@@ -529,6 +529,8 @@
         const overlay = document.getElementById('loginOverlay');
         const btnTabUser = document.getElementById('btnTabUser');
         const displayUser = document.getElementById('displayUserName');
+        const adminLogoBar = document.getElementById('adminLogoBar');
+        const adminRestoreBar = document.getElementById('adminRestoreBar');
         
         if (user) { 
             overlay.style.display = 'none'; 
@@ -536,21 +538,34 @@
 
             onValue(ref(db, 'users/' + userId), (snap) => {
                 const userData = snap.val();
+                
+                // JIKA YANG LOGIN ADALAH GURU
                 if(userData && userData.role === "GURU") {
                     userAksesKelas = userData.aksesKelas;
                     displayUser.innerText = "Guru Kelas " + userAksesKelas;
+                    
+                    // Sembunyikan Menu Kelola Guru
+                    if(btnTabUser) btnTabUser.style.display = 'none'; 
+                    // Sembunyikan Logo & Restore
+                    if(adminLogoBar) adminLogoBar.style.display = 'none';
+                    if(adminRestoreBar) adminRestoreBar.style.display = 'none';
+                    
+                    // Kunci filter hanya ke kelasnya saja
                     document.getElementById('mainFilterKelas').value = userAksesKelas;
                     document.getElementById('mainFilterKelas').disabled = true;
-                    if(btnTabUser) btnTabUser.classList.add('hidden');
-                    document.getElementById('adminLogoBar').classList.add('hidden');
-                    document.getElementById('adminRestoreBar').classList.add('hidden');
-                } else {
+                } 
+                // JIKA YANG LOGIN ADALAH ADMIN
+                else {
                     userAksesKelas = null;
-                    displayUser.innerText = "Indra Setiawan, S.Pd.Gr";
-                    document.getElementById('mainFilterKelas').disabled = false;
+                    displayUser.innerText = "Administrator (Indra Setiawan)";
+                    
+                    // Tampilkan semua menu
+                    if(btnTabUser) btnTabUser.style.display = 'block'; 
                     if(btnTabUser) btnTabUser.classList.remove('hidden');
-                    document.getElementById('adminLogoBar').classList.remove('hidden');
-                    document.getElementById('adminRestoreBar').classList.remove('hidden');
+                    if(adminLogoBar) adminLogoBar.style.display = 'flex';
+                    if(adminRestoreBar) adminRestoreBar.style.display = 'flex';
+                    
+                    document.getElementById('mainFilterKelas').disabled = false;
                 }
                 applyFilter();
             }, { onlyOnce: true });
@@ -1069,6 +1084,7 @@
 </script>
 </body>
 </html>
+
 
 
 
