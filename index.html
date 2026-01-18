@@ -264,25 +264,38 @@
 </div>
 
 <div class="container">
-    <header>
-        <div class="header-content">
-            <div style="flex-grow: 1; overflow: hidden; margin-right: 20px;">
-    <marquee behavior="scroll" direction="left" scrollamount="6">
-        <h1 style="display: inline; margin-right: 50px;">TIM KKGO KECAMATAN MAJALENGKA</h1>
-        <span style="font-size: 16px; opacity: 0.9; font-weight: 400;">— Aplikasi Pembuat Soal STS/SAS/US Tahun Pelajaran 2025/2026 —</span>
-    </marquee>
-    <p style="margin-top: 5px; font-size: 12px; opacity: 0.8;">Kecamatan Majalengka, Kabupaten Majalengka</p>
-</div>
-            
-            <div class="top-right-badge">
-                <div class="creator-name" id="displayUserName">Memuat...</div>
-                <button class="btn btn-red" onclick="handleLogout()" style="padding:4px 8px; font-size:10px;">LOGOUT</button>
-                <div id="statusIndicator" class="online-badge offline">
-                    <div class="dot"></div> <span id="statusText">Connecting...</span>
-                </div>
-            </div>
+    <header style="position: relative; padding: 20px; background: var(--primary-grad); color: white; border-radius: 15px; margin-bottom: 25px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); overflow: hidden; min-height: 110px; display: flex; align-items: center; gap: 20px;">
+    
+    <div style="flex-shrink: 0; z-index: 10;">
+        <img src="logo_kkgo.jpg" alt="Logo KKGO" style="width: 80px; height: 80px; object-fit: contain; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.2)); border-radius: 10px;">
+    </div>
+
+    <div style="flex-grow: 1; overflow: hidden;">
+        <marquee behavior="scroll" direction="left" scrollamount="6" onmouseover="this.stop();" onmouseout="this.start();" style="width: 100%;">
+            <h1 style="margin: 0; font-size: 26px; text-transform: uppercase; letter-spacing: 1px;">
+                TIM KKGO KECAMATAN MAJALENGKA
+            </h1>
+        </marquee>
+        
+        <p style="margin: 5px 0 0 0; font-size: 18px; opacity: 1; font-weight: 700; letter-spacing: 0.5px;">
+            APLIKASI PEMBUAT SOAL OTOMATIS
+        </p>
+        <p style="margin: 2px 0 0 0; font-size: 12px; opacity: 0.8;">
+            Kecamatan Majalengka, Kabupaten Majalengka
+        </p>
+    </div>
+
+    <div style="position: absolute; top: 10px; right: 10px; display: flex; align-items: center; gap: 8px; z-index: 999;">
+        <div class="creator-name" id="displayUserName" style="font-size: 11px; white-space: nowrap; background: rgba(255,255,255,0.2); padding: 5px 12px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.3);">
+            Indra Setiawan, S.Pd.Gr
         </div>
-    </header>
+        <button class="btn btn-red" onclick="handleLogout()" style="padding:4px 8px; font-size:10px; cursor: pointer;">LOGOUT</button>
+        <div id="statusIndicator" class="online-badge offline" style="margin-left: 0;">
+            <div class="dot"></div> <span id="statusText" style="font-size: 10px;">Connecting...</span>
+        </div>
+    </div>
+
+</header>
 
     <div class="tab-nav">
         <button class="tab-btn active" onclick="switchTab(event, 'kurikulum')">📂 DATA KURIKULUM</button>
@@ -1071,4 +1084,5 @@
 </script>
 </body>
 </html>
+
 
