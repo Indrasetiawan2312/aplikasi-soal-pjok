@@ -734,14 +734,30 @@
     
     // --- PERBAIKAN LOGIKA OPSI JAWABAN KELAS 1-2 vs 3-6 ---
     window.loadTP = function() {
-        const k = document.getElementById('sKelas').value; 
-        const s = document.getElementById('sTP'); 
-        s.innerHTML = "";
-        const kat = document.getElementById('sKategori').value;
-        const filterKelas = (kat === 'US') ? "6" : k;
-        
-        // Load data TP
-        KUR_DB.filter(x => x.rombel == filterKelas).forEach(d => (d.tpSet||[]).forEach(t => s.innerHTML += `<option value="${t}">${t}</option>`));
+    const k = document.getElementById('sKelas').value; 
+    const s = document.getElementById('sTP'); 
+    s.innerHTML = "";
+    const kat = document.getElementById('sKategori').value;
+    const filterKelas = (kat === 'US') ? "6" : k;
+    
+    // Load Data TP
+    KUR_DB.filter(x => x.rombel == filterKelas).forEach(d => 
+        (d.tpSet||[]).forEach(t => s.innerHTML += `<option value="${t}">${t}</option>`)
+    );
+
+    // LOGIKA OTOMATIS OPSI D
+    const isRendah = (k == "1" || k == "2");
+    const rowD = document.getElementById('rowD');
+    const sKunci = document.getElementById('sKunci');
+
+    if (isRendah) {
+        if(rowD) rowD.style.display = 'none'; 
+        sKunci.innerHTML = `<option value="a">A</option><option value="b">B</option><option value="c">C</option>`;
+    } else {
+        if(rowD) rowD.style.display = 'block'; 
+        sKunci.innerHTML = `<option value="a">A</option><option value="b">B</option><option value="c">C</option><option value="d">D</option>`;
+    }
+};
         
         // Cek apakah kelas 1 atau 2 (Tiga Opsi: A, B, C)
         const isTigaOpsi = (k == "1" || k == "2");
@@ -1108,4 +1124,5 @@
 </script>
 </body>
 </html>
+
 
