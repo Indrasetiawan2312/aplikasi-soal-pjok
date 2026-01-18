@@ -42,32 +42,63 @@
             padding: 20px 30px; 
             position: relative; 
             border-bottom: 4px solid rgba(255,255,255,0.2);
-        }
-
-        .header-content {
             display: flex;
-            justify-content: space-between;
             align-items: center;
+            justify-content: space-between;
+            min-height: 100px;
         }
 
-        .header-content h1 { 
+        /* Penempatan Logo Kiri */
+        .header-logo-left {
+            flex: 0 0 80px;
+        }
+        .header-logo-left img {
+            width: 70px;
+            height: auto;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+            image-rendering: -webkit-optimize-contrast;
+        }
+
+        /* Penempatan Teks Tengah */
+        .header-center-text {
+            flex: 1;
+            text-align: center;
+            padding: 0 20px;
+        }
+
+        .header-center-text h1 { 
             margin: 0; 
             font-size: 22px; 
-            font-weight: 700; 
-            letter-spacing: 0.5px; 
+            font-weight: 800; 
+            letter-spacing: 1px; 
+            text-transform: uppercase;
         }
         
-        .header-content p { 
+        .header-center-text p { 
             margin: 4px 0 0; 
-            font-size: 13px; 
+            font-size: 14px; 
             opacity: 0.9; 
-            font-weight: 400;
+            font-weight: 600;
+        }
+
+        .role-badge-container {
+            margin-top: 8px;
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 2px 15px;
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.3);
+            font-size: 12px;
+            font-weight: bold;
+            letter-spacing: 1px;
         }
 
         .top-right-badge {
+            flex: 0 0 220px;
             display: flex;
-            align-items: center;
-            gap: 10px;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 5px;
         }
 
         .creator-name { 
@@ -264,45 +295,29 @@
 </div>
 
 <div class="container">
-    <header style="position: relative; padding: 20px; background: var(--primary-grad); color: white; border-radius: 15px; margin-bottom: 25px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); overflow: hidden; min-height: 130px; display: flex; align-items: center;">
-    
-    <div style="position: absolute; left: 20px; z-index: 10;">
-        <img src="logo_kkgo.jpg" alt="Logo" style="width: 75px; height: auto; image-rendering: -webkit-optimize-contrast; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));">
-    </div>
+    <header>
+        <div class="header-logo-left">
+            <img src="logo_kkgo.jpg" alt="Logo">
+        </div>
 
-    <div style="width: 100%; text-align: center; padding: 0 120px;">
-        <marquee behavior="scroll" direction="left" scrollamount="6" onmouseover="this.stop();" onmouseout="this.start();" style="width: 100%;">
-            <h1 style="margin: 0; font-size: 24px; text-transform: uppercase; letter-spacing: 1px; font-weight: 800;">
-                TIM KKGO KECAMATAN MAJALENGKA
-            </h1>
-        </marquee>
+        <div class="header-center-text">
+            <h1>TIM KKGO KECAMATAN MAJALENGKA</h1>
+            <p>APLIKASI PEMBUAT SOAL STS/SAS/US 2025/2026</p>
+            <div class="role-badge-container">
+                <span id="userRoleStatus">MEMUAT...</span>
+            </div>
+        </div>
         
-        <p style="margin: 8px 0 0 0; font-size: 18px; opacity: 1; font-weight: 700; letter-spacing: 1px;">
-            APLIKASI PEMBUAT SOAL OTOMATIS
-        </p>
-
-        <p style="margin: 2px 0 5px 0; font-size: 12px; opacity: 0.8;">
-            Kecamatan Majalengka, Kabupaten Majalengka
-        </p>
-
-        <div style="display: inline-block; background: rgba(255, 255, 255, 0.2); padding: 3px 18px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.4); margin-top: 5px; backdrop-filter: blur(5px);">
-            <span style="font-size: 13px; font-weight: 600; letter-spacing: 1px; color: #ffffff;">
-                Admin / Guru
-            </span>
+        <div class="top-right-badge">
+            <div class="creator-name" id="displayUserName">Memuat...</div>
+            <div style="display:flex; gap:8px;">
+                <button class="btn btn-red" onclick="handleLogout()" style="padding:4px 8px; font-size:10px;">LOGOUT</button>
+                <div id="statusIndicator" class="online-badge offline">
+                    <div class="dot"></div> <span id="statusText">Connecting...</span>
+                </div>
+            </div>
         </div>
-    </div>
-
-    <div style="position: absolute; top: 10px; right: 10px; display: flex; align-items: center; gap: 8px; z-index: 999;">
-        <div class="creator-name" id="displayUserName" style="font-size: 11px; white-space: nowrap; background: rgba(255,255,255,0.2); padding: 5px 12px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.3); backdrop-filter: blur(4px);">
-            Indra Setiawan, S.Pd.Gr
-        </div>
-        <button class="btn btn-red" onclick="handleLogout()" style="padding:4px 8px; font-size:10px; cursor: pointer;">LOGOUT</button>
-        <div id="statusIndicator" class="online-badge offline" style="margin-left: 0;">
-            <div class="dot"></div> <span id="statusText" style="font-size: 10px;">Connecting...</span>
-        </div>
-    </div>
-
-</header>
+    </header>
 
     <div class="tab-nav">
         <button class="tab-btn active" onclick="switchTab(event, 'kurikulum')">📂 DATA KURIKULUM</button>
@@ -526,7 +541,7 @@
 
     let KUR_DB = [];
     let SOAL_DB = [];
-    let userAksesKelas = null; // Global untuk simpan akses guru
+    let userAksesKelas = null;
 
     // --- AUTH LOGIC ---
     window.handleLogin = function() {
@@ -547,6 +562,7 @@
         const overlay = document.getElementById('loginOverlay');
         const btnTabUser = document.getElementById('btnTabUser');
         const displayUser = document.getElementById('displayUserName');
+        const roleStatus = document.getElementById('userRoleStatus');
         
         if (user) { 
             overlay.style.display = 'none'; 
@@ -555,21 +571,20 @@
             onValue(ref(db, 'users/' + userId), (snap) => {
                 const userData = snap.val();
                 if(userData && userData.role === "GURU") {
-                    // LOGIKA GURU
                     userAksesKelas = userData.aksesKelas;
                     displayUser.innerText = "Guru Kelas " + userAksesKelas;
+                    roleStatus.innerText = "GURU";
                     
                     document.getElementById('mainFilterKelas').value = userAksesKelas;
                     document.getElementById('mainFilterKelas').disabled = true;
                     if(btnTabUser) btnTabUser.classList.add('hidden');
                     
-                    // Sembunyikan fitur restore/logo untuk guru
                     document.getElementById('adminLogoBar').classList.add('hidden');
                     document.getElementById('adminRestoreBar').classList.add('hidden');
                 } else {
-                    // LOGIKA ADMIN
                     userAksesKelas = null;
                     displayUser.innerText = "Indra Setiawan, S.Pd.Gr";
+                    roleStatus.innerText = "ADMINISTRATOR";
                     
                     document.getElementById('mainFilterKelas').disabled = false;
                     if(btnTabUser) btnTabUser.classList.remove('hidden');
@@ -624,7 +639,6 @@
         if(confirm("Hapus akses guru ini?")) remove(ref(db, 'users/' + key));
     };
 
-    // --- PROTEKSI DATA BERDASARKAN KELAS ---
     window.hapusDataUniversal = function(path, id, kelasData) {
         if(userAksesKelas && kelasData != userAksesKelas) {
             alert("Maaf, Anda hanya bisa mengelola data Kelas " + userAksesKelas);
@@ -633,7 +647,6 @@
         if(confirm('Yakin ingin menghapus data ini?')) remove(ref(db, path + '/' + id));
     };
 
-    // --- UTILITIES ---
     window.saveLogoToLocal = async function(input) {
         if(input.files[0]) {
             const base64 = await compressImage(input.files[0]);
@@ -672,7 +685,6 @@
         reader.readAsText(input.files[0]);
     };
 
-    // --- FIREBASE LISTENERS ---
     if(db) {
         onValue(ref(db, ".info/connected"), (s) => {
             const el = document.getElementById('statusIndicator'); const txt = document.getElementById('statusText');
@@ -683,7 +695,6 @@
         onValue(ref(db, 'soal'), (s) => { SOAL_DB = s.val() ? Object.values(s.val()) : []; renderSoal(); });
     }
 
-    // --- TAB & UI CONTROL ---
     window.switchTab = function(e, n) { 
         document.querySelectorAll('.tab-content').forEach(x => x.classList.add('hidden')); 
         document.querySelectorAll('.tab-btn').forEach(x => x.classList.remove('active')); 
@@ -694,13 +705,10 @@
         if(inp.files[0]) { const r = new FileReader(); r.onload = e => document.getElementById(id).innerHTML = `<img src="${e.target.result}" class="preview-img">`; r.readAsDataURL(inp.files[0]); } 
     };
 
-    // --- KURIKULUM OPS ---
     window.openFormKur = function() { 
         document.getElementById('editKurId').value = ""; document.getElementById('tpInputs').innerHTML = ""; addTPField(''); 
-        
         const filterVal = document.getElementById('mainFilterKelas').value;
         const inputKelas = document.getElementById('fKelas');
-        
         if(userAksesKelas) {
             inputKelas.value = userAksesKelas;
             inputKelas.disabled = true;
@@ -710,7 +718,6 @@
         } else {
             inputKelas.disabled = false;
         }
-        
         document.getElementById('formKur').classList.remove('hidden'); 
     };
     window.addTPField = function(v) { document.getElementById('tpInputs').insertAdjacentHTML('beforeend', `<div style="display:flex; gap:5px; margin-bottom:5px;"><input type="text" class="tp-val" value="${v}" style="flex:1" placeholder="Isi Tujuan Pembelajaran..."><button class="btn btn-red" onclick="this.parentElement.remove()" style="padding:5px 10px;">✕</button></div>`); };
@@ -718,7 +725,6 @@
         const idStr = document.getElementById('editKurId').value;
         const id = idStr ? parseInt(idStr) : Date.now();
         const kValue = document.getElementById('fKelas').value;
-        
         const data = { 
             id: id, fase: document.getElementById('fFase').value, rombel: kValue, sem: document.getElementById('fSem').value, cp: document.getElementById('fCp').value, 
             tpSet: Array.from(document.querySelectorAll('.tp-val')).map(i => i.value).filter(x => x.trim() !== "") 
@@ -737,13 +743,11 @@
     window.editKur = function(id) { 
         const d = KUR_DB.find(x => x.id === id); if(!d) return;
         if(userAksesKelas && d.rombel != userAksesKelas) return alert("Hanya bisa mengedit Kelas " + userAksesKelas);
-        
         document.getElementById('editKurId').value = d.id; document.getElementById('fFase').value = d.fase; document.getElementById('fKelas').value = d.rombel; document.getElementById('fSem').value = d.sem; document.getElementById('fCp').value = d.cp; 
         document.getElementById('tpInputs').innerHTML = ""; (d.tpSet || []).forEach(t => addTPField(t)); 
         document.getElementById('formKur').classList.remove('hidden'); 
     };
 
-    // --- SOAL OPS ---
     window.populateKelas = function() { 
         const s = document.getElementById('sKelas'); const currentVal = s.value; s.innerHTML = "<option value=''>- Pilih Kelas -</option>"; 
         [...new Set(KUR_DB.map(x => x.rombel))].sort().forEach(k => s.innerHTML += `<option value="${k}">${k}</option>`); 
@@ -769,7 +773,6 @@
 
     window.openFormSoal = function(kategori = 'REGULER') { 
         const sk = document.getElementById('sKelas');
-        
         if(userAksesKelas && kategori === 'REGULER') {
             sk.value = userAksesKelas;
             sk.disabled = true;
@@ -778,7 +781,6 @@
         } else {
             sk.disabled = false;
         }
-
         document.getElementById('editSoalId').value = ""; 
         document.getElementById('sKategori').value = kategori;
         document.getElementById('labelKategori').innerText = kategori === 'US' ? "[ MODE UJIAN SEKOLAH ]" : "";
@@ -787,18 +789,15 @@
         document.getElementById('sMateri').value = ""; document.getElementById('sIndikator').value = ""; 
         document.getElementById('sTanya').value = ""; document.getElementById('sJawabanEssay').value = "";
         document.querySelectorAll('#pgBox input[type=text]').forEach(i => i.value = ""); document.querySelectorAll('#pgBox div[id^=p]').forEach(i => i.innerHTML = ""); document.querySelectorAll('input[type=file]').forEach(i => i.value = "");
-        
         populateKelas(); 
         if(kategori === 'US') document.getElementById('sKelas').value = "6"; 
         else if(userAksesKelas) document.getElementById('sKelas').value = userAksesKelas;
-
         loadTP(); checkSoalType(); 
     };
 
     window.editSoal = function(id) {
         populateKelas(); const s = SOAL_DB.find(x => x.id == id); if(!s) return;
         if(userAksesKelas && s.kelas != userAksesKelas) return alert("Hanya bisa mengedit Kelas " + userAksesKelas);
-
         document.getElementById('editSoalId').value = s.id;
         document.getElementById('sKategori').value = s.kategori || 'REGULER';
         document.getElementById('labelKategori').innerText = s.kategori === 'US' ? "[ MODE UJIAN SEKOLAH ]" : "";
@@ -878,10 +877,8 @@
         const u = document.getElementById('usSoalContainer'); 
         const rReg = document.getElementById('rekapStats');
         const rUS = document.getElementById('rekapStatsUS');
-        
         l.innerHTML = ""; u.innerHTML = ""; 
         const filterVal = document.getElementById('mainFilterKelas').value;
-        
         let filteredReg = SOAL_DB.filter(s => (s.kategori === 'REGULER' || !s.kategori));
         if(filterVal !== 'ALL') filteredReg = filteredReg.filter(s => s.kelas == filterVal);
         let usData = SOAL_DB.filter(s => s.kategori === 'US');
@@ -899,7 +896,6 @@
 
         if(rReg) rReg.innerHTML = getRekapHtml(filteredReg, `Rekapitulasi STS/SAS (Fokus: ${filterVal})`);
         if(rUS) rUS.innerHTML = getRekapHtml(usData, `Rekapitulasi Ujian Sekolah (US)`);
-
         filteredReg.sort((a, b) => (a.tipe === b.tipe) ? 0 : (a.tipe === 'PG' ? -1 : 1));
         filteredReg.forEach((s, i) => {
             let contentHtml = s.imgS ? `<div class="soal-item"><div class="soal-number">${i+1}.</div><div class="soal-image-container"><img src="${s.imgS}"></div><div class="soal-text-content">${s.tanya}</div></div>` : `<b>${i+1}.</b> ${s.tanya}`;
@@ -911,171 +907,70 @@
         });
     }
 
-    // --- EKSPOR WORD (ORIGINAL) ---
     window.exportWord = function(mode) {
         const { Document, Packer, Paragraph, TextRun, ImageRun, Table, TableRow, TableCell, WidthType, BorderStyle, AlignmentType, VerticalAlign } = docx;
         const sections = []; const filterVal = document.getElementById('mainFilterKelas').value;
         let dataToExport = []; let labelJudul = "PJOK";
-        
-        if(mode.startsWith('us_')) {
-            dataToExport = SOAL_DB.filter(x => x.kategori === 'US'); labelJudul = "UJIAN SEKOLAH (US) PJOK";
-        } else {
-            dataToExport = (filterVal !== 'ALL') ? SOAL_DB.filter(s => s.kelas == filterVal && (s.kategori === 'REGULER' || !s.kategori)) : SOAL_DB.filter(s => s.kategori === 'REGULER' || !s.kategori);
-        }
+        if(mode.startsWith('us_')) { dataToExport = SOAL_DB.filter(x => x.kategori === 'US'); labelJudul = "UJIAN SEKOLAH (US) PJOK"; } 
+        else { dataToExport = (filterVal !== 'ALL') ? SOAL_DB.filter(s => s.kelas == filterVal && (s.kategori === 'REGULER' || !s.kategori)) : SOAL_DB.filter(s => s.kategori === 'REGULER' || !s.kategori); }
         if(dataToExport.length === 0) return alert("Data Kosong!");
         const klList = [...new Set(dataToExport.map(x => x.kelas))].sort();
         const savedLogo = localStorage.getItem('pjok_logo_kop');
-
         for(let k of klList) {
-            let isKecil = (k == "1" || k == "2");
-            let fontName = isKecil ? "Arial" : "Times New Roman";
-            let fontSize = 24; 
-            const children = [];
-            let headerText = labelJudul;
-
-            if(mode.includes('kisi')) headerText = "KISI-KISI SOAL " + labelJudul;
-            else if(mode.includes('kunci')) headerText = "KUNCI JAWABAN " + labelJudul;
-            else if(mode.includes('skor')) headerText = "PEDOMAN PENSKORAN " + labelJudul;
-
-            // KOP SURAT
+            let isKecil = (k == "1" || k == "2"); let fontName = isKecil ? "Arial" : "Times New Roman"; let fontSize = 24; 
+            const children = []; let headerText = labelJudul;
+            if(mode.includes('kisi')) headerText = "KISI-KISI SOAL " + labelJudul; else if(mode.includes('kunci')) headerText = "KUNCI JAWABAN " + labelJudul; else if(mode.includes('skor')) headerText = "PEDOMAN PENSKORAN " + labelJudul;
             let headerCells = [];
-            if (savedLogo) {
-                try {
-                    const base64Data = savedLogo.split(',')[1];
-                    headerCells.push(new TableCell({ width: { size: 15, type: WidthType.PERCENTAGE }, children: [new Paragraph({ children: [new ImageRun({ data: Uint8Array.from(atob(base64Data), c => c.charCodeAt(0)), transformation: { width: 60, height: 60 } })], alignment: AlignmentType.CENTER })] }));
-                } catch(e) {}
-            }
-            headerCells.push(new TableCell({
-                width: { size: savedLogo ? 85 : 100, type: WidthType.PERCENTAGE },
-                children: [
-                    new Paragraph({ children: [new TextRun({ text: "TIM KKGO KECAMATAN MAJALENGKA", bold: true, size: 26, font: fontName })], alignment: AlignmentType.CENTER }),
-                    new Paragraph({ children: [new TextRun({ text: headerText + " KELAS " + k, bold: true, size: 22, font: fontName })], alignment: AlignmentType.CENTER }),
-                    new Paragraph({ children: [new TextRun({ text: "TAHUN PELAJARAN 2025/2026", size: 18, font: fontName })], alignment: AlignmentType.CENTER })
-                ],
-                verticalAlign: VerticalAlign.CENTER
-            }));
+            if (savedLogo) { try { const base64Data = savedLogo.split(',')[1]; headerCells.push(new TableCell({ width: { size: 15, type: WidthType.PERCENTAGE }, children: [new Paragraph({ children: [new ImageRun({ data: Uint8Array.from(atob(base64Data), c => c.charCodeAt(0)), transformation: { width: 60, height: 60 } })], alignment: AlignmentType.CENTER })] })); } catch(e) {} }
+            headerCells.push(new TableCell({ width: { size: savedLogo ? 85 : 100, type: WidthType.PERCENTAGE }, children: [ new Paragraph({ children: [new TextRun({ text: "TIM KKGO KECAMATAN MAJALENGKA", bold: true, size: 26, font: fontName })], alignment: AlignmentType.CENTER }), new Paragraph({ children: [new TextRun({ text: headerText + " KELAS " + k, bold: true, size: 22, font: fontName })], alignment: AlignmentType.CENTER }), new Paragraph({ children: [new TextRun({ text: "TAHUN PELAJARAN 2025/2026", size: 18, font: fontName })], alignment: AlignmentType.CENTER }) ], verticalAlign: VerticalAlign.CENTER }));
             children.push(new Table({ rows: [new TableRow({ children: headerCells })], width: { size: 100, type: WidthType.PERCENTAGE }, borders: { top: {style: BorderStyle.NONE}, bottom: {style: BorderStyle.DOUBLE, size: 3}, left: {style: BorderStyle.NONE}, right: {style: BorderStyle.NONE}, insideHorizontal: {style: BorderStyle.NONE}, insideVertical: {style: BorderStyle.NONE} } }));
             children.push(new Paragraph({ text: "", spacing: { after: 200 } }));
-
             let soals = dataToExport.filter(x => x.kelas == k).sort((a, b) => (a.tipe === b.tipe) ? 0 : (a.tipe === 'PG' ? -1 : 1));
-
             if(mode.includes('kisi')) {
-                const kisiRows = [
-                    new TableRow({ children: ["NO", "TP", "MATERI", "INDIKATOR", "LEVEL", "TIPE", "SKOR"].map(t => new TableCell({ shading:{fill:"EEEEEE"}, children:[new Paragraph({ children:[new TextRun({text:t, bold:true, size:18, font:fontName})], alignment:AlignmentType.CENTER })] })) })
-                ];
-                soals.forEach((s, idx) => {
-                    kisiRows.push(new TableRow({
-                        children: [
-                            new TableCell({ children:[new Paragraph({ text:(idx+1).toString(), alignment:AlignmentType.CENTER, font:fontName })] }),
-                            new TableCell({ children:[new Paragraph({ text:s.tp || "-", size:18, font:fontName })] }),
-                            new TableCell({ children:[new Paragraph({ text:s.materi || "-", size:18, font:fontName })] }),
-                            new TableCell({ children:[new Paragraph({ text:s.indikator || "-", size:18, font:fontName })] }),
-                            new TableCell({ children:[new Paragraph({ text:s.level || "-", alignment:AlignmentType.CENTER, font:fontName })] }),
-                            new TableCell({ children:[new Paragraph({ text:s.tipe, alignment:AlignmentType.CENTER, font:fontName })] }),
-                            new TableCell({ children:[new Paragraph({ text:(s.skor||1).toString(), alignment:AlignmentType.CENTER, font:fontName })] })
-                        ]
-                    }));
-                });
+                const kisiRows = [ new TableRow({ children: ["NO", "TP", "MATERI", "INDIKATOR", "LEVEL", "TIPE", "SKOR"].map(t => new TableCell({ shading:{fill:"EEEEEE"}, children:[new Paragraph({ children:[new TextRun({text:t, bold:true, size:18, font:fontName})], alignment:AlignmentType.CENTER })] })) }) ];
+                soals.forEach((s, idx) => { kisiRows.push(new TableRow({ children: [ new TableCell({ children:[new Paragraph({ text:(idx+1).toString(), alignment:AlignmentType.CENTER, font:fontName })] }), new TableCell({ children:[new Paragraph({ text:s.tp || "-", size:18, font:fontName })] }), new TableCell({ children:[new Paragraph({ text:s.materi || "-", size:18, font:fontName })] }), new TableCell({ children:[new Paragraph({ text:s.indikator || "-", size:18, font:fontName })] }), new TableCell({ children:[new Paragraph({ text:s.level || "-", alignment:AlignmentType.CENTER, font:fontName })] }), new TableCell({ children:[new Paragraph({ text:s.tipe, alignment:AlignmentType.CENTER, font:fontName })] }), new TableCell({ children:[new Paragraph({ text:(s.skor||1).toString(), alignment:AlignmentType.CENTER, font:fontName })] }) ] })); });
                 children.push(new Table({ width:{size:100, type:WidthType.PERCENTAGE}, rows:kisiRows }));
             } 
             else if(mode.includes('skor')) {
-                const headSkor = new TableRow({
-                    children: [
-                        {t:"No", w:5}, {t:"Level", w:10}, {t:"Kunci / Unsur Jawaban", w:40}, {t:"Rubrik", w:30}, {t:"Skor", w:15}
-                    ].map(h => new TableCell({ shading:{fill:"F2F2F2"}, children:[new Paragraph({ children:[new TextRun({text:h.t, bold:true, font:fontName, size:18})], alignment:AlignmentType.CENTER })], width:{size:h.w, type:WidthType.PERCENTAGE} }))
-                });
-                let skorRows = [headSkor];
-                let grandTotal = 0;
-                soals.forEach((s, idx) => {
-                    let sMax = parseInt(s.skor) || 1; grandTotal += sMax;
-                    skorRows.push(new TableRow({
-                        children: [
-                            new TableCell({ children:[new Paragraph({ text:(idx+1).toString(), alignment:AlignmentType.CENTER, font:fontName })] }),
-                            new TableCell({ children:[new Paragraph({ text:s.level||"-", alignment:AlignmentType.CENTER, font:fontName })] }),
-                            new TableCell({ children:[new Paragraph({ text:s.tipe==='PG'?s.kunci.toUpperCase():s.jawaban, font:fontName, size:18 })] }),
-                            new TableCell({ children:[new Paragraph({ text:s.tipe==='PG'?"Benar 1, Salah 0":"Sesuai kebijakan/kunci", font:fontName, size:18 })] }),
-                            new TableCell({ children:[new Paragraph({ text:sMax.toString(), alignment:AlignmentType.CENTER, font:fontName })] })
-                        ]
-                    }));
-                });
+                const headSkor = new TableRow({ children: [ {t:"No", w:5}, {t:"Level", w:10}, {t:"Kunci / Unsur Jawaban", w:40}, {t:"Rubrik", w:30}, {t:"Skor", w:15} ].map(h => new TableCell({ shading:{fill:"F2F2F2"}, children:[new Paragraph({ children:[new TextRun({text:h.t, bold:true, font:fontName, size:18})], alignment:AlignmentType.CENTER })], width:{size:h.w, type:WidthType.PERCENTAGE} })) });
+                let skorRows = [headSkor]; let grandTotal = 0;
+                soals.forEach((s, idx) => { let sMax = parseInt(s.skor) || 1; grandTotal += sMax; skorRows.push(new TableRow({ children: [ new TableCell({ children:[new Paragraph({ text:(idx+1).toString(), alignment:AlignmentType.CENTER, font:fontName })] }), new TableCell({ children:[new Paragraph({ text:s.level||"-", alignment:AlignmentType.CENTER, font:fontName })] }), new TableCell({ children:[new Paragraph({ text:s.tipe==='PG'?s.kunci.toUpperCase():s.jawaban, font:fontName, size:18 })] }), new TableCell({ children:[new Paragraph({ text:s.tipe==='PG'?"Benar 1, Salah 0":"Sesuai kebijakan/kunci", font:fontName, size:18 })] }), new TableCell({ children:[new Paragraph({ text:sMax.toString(), alignment:AlignmentType.CENTER, font:fontName })] }) ] })); });
                 children.push(new Table({ width:{size:100, type:WidthType.PERCENTAGE}, rows:skorRows }));
                 children.push(new Paragraph({ text:`\nNilai Akhir = (Skor Perolehan / ${grandTotal}) x 100`, font:fontName, italics:true, size:20 }));
             }
             else if(mode.includes('kunci')) {
-                let pgSoals = soals.filter(s => s.tipe === 'PG');
-                let esSoals = soals.filter(s => s.tipe === 'Essay');
+                let pgSoals = soals.filter(s => s.tipe === 'PG'); let esSoals = soals.filter(s => s.tipe === 'Essay');
                 children.push(new Paragraph({ children:[new TextRun({text:"A. PILIHAN GANDA", bold:true, font:fontName, size:22})], spacing:{after:150} }));
-                
                 const rowsPerCol = 5; const totalCols = Math.ceil(pgSoals.length / rowsPerCol);
                 let tableRowsArr = [];
                 for(let r=0; r<rowsPerCol; r++){
                     let cells = [];
                     for(let c=0; c<totalCols; c++){
                         let idx = r + (c * rowsPerCol); let s = pgSoals[idx];
-                        cells.push(new TableCell({
-                            borders:{top:BorderStyle.NONE, bottom:BorderStyle.NONE, left:BorderStyle.NONE, right:BorderStyle.NONE},
-                            children:[new Paragraph({ children:[new TextRun({text:s?`${idx+1}. ${s.kunci.toUpperCase()}`:"", font:fontName, size:fontSize})], alignment:AlignmentType.LEFT })]
-                        }));
+                        cells.push(new TableCell({ borders:{top:BorderStyle.NONE, bottom:BorderStyle.NONE, left:BorderStyle.NONE, right:BorderStyle.NONE}, children:[new Paragraph({ children:[new TextRun({text:s?`${idx+1}. ${s.kunci.toUpperCase()}`:"", font:fontName, size:fontSize})], alignment:AlignmentType.LEFT })] }));
                     }
                     tableRowsArr.push(new TableRow({ children:cells }));
                 }
                 children.push(new Table({ width:{size:100, type:WidthType.PERCENTAGE}, rows:tableRowsArr }));
-
                 if(esSoals.length > 0){
                     children.push(new Paragraph({ children:[new TextRun({text:"\nB. ESSAY / URAIAN", bold:true, font:fontName, size:22})], spacing:{before:200, after:100} }));
-                    esSoals.forEach((s, idx) => {
-                        children.push(new Paragraph({ children:[new TextRun({text:`${pgSoals.length+idx+1}. `, bold:true, font:fontName}), new TextRun({text:s.jawaban, font:fontName})], spacing:{after:50} }));
-                    });
+                    esSoals.forEach((s, idx) => { children.push(new Paragraph({ children:[new TextRun({text:`${pgSoals.length+idx+1}. `, bold:true, font:fontName}), new TextRun({text:s.jawaban, font:fontName})], spacing:{after:50} })); });
                 }
             } else {
                 let pgDoneFlag = false; let esDoneFlag = false;
                 for(let [idx, s] of soals.entries()){
-                    if(s.tipe === 'PG' && !pgDoneFlag){ 
-                        children.push(new Paragraph({ children:[new TextRun({text:"I. Pilihlah salah satu jawaban yang paling benar!", bold:true, italics:true, font:fontName, size:fontSize})], spacing:{after:200} })); 
-                        pgDoneFlag = true; 
-                    }
-                    if(s.tipe === 'Essay' && !esDoneFlag){ 
-                        children.push(new Paragraph({ children:[new TextRun({text:"II. Isilah titik-titik dibawah ini dengan jawaban yang benar!", bold:true, italics:true, font:fontName, size:fontSize})], spacing:{before:300, after:200} })); 
-                        esDoneFlag = true; 
-                    }
-
+                    if(s.tipe === 'PG' && !pgDoneFlag){ children.push(new Paragraph({ children:[new TextRun({text:"I. Pilihlah salah satu jawaban yang paling benar!", bold:true, italics:true, font:fontName, size:fontSize})], spacing:{after:200} })); pgDoneFlag = true; }
+                    if(s.tipe === 'Essay' && !esDoneFlag){ children.push(new Paragraph({ children:[new TextRun({text:"II. Isilah titik-titik dibawah ini dengan jawaban yang benar!", bold:true, italics:true, font:fontName, size:fontSize})], spacing:{before:300, after:200} })); esDoneFlag = true; }
                     let qContainer = [new Paragraph({ children:[new TextRun({text:s.tanya, font:fontName, size:fontSize})], alignment:AlignmentType.JUSTIFIED, spacing:{after:120} })];
-                    
                     if(s.tipe === 'PG'){
-                        const abc = ['a','b','c','d'];
-                        let validOps = (s.opsi || []).filter((o, i) => !(isKecil && i > 2) && (o.t || o.i));
+                        const abc = ['a','b','c','d']; let validOps = (s.opsi || []).filter((o, i) => !(isKecil && i > 2) && (o.t || o.i));
                         let totalChar = validOps.reduce((acc, curr) => acc + (curr.t?curr.t.length:0), 0);
                         let isLong = validOps.some(o => (o.t && o.t.length > 30)) || totalChar > 60;
-
-                        if(isKecil){
-                            if(!isLong){
-                                let runs = []; validOps.forEach((v, i) => runs.push(new TextRun({text:`${abc[i]}. ${v.t}      `, font:fontName, size:fontSize})));
-                                qContainer.push(new Paragraph({ children:runs }));
-                            } else {
-                                validOps.forEach((v, i) => qContainer.push(new Paragraph({ children:[new TextRun({text:`${abc[i]}. ${v.t}`, font:fontName, size:fontSize})] })));
-                            }
-                        } else {
-                            if(!isLong){
-                                let rows = [];
-                                for(let i=0; i<validOps.length; i+=2){
-                                    let cells = [new TableCell({ borders:{top:BorderStyle.NONE, bottom:BorderStyle.NONE, left:BorderStyle.NONE, right:BorderStyle.NONE}, children:[new Paragraph({children:[new TextRun({text:`${abc[i]}. ${validOps[i].t}`, font:fontName, size:fontSize})]})] })];
-                                    if(validOps[i+1]) cells.push(new TableCell({ borders:{top:BorderStyle.NONE, bottom:BorderStyle.NONE, left:BorderStyle.NONE, right:BorderStyle.NONE}, children:[new Paragraph({children:[new TextRun({text:`${abc[i+1]}. ${validOps[i+1].t}`, font:fontName, size:fontSize})]})] }));
-                                    rows.push(new TableRow({ children:cells }));
-                                }
-                                qContainer.push(new Table({ width:{size:100, type:WidthType.PERCENTAGE}, borders:{top:BorderStyle.NONE, bottom:BorderStyle.NONE, left:BorderStyle.NONE, right:BorderStyle.NONE, insideHorizontal:BorderStyle.NONE, insideVertical:BorderStyle.NONE}, rows }));
-                            } else {
-                                validOps.forEach((v, i) => qContainer.push(new Paragraph({ children:[new TextRun({text:`${abc[i]}. ${v.t}`, font:fontName, size:fontSize})] })));
-                            }
-                        }
+                        if(isKecil){ if(!isLong){ let runs = []; validOps.forEach((v, i) => runs.push(new TextRun({text:`${abc[i]}. ${v.t}      `, font:fontName, size:fontSize}))); qContainer.push(new Paragraph({ children:runs })); } else { validOps.forEach((v, i) => qContainer.push(new Paragraph({ children:[new TextRun({text:`${abc[i]}. ${v.t}`, font:fontName, size:fontSize})] }))); } }
+                        else { if(!isLong){ let rows = []; for(let i=0; i<validOps.length; i+=2){ let cells = [new TableCell({ borders:{top:BorderStyle.NONE, bottom:BorderStyle.NONE, left:BorderStyle.NONE, right:BorderStyle.NONE}, children:[new Paragraph({children:[new TextRun({text:`${abc[i]}. ${validOps[i].t}`, font:fontName, size:fontSize})]})] })]; if(validOps[i+1]) cells.push(new TableCell({ borders:{top:BorderStyle.NONE, bottom:BorderStyle.NONE, left:BorderStyle.NONE, right:BorderStyle.NONE}, children:[new Paragraph({children:[new TextRun({text:`${abc[i+1]}. ${validOps[i+1].t}`, font:fontName, size:fontSize})]})] })); rows.push(new TableRow({ children:cells })); } qContainer.push(new Table({ width:{size:100, type:WidthType.PERCENTAGE}, borders:{top:BorderStyle.NONE, bottom:BorderStyle.NONE, left:BorderStyle.NONE, right:BorderStyle.NONE, insideHorizontal:BorderStyle.NONE, insideVertical:BorderStyle.NONE}, rows })); } else { validOps.forEach((v, i) => qContainer.push(new Paragraph({ children:[new TextRun({text:`${abc[i]}. ${v.t}`, font:fontName, size:fontSize})] }))); } }
                     }
-
-                    let mainCells = [
-                        new TableCell({ width:{size:4, type:WidthType.PERCENTAGE}, children:[new Paragraph({ text:(idx+1)+".", font:fontName, size:fontSize })] }),
-                        new TableCell({ width:{size:96, type:WidthType.PERCENTAGE}, children:qContainer })
-                    ];
-                    if(s.imgS){
-                        try { mainCells.splice(1, 0, new TableCell({ width:{size:25, type:WidthType.PERCENTAGE}, children:[new Paragraph({ children:[new ImageRun({ data:Uint8Array.from(atob(s.imgS.split(',')[1]), c => c.charCodeAt(0)), transformation:{width:120, height:90} })], alignment:AlignmentType.CENTER })] })); } catch(e){}
-                    }
+                    let mainCells = [ new TableCell({ width:{size:4, type:WidthType.PERCENTAGE}, children:[new Paragraph({ text:(idx+1)+".", font:fontName, size:fontSize })] }), new TableCell({ width:{size:96, type:WidthType.PERCENTAGE}, children:qContainer }) ];
+                    if(s.imgS){ try { mainCells.splice(1, 0, new TableCell({ width:{size:25, type:WidthType.PERCENTAGE}, children:[new Paragraph({ children:[new ImageRun({ data:Uint8Array.from(atob(s.imgS.split(',')[1]), c => c.charCodeAt(0)), transformation:{width:120, height:90} })], alignment:AlignmentType.CENTER })] })); } catch(e){} }
                     children.push(new Table({ rows:[new TableRow({ children:mainCells, cantSplit:true })], width:{size:100, type:WidthType.PERCENTAGE}, borders:{top:BorderStyle.NONE, bottom:BorderStyle.NONE, left:BorderStyle.NONE, right:BorderStyle.NONE, insideHorizontal:BorderStyle.NONE, insideVertical:BorderStyle.NONE} }));
                     children.push(new Paragraph({ text:"", spacing:{after:150} }));
                 }
@@ -1091,6 +986,3 @@
 </script>
 </body>
 </html>
-
-
-
