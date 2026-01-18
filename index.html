@@ -776,10 +776,22 @@
         document.getElementById('labelKategori').innerText = s.kategori === 'US' ? "[ MODE UJIAN SEKOLAH ]" : "";
         document.getElementById('sType').value = s.tipe; 
         document.getElementById('sKelas').value = s.kelas;
-        loadTP(); 
+        loadTP(); // Ini akan memicu penyembunyian Opsi D otomatis
+        
         setTimeout(() => { 
-            document.getElementById('sTP').value = s.tp; 
-            document.getElementById('sKunci').value = s.kunci; 
+            document.getElementById('sTP').value = s.tp;
+            
+            // Cek ulang apakah kelas 1 atau 2 untuk memastikan dropdown kunci sinkron
+            const isRendah = (s.kelas == "1" || s.kelas == "2");
+            const sKunci = document.getElementById('sKunci');
+            
+            if (isRendah) {
+                sKunci.innerHTML = `<option value="a">A</option><option value="b">B</option><option value="c">C</option>`;
+            } else {
+                sKunci.innerHTML = `<option value="a">A</option><option value="b">B</option><option value="c">C</option><option value="d">D</option>`;
+            }
+            
+            sKunci.value = s.kunci; 
         }, 300);
         document.getElementById('sMateri').value = s.materi || "";
         document.getElementById('sIndikator').value = s.indikator || "";
@@ -1058,5 +1070,6 @@
 </script>
 </body>
 </html>
+
 
 
