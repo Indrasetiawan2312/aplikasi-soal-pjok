@@ -613,11 +613,14 @@
     };
 
     window.hapusDataUniversal = function(path, id, kelasData) {
+        // Jika Guru mencoba hapus kelas lain, tolak.
         if(userAksesKelas && kelasData != userAksesKelas) {
-            alert("Maaf, Anda hanya bisa mengelola data Kelas " + userAksesKelas);
+            alert("⚠️ Akses Ditolak! Anda hanya boleh mengelola Kelas " + userAksesKelas);
             return;
         }
-        if(confirm('Yakin ingin menghapus data ini?')) remove(ref(path + '/' + id));
+        if(confirm('Yakin ingin menghapus data ini secara permanen?')) {
+            remove(ref(db, path + '/' + id));
+        }
     };
 
     window.saveLogoToLocal = async function(input) {
@@ -1084,6 +1087,7 @@
 </script>
 </body>
 </html>
+
 
 
 
