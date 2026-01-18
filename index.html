@@ -524,6 +524,7 @@
         const overlay = document.getElementById('loginOverlay');
         const btnTabUser = document.getElementById('btnTabUser');
         const displayUser = document.getElementById('displayUserName');
+        const tabUserContent = document.getElementById('tabUser');
         
         if (user) { 
             overlay.style.display = 'none'; 
@@ -532,24 +533,33 @@
             onValue(ref(db, 'users/' + userId), (snap) => {
                 const userData = snap.val();
                 if(userData && userData.role === "GURU") {
-                    // LOGIKA GURU
+                    // --- LOGIKA GURU ---
                     userAksesKelas = userData.aksesKelas;
                     displayUser.innerText = "Guru Kelas " + userAksesKelas;
                     
                     document.getElementById('mainFilterKelas').value = userAksesKelas;
                     document.getElementById('mainFilterKelas').disabled = true;
-                    if(btnTabUser) btnTabUser.classList.add('hidden');
                     
-                    // Sembunyikan fitur restore/logo untuk guru
+                    // SEMBUNYIKAN MENU & KONTEN KELOLA GURU
+                    if(btnTabUser) btnTabUser.style.display = 'none'; 
+                    if(tabUserContent) tabUserContent.classList.add('hidden');
+                    
+                    // Sembunyikan fitur admin lainnya (Restore & Logo)
                     document.getElementById('adminLogoBar').classList.add('hidden');
                     document.getElementById('adminRestoreBar').classList.add('hidden');
                 } else {
-                    // LOGIKA ADMIN
+                    // --- LOGIKA ADMIN ---
                     userAksesKelas = null;
                     displayUser.innerText = "Indra Setiawan, S.Pd.Gr";
                     
                     document.getElementById('mainFilterKelas').disabled = false;
-                    if(btnTabUser) btnTabUser.classList.remove('hidden');
+                    
+                    // TAMPILKAN MENU KELOLA GURU UNTUK ADMIN
+                    if(btnTabUser) {
+                        btnTabUser.classList.remove('hidden');
+                        btnTabUser.style.display = 'block';
+                    }
+                    
                     document.getElementById('adminLogoBar').classList.remove('hidden');
                     document.getElementById('adminRestoreBar').classList.remove('hidden');
                 }
@@ -1068,3 +1078,4 @@
 </script>
 </body>
 </html>
+
