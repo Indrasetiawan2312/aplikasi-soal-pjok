@@ -64,6 +64,42 @@
             font-weight: 400;
         }
 
+        /* --- RUNNING TEXT STYLE --- */
+        .running-text-container {
+            background: #ffffff;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 8px 0;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+        }
+
+        .marquee-content {
+            display: inline-block;
+            white-space: nowrap;
+            animation: marquee 25s linear infinite;
+            font-weight: 700;
+            color: var(--accent);
+            font-size: 14px;
+            letter-spacing: 1px;
+        }
+
+        @keyframes marquee {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
+
+        .marquee-prefix {
+            background: var(--danger);
+            color: white;
+            padding: 8px 15px;
+            font-size: 12px;
+            font-weight: 800;
+            z-index: 10;
+            white-space: nowrap;
+            box-shadow: 5px 0 10px rgba(0,0,0,0.1);
+        }
+
         .top-right-badge {
             display: flex;
             align-items: center;
@@ -280,6 +316,15 @@
             </div>
         </div>
     </header>
+
+    <div class="running-text-container">
+        <div class="marquee-prefix">INFO TERKINI:</div>
+        <div class="marquee-content">
+            MAJALENGKA LANGKUNG SAE - "BERGERAK DINAMIS, MENCETAK GENERASI DI ERA DIGITAL." 
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ★ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            MAJALENGKA LANGKUNG SAE - "BERGERAK DINAMIS, MENCETAK GENERASI DI ERA DIGITAL."
+        </div>
+    </div>
 
     <div class="tab-nav">
         <button class="tab-btn active" onclick="switchTab(event, 'kurikulum')">📂 DATA KURIKULUM</button>
@@ -805,7 +850,7 @@
             if (isRendah) {
                 sKunci.innerHTML = `<option value="a">A</option><option value="b">B</option><option value="c">C</option>`;
             } else {
-                sKunci.innerHTML = `<option value="a">A</option><option value="b">B</option><option value="c">C</option><option value="d">D</option>`;
+                sKunci.innerHTML = `<option value="a">A</option><option value="b">B</option><option value="c">C</option>`;
             }
             
             sKunci.value = s.kunci; 
@@ -1087,11 +1132,3 @@
 </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
