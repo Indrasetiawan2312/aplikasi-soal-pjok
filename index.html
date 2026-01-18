@@ -44,6 +44,17 @@
             border-bottom: 4px solid rgba(255,255,255,0.2);
         }
 
+        /* --- STYLE TEKS BERJALAN --- */
+        .marquee-container {
+            background: #1e293b;
+            color: #fbbf24;
+            padding: 8px 0;
+            font-size: 14px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            border-bottom: 1px solid #334155;
+        }
+
         .header-content {
             display: flex;
             justify-content: space-between;
@@ -280,6 +291,10 @@
             </div>
         </div>
     </header>
+
+    <div class="marquee-container">
+        <marquee behavior="scroll" direction="left">✨ MAJALENGKA LANGKUNG SAE — TIM KKGO KECAMATAN MAJALENGKA — SEMANGAT MENCERDASKAN ANAK BANGSA ✨</marquee>
+    </div>
 
     <div class="tab-nav">
         <button class="tab-btn active" onclick="switchTab(event, 'kurikulum')">📂 DATA KURIKULUM</button>
@@ -1078,4 +1093,3 @@
 </script>
 </body>
 </html>
-
