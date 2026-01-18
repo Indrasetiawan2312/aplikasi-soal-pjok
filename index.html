@@ -1073,7 +1073,7 @@
                         try { mainCells.splice(1, 0, new TableCell({ width:{size:25, type:WidthType.PERCENTAGE}, children:[new Paragraph({ children:[new ImageRun({ data:Uint8Array.from(atob(s.imgS.split(',')[1]), c => c.charCodeAt(0)), transformation:{width:120, height:90} })], alignment:AlignmentType.CENTER })] })); } catch(e){}
                     }
                     children.push(new Table({ rows:[new TableRow({ children:mainCells, cantSplit:true })], width:{size:100, type:WidthType.PERCENTAGE}, borders:{top:BorderStyle.NONE, bottom:BorderStyle.NONE, left:BorderStyle.NONE, right:BorderStyle.NONE, insideHorizontal:BorderStyle.NONE, insideVertical:BorderStyle.NONE} }));
-                    children.push(new Paragraph({ text:"", spacing:{after:150} }));
+                    children.push(new Paragraph({ text:"", spacing:{after:80} }));
                 }
             }
             sections.push({ properties: { page: { margin: { top: 1134, right: 1134, bottom: 1134, left: 1134 } } }, children });
@@ -1087,6 +1087,7 @@
 </script>
 </body>
 </html>
+
 
 
 
