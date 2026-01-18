@@ -42,63 +42,32 @@
             padding: 20px 30px; 
             position: relative; 
             border-bottom: 4px solid rgba(255,255,255,0.2);
+        }
+
+        .header-content {
             display: flex;
-            align-items: center;
             justify-content: space-between;
-            min-height: 100px;
+            align-items: center;
         }
 
-        /* Penempatan Logo Kiri */
-        .header-logo-left {
-            flex: 0 0 80px;
-        }
-        .header-logo-left img {
-            width: 70px;
-            height: auto;
-            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
-            image-rendering: -webkit-optimize-contrast;
-        }
-
-        /* Penempatan Teks Tengah */
-        .header-center-text {
-            flex: 1;
-            text-align: center;
-            padding: 0 20px;
-        }
-
-        .header-center-text h1 { 
+        .header-content h1 { 
             margin: 0; 
             font-size: 22px; 
-            font-weight: 800; 
-            letter-spacing: 1px; 
-            text-transform: uppercase;
+            font-weight: 700; 
+            letter-spacing: 0.5px; 
         }
         
-        .header-center-text p { 
+        .header-content p { 
             margin: 4px 0 0; 
-            font-size: 14px; 
+            font-size: 13px; 
             opacity: 0.9; 
-            font-weight: 600;
-        }
-
-        .role-badge-container {
-            margin-top: 8px;
-            display: inline-block;
-            background: rgba(255, 255, 255, 0.2);
-            padding: 2px 15px;
-            border-radius: 20px;
-            border: 1px solid rgba(255,255,255,0.3);
-            font-size: 12px;
-            font-weight: bold;
-            letter-spacing: 1px;
+            font-weight: 400;
         }
 
         .top-right-badge {
-            flex: 0 0 220px;
             display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-            gap: 5px;
+            align-items: center;
+            gap: 10px;
         }
 
         .creator-name { 
@@ -296,21 +265,14 @@
 
 <div class="container">
     <header>
-        <div class="header-logo-left">
-            <img src="logo_kkgo.jpg" alt="Logo">
-        </div>
-
-        <div class="header-center-text">
-            <h1>TIM KKGO KECAMATAN MAJALENGKA</h1>
-            <p>APLIKASI PEMBUAT SOAL STS/SAS/US 2025/2026</p>
-            <div class="role-badge-container">
-                <span id="userRoleStatus">MEMUAT...</span>
+        <div class="header-content">
+            <div>
+                <h1>TIM KKGO KECAMATAN MAJALENGKA</h1>
+                <p>Aplikasi Pembuat Soal STS/SAS/US 2025/2026</p>
             </div>
-        </div>
-        
-        <div class="top-right-badge">
-            <div class="creator-name" id="displayUserName">Memuat...</div>
-            <div style="display:flex; gap:8px;">
+            
+            <div class="top-right-badge">
+                <div class="creator-name" id="displayUserName">Memuat...</div>
                 <button class="btn btn-red" onclick="handleLogout()" style="padding:4px 8px; font-size:10px;">LOGOUT</button>
                 <div id="statusIndicator" class="online-badge offline">
                     <div class="dot"></div> <span id="statusText">Connecting...</span>
@@ -562,7 +524,6 @@
         const overlay = document.getElementById('loginOverlay');
         const btnTabUser = document.getElementById('btnTabUser');
         const displayUser = document.getElementById('displayUserName');
-        const roleStatus = document.getElementById('userRoleStatus');
         
         if (user) { 
             overlay.style.display = 'none'; 
@@ -573,19 +534,14 @@
                 if(userData && userData.role === "GURU") {
                     userAksesKelas = userData.aksesKelas;
                     displayUser.innerText = "Guru Kelas " + userAksesKelas;
-                    roleStatus.innerText = "GURU";
-                    
                     document.getElementById('mainFilterKelas').value = userAksesKelas;
                     document.getElementById('mainFilterKelas').disabled = true;
                     if(btnTabUser) btnTabUser.classList.add('hidden');
-                    
                     document.getElementById('adminLogoBar').classList.add('hidden');
                     document.getElementById('adminRestoreBar').classList.add('hidden');
                 } else {
                     userAksesKelas = null;
                     displayUser.innerText = "Indra Setiawan, S.Pd.Gr";
-                    roleStatus.innerText = "ADMINISTRATOR";
-                    
                     document.getElementById('mainFilterKelas').disabled = false;
                     if(btnTabUser) btnTabUser.classList.remove('hidden');
                     document.getElementById('adminLogoBar').classList.remove('hidden');
@@ -593,7 +549,6 @@
                 }
                 applyFilter();
             }, { onlyOnce: true });
-
         } else { 
             overlay.style.display = 'flex'; 
         }
@@ -604,16 +559,10 @@
         const email = document.getElementById('regEmail').value;
         const pass = document.getElementById('regPass').value;
         const kelas = document.getElementById('regKelas').value;
-
         if(!email || !pass) return alert("Isi email dan password!");
-
         try {
             const userId = btoa(email).replace(/=/g, "");
-            await set(ref(db, 'users/' + userId), {
-                email: email,
-                role: "GURU",
-                aksesKelas: kelas
-            });
+            await set(ref(db, 'users/' + userId), { email: email, role: "GURU", aksesKelas: kelas });
             alert("Berhasil! Guru kelas " + kelas + " terdaftar.");
             document.getElementById('regEmail').value = "";
             document.getElementById('regPass').value = "";
@@ -639,6 +588,7 @@
         if(confirm("Hapus akses guru ini?")) remove(ref(db, 'users/' + key));
     };
 
+    // --- PROTEKSI DATA ---
     window.hapusDataUniversal = function(path, id, kelasData) {
         if(userAksesKelas && kelasData != userAksesKelas) {
             alert("Maaf, Anda hanya bisa mengelola data Kelas " + userAksesKelas);
@@ -647,6 +597,7 @@
         if(confirm('Yakin ingin menghapus data ini?')) remove(ref(db, path + '/' + id));
     };
 
+    // --- UTILITIES ---
     window.saveLogoToLocal = async function(input) {
         if(input.files[0]) {
             const base64 = await compressImage(input.files[0]);
@@ -663,11 +614,10 @@
 
     window.uploadBackupToCloud = function(input) {
         if (!input.files[0] || !db) return alert("Database belum terhubung!");
-        if(!confirm("⚠️ Yakin ingin restore data? Proses ini akan menimpa data lama.")) { input.value = ''; return; }
+        if(!confirm("⚠️ Yakin ingin restore data?")) { input.value = ''; return; }
         const btnRestore = document.querySelector('button[onclick*="fileRestore"]');
         const originalText = btnRestore.innerText;
         btnRestore.innerText = "⏳ PROCESSING..."; btnRestore.disabled = true;
-
         const reader = new FileReader();
         reader.onload = async function(e) {
             try {
@@ -705,19 +655,13 @@
         if(inp.files[0]) { const r = new FileReader(); r.onload = e => document.getElementById(id).innerHTML = `<img src="${e.target.result}" class="preview-img">`; r.readAsDataURL(inp.files[0]); } 
     };
 
+    // --- KURIKULUM OPS ---
     window.openFormKur = function() { 
         document.getElementById('editKurId').value = ""; document.getElementById('tpInputs').innerHTML = ""; addTPField(''); 
         const filterVal = document.getElementById('mainFilterKelas').value;
         const inputKelas = document.getElementById('fKelas');
-        if(userAksesKelas) {
-            inputKelas.value = userAksesKelas;
-            inputKelas.disabled = true;
-        } else if(filterVal !== 'ALL') {
-            inputKelas.value = filterVal;
-            inputKelas.disabled = false;
-        } else {
-            inputKelas.disabled = false;
-        }
+        if(userAksesKelas) { inputKelas.value = userAksesKelas; inputKelas.disabled = true; } 
+        else if(filterVal !== 'ALL') { inputKelas.value = filterVal; inputKelas.disabled = false; }
         document.getElementById('formKur').classList.remove('hidden'); 
     };
     window.addTPField = function(v) { document.getElementById('tpInputs').insertAdjacentHTML('beforeend', `<div style="display:flex; gap:5px; margin-bottom:5px;"><input type="text" class="tp-val" value="${v}" style="flex:1" placeholder="Isi Tujuan Pembelajaran..."><button class="btn btn-red" onclick="this.parentElement.remove()" style="padding:5px 10px;">✕</button></div>`); };
@@ -748,6 +692,7 @@
         document.getElementById('formKur').classList.remove('hidden'); 
     };
 
+    // --- SOAL OPS ---
     window.populateKelas = function() { 
         const s = document.getElementById('sKelas'); const currentVal = s.value; s.innerHTML = "<option value=''>- Pilih Kelas -</option>"; 
         [...new Set(KUR_DB.map(x => x.rombel))].sort().forEach(k => s.innerHTML += `<option value="${k}">${k}</option>`); 
@@ -761,7 +706,7 @@
         KUR_DB.filter(x => x.rombel == filterKelas).forEach(d => (d.tpSet||[]).forEach(t => s.innerHTML += `<option value="${t}">${t}</option>`));
         const isTigaOpsi = (k == "1" || k == "2");
         document.getElementById('rowD').classList.toggle('hidden', isTigaOpsi);
-        document.getElementById('sKunci').innerHTML = isTigaOpsi ? `<option value="a">A</option><option value="b">B</option><option value="c">C</option>` : `<option value="a">A</option><option value="b">B</option><option value="c">C</option><option value="d">D</option>`;
+        document.getElementById('sKunci').innerHTML = isTigaOpsi ? `<option value="a">A</option><option value="b">B</option><option value="c">C</option>` : `<option value="a">A</option><option value="b">B</option><option value="c">C</option>` : `<option value="a">A</option><option value="b">B</option><option value="c">C</option><option value="d">D</option>`;
     };
 
     window.cekKaidah = function(el) { if(el.value.toUpperCase().includes("KECUALI")) { alert("Sesuai kaidah, hindari kata 'KECUALI'."); el.value = el.value.replace(/KECUALI/gi, ""); } };
@@ -773,14 +718,8 @@
 
     window.openFormSoal = function(kategori = 'REGULER') { 
         const sk = document.getElementById('sKelas');
-        if(userAksesKelas && kategori === 'REGULER') {
-            sk.value = userAksesKelas;
-            sk.disabled = true;
-        } else if(userAksesKelas && kategori === 'US' && userAksesKelas != "6") {
-            return alert("Modul US khusus untuk pengampu Kelas 6.");
-        } else {
-            sk.disabled = false;
-        }
+        if(userAksesKelas && kategori === 'REGULER') { sk.value = userAksesKelas; sk.disabled = true; } 
+        else if(userAksesKelas && kategori === 'US' && userAksesKelas != "6") { return alert("Modul US khusus Kelas 6."); }
         document.getElementById('editSoalId').value = ""; 
         document.getElementById('sKategori').value = kategori;
         document.getElementById('labelKategori').innerText = kategori === 'US' ? "[ MODE UJIAN SEKOLAH ]" : "";
@@ -822,6 +761,7 @@
         checkSoalType(); document.getElementById('formSoal').classList.remove('hidden');
     };
 
+    // --- OPTIMASI KOMPRESI GAMBAR (ANTI PECAH) ---
     async function compressImage(file) {
         if(!file) return null;
         return new Promise((resolve) => {
@@ -830,10 +770,16 @@
             reader.onload = (event) => {
                 const img = new Image(); img.src = event.target.result;
                 img.onload = () => {
-                    const canvas = document.createElement('canvas'); const MAX_WIDTH = 600;
-                    const scaleSize = MAX_WIDTH / img.width; canvas.width = MAX_WIDTH; canvas.height = img.height * scaleSize;
-                    const ctx = canvas.getContext('2d'); ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                    resolve(canvas.toDataURL('image/jpeg', 0.7)); 
+                    const canvas = document.createElement('canvas'); 
+                    const MAX_WIDTH = 1200; // Resolusi ditingkatkan agar tajam saat diprint
+                    const scaleSize = MAX_WIDTH / img.width; 
+                    canvas.width = MAX_WIDTH; 
+                    canvas.height = img.height * scaleSize;
+                    const ctx = canvas.getContext('2d'); 
+                    ctx.imageSmoothingEnabled = true;
+                    ctx.imageSmoothingQuality = 'high';
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    resolve(canvas.toDataURL('image/jpeg', 0.92)); // Kualitas tinggi
                 };
             };
         });
@@ -907,6 +853,7 @@
         });
     }
 
+    // --- EKSPOR WORD (DENGAN PENYESUAIAN GAMBAR) ---
     window.exportWord = function(mode) {
         const { Document, Packer, Paragraph, TextRun, ImageRun, Table, TableRow, TableCell, WidthType, BorderStyle, AlignmentType, VerticalAlign } = docx;
         const sections = []; const filterVal = document.getElementById('mainFilterKelas').value;
@@ -916,30 +863,70 @@
         if(dataToExport.length === 0) return alert("Data Kosong!");
         const klList = [...new Set(dataToExport.map(x => x.kelas))].sort();
         const savedLogo = localStorage.getItem('pjok_logo_kop');
+
         for(let k of klList) {
-            let isKecil = (k == "1" || k == "2"); let fontName = isKecil ? "Arial" : "Times New Roman"; let fontSize = 24; 
-            const children = []; let headerText = labelJudul;
-            if(mode.includes('kisi')) headerText = "KISI-KISI SOAL " + labelJudul; else if(mode.includes('kunci')) headerText = "KUNCI JAWABAN " + labelJudul; else if(mode.includes('skor')) headerText = "PEDOMAN PENSKORAN " + labelJudul;
+            let isKecil = (k == "1" || k == "2");
+            let fontName = isKecil ? "Arial" : "Times New Roman";
+            let fontSize = 24; const children = []; let headerText = labelJudul;
+            if(mode.includes('kisi')) headerText = "KISI-KISI SOAL " + labelJudul;
+            else if(mode.includes('kunci')) headerText = "KUNCI JAWABAN " + labelJudul;
+            else if(mode.includes('skor')) headerText = "PEDOMAN PENSKORAN " + labelJudul;
+
             let headerCells = [];
-            if (savedLogo) { try { const base64Data = savedLogo.split(',')[1]; headerCells.push(new TableCell({ width: { size: 15, type: WidthType.PERCENTAGE }, children: [new Paragraph({ children: [new ImageRun({ data: Uint8Array.from(atob(base64Data), c => c.charCodeAt(0)), transformation: { width: 60, height: 60 } })], alignment: AlignmentType.CENTER })] })); } catch(e) {} }
-            headerCells.push(new TableCell({ width: { size: savedLogo ? 85 : 100, type: WidthType.PERCENTAGE }, children: [ new Paragraph({ children: [new TextRun({ text: "TIM KKGO KECAMATAN MAJALENGKA", bold: true, size: 26, font: fontName })], alignment: AlignmentType.CENTER }), new Paragraph({ children: [new TextRun({ text: headerText + " KELAS " + k, bold: true, size: 22, font: fontName })], alignment: AlignmentType.CENTER }), new Paragraph({ children: [new TextRun({ text: "TAHUN PELAJARAN 2025/2026", size: 18, font: fontName })], alignment: AlignmentType.CENTER }) ], verticalAlign: VerticalAlign.CENTER }));
+            if (savedLogo) {
+                try {
+                    const base64Data = savedLogo.split(',')[1];
+                    headerCells.push(new TableCell({ width: { size: 15, type: WidthType.PERCENTAGE }, children: [new Paragraph({ children: [new ImageRun({ data: Uint8Array.from(atob(base64Data), c => c.charCodeAt(0)), transformation: { width: 60, height: 60 } })], alignment: AlignmentType.CENTER })] }));
+                } catch(e) {}
+            }
+            headerCells.push(new TableCell({
+                width: { size: savedLogo ? 85 : 100, type: WidthType.PERCENTAGE },
+                children: [
+                    new Paragraph({ children: [new TextRun({ text: "TIM KKGO KECAMATAN MAJALENGKA", bold: true, size: 26, font: fontName })], alignment: AlignmentType.CENTER }),
+                    new Paragraph({ children: [new TextRun({ text: headerText + " KELAS " + k, bold: true, size: 22, font: fontName })], alignment: AlignmentType.CENTER }),
+                    new Paragraph({ children: [new TextRun({ text: "TAHUN PELAJARAN 2025/2026", size: 18, font: fontName })], alignment: AlignmentType.CENTER })
+                ],
+                verticalAlign: VerticalAlign.CENTER
+            }));
             children.push(new Table({ rows: [new TableRow({ children: headerCells })], width: { size: 100, type: WidthType.PERCENTAGE }, borders: { top: {style: BorderStyle.NONE}, bottom: {style: BorderStyle.DOUBLE, size: 3}, left: {style: BorderStyle.NONE}, right: {style: BorderStyle.NONE}, insideHorizontal: {style: BorderStyle.NONE}, insideVertical: {style: BorderStyle.NONE} } }));
             children.push(new Paragraph({ text: "", spacing: { after: 200 } }));
+
             let soals = dataToExport.filter(x => x.kelas == k).sort((a, b) => (a.tipe === b.tipe) ? 0 : (a.tipe === 'PG' ? -1 : 1));
+
             if(mode.includes('kisi')) {
-                const kisiRows = [ new TableRow({ children: ["NO", "TP", "MATERI", "INDIKATOR", "LEVEL", "TIPE", "SKOR"].map(t => new TableCell({ shading:{fill:"EEEEEE"}, children:[new Paragraph({ children:[new TextRun({text:t, bold:true, size:18, font:fontName})], alignment:AlignmentType.CENTER })] })) }) ];
-                soals.forEach((s, idx) => { kisiRows.push(new TableRow({ children: [ new TableCell({ children:[new Paragraph({ text:(idx+1).toString(), alignment:AlignmentType.CENTER, font:fontName })] }), new TableCell({ children:[new Paragraph({ text:s.tp || "-", size:18, font:fontName })] }), new TableCell({ children:[new Paragraph({ text:s.materi || "-", size:18, font:fontName })] }), new TableCell({ children:[new Paragraph({ text:s.indikator || "-", size:18, font:fontName })] }), new TableCell({ children:[new Paragraph({ text:s.level || "-", alignment:AlignmentType.CENTER, font:fontName })] }), new TableCell({ children:[new Paragraph({ text:s.tipe, alignment:AlignmentType.CENTER, font:fontName })] }), new TableCell({ children:[new Paragraph({ text:(s.skor||1).toString(), alignment:AlignmentType.CENTER, font:fontName })] }) ] })); });
+                const kisiRows = [new TableRow({ children: ["NO", "TP", "MATERI", "INDIKATOR", "LEVEL", "TIPE", "SKOR"].map(t => new TableCell({ shading:{fill:"EEEEEE"}, children:[new Paragraph({ children:[new TextRun({text:t, bold:true, size:18, font:fontName})], alignment:AlignmentType.CENTER })] })) })];
+                soals.forEach((s, idx) => {
+                    kisiRows.push(new TableRow({ children: [
+                        new TableCell({ children:[new Paragraph({ text:(idx+1).toString(), alignment:AlignmentType.CENTER, font:fontName })] }),
+                        new TableCell({ children:[new Paragraph({ text:s.tp || "-", size:18, font:fontName })] }),
+                        new TableCell({ children:[new Paragraph({ text:s.materi || "-", size:18, font:fontName })] }),
+                        new TableCell({ children:[new Paragraph({ text:s.indikator || "-", size:18, font:fontName })] }),
+                        new TableCell({ children:[new Paragraph({ text:s.level || "-", alignment:AlignmentType.CENTER, font:fontName })] }),
+                        new TableCell({ children:[new Paragraph({ text:s.tipe, alignment:AlignmentType.CENTER, font:fontName })] }),
+                        new TableCell({ children:[new Paragraph({ text:(s.skor||1).toString(), alignment:AlignmentType.CENTER, font:fontName })] })
+                    ] }));
+                });
                 children.push(new Table({ width:{size:100, type:WidthType.PERCENTAGE}, rows:kisiRows }));
             } 
             else if(mode.includes('skor')) {
-                const headSkor = new TableRow({ children: [ {t:"No", w:5}, {t:"Level", w:10}, {t:"Kunci / Unsur Jawaban", w:40}, {t:"Rubrik", w:30}, {t:"Skor", w:15} ].map(h => new TableCell({ shading:{fill:"F2F2F2"}, children:[new Paragraph({ children:[new TextRun({text:h.t, bold:true, font:fontName, size:18})], alignment:AlignmentType.CENTER })], width:{size:h.w, type:WidthType.PERCENTAGE} })) });
-                let skorRows = [headSkor]; let grandTotal = 0;
-                soals.forEach((s, idx) => { let sMax = parseInt(s.skor) || 1; grandTotal += sMax; skorRows.push(new TableRow({ children: [ new TableCell({ children:[new Paragraph({ text:(idx+1).toString(), alignment:AlignmentType.CENTER, font:fontName })] }), new TableCell({ children:[new Paragraph({ text:s.level||"-", alignment:AlignmentType.CENTER, font:fontName })] }), new TableCell({ children:[new Paragraph({ text:s.tipe==='PG'?s.kunci.toUpperCase():s.jawaban, font:fontName, size:18 })] }), new TableCell({ children:[new Paragraph({ text:s.tipe==='PG'?"Benar 1, Salah 0":"Sesuai kebijakan/kunci", font:fontName, size:18 })] }), new TableCell({ children:[new Paragraph({ text:sMax.toString(), alignment:AlignmentType.CENTER, font:fontName })] }) ] })); });
+                let skorRows = [new TableRow({ children: [{t:"No", w:5}, {t:"Level", w:10}, {t:"Kunci", w:40}, {t:"Rubrik", w:30}, {t:"Skor", w:15}].map(h => new TableCell({ shading:{fill:"F2F2F2"}, children:[new Paragraph({ children:[new TextRun({text:h.t, bold:true, font:fontName, size:18})], alignment:AlignmentType.CENTER })] })) })];
+                let grandTotal = 0;
+                soals.forEach((s, idx) => {
+                    let sMax = parseInt(s.skor) || 1; grandTotal += sMax;
+                    skorRows.push(new TableRow({ children: [
+                        new TableCell({ children:[new Paragraph({ text:(idx+1).toString(), alignment:AlignmentType.CENTER, font:fontName })] }),
+                        new TableCell({ children:[new Paragraph({ text:s.level||"-", alignment:AlignmentType.CENTER, font:fontName })] }),
+                        new TableCell({ children:[new Paragraph({ text:s.tipe==='PG'?s.kunci.toUpperCase():s.jawaban, font:fontName, size:18 })] }),
+                        new TableCell({ children:[new Paragraph({ text:s.tipe==='PG'?"Benar 1, Salah 0":"Sesuai kunci", font:fontName, size:18 })] }),
+                        new TableCell({ children:[new Paragraph({ text:sMax.toString(), alignment:AlignmentType.CENTER, font:fontName })] })
+                    ] }));
+                });
                 children.push(new Table({ width:{size:100, type:WidthType.PERCENTAGE}, rows:skorRows }));
                 children.push(new Paragraph({ text:`\nNilai Akhir = (Skor Perolehan / ${grandTotal}) x 100`, font:fontName, italics:true, size:20 }));
             }
             else if(mode.includes('kunci')) {
-                let pgSoals = soals.filter(s => s.tipe === 'PG'); let esSoals = soals.filter(s => s.tipe === 'Essay');
+                let pgSoals = soals.filter(s => s.tipe === 'PG');
+                let esSoals = soals.filter(s => s.tipe === 'Essay');
                 children.push(new Paragraph({ children:[new TextRun({text:"A. PILIHAN GANDA", bold:true, font:fontName, size:22})], spacing:{after:150} }));
                 const rowsPerCol = 5; const totalCols = Math.ceil(pgSoals.length / rowsPerCol);
                 let tableRowsArr = [];
@@ -959,18 +946,31 @@
             } else {
                 let pgDoneFlag = false; let esDoneFlag = false;
                 for(let [idx, s] of soals.entries()){
-                    if(s.tipe === 'PG' && !pgDoneFlag){ children.push(new Paragraph({ children:[new TextRun({text:"I. Pilihlah salah satu jawaban yang paling benar!", bold:true, italics:true, font:fontName, size:fontSize})], spacing:{after:200} })); pgDoneFlag = true; }
-                    if(s.tipe === 'Essay' && !esDoneFlag){ children.push(new Paragraph({ children:[new TextRun({text:"II. Isilah titik-titik dibawah ini dengan jawaban yang benar!", bold:true, italics:true, font:fontName, size:fontSize})], spacing:{before:300, after:200} })); esDoneFlag = true; }
+                    if(s.tipe === 'PG' && !pgDoneFlag){ 
+                        children.push(new Paragraph({ children:[new TextRun({text:"I. Pilihlah salah satu jawaban yang paling benar!", bold:true, italics:true, font:fontName, size:fontSize})], spacing:{after:200} })); 
+                        pgDoneFlag = true; 
+                    }
+                    if(s.tipe === 'Essay' && !esDoneFlag){ 
+                        children.push(new Paragraph({ children:[new TextRun({text:"II. Isilah titik-titik dibawah ini dengan jawaban yang benar!", bold:true, italics:true, font:fontName, size:fontSize})], spacing:{before:300, after:200} })); 
+                        esDoneFlag = true; 
+                    }
                     let qContainer = [new Paragraph({ children:[new TextRun({text:s.tanya, font:fontName, size:fontSize})], alignment:AlignmentType.JUSTIFIED, spacing:{after:120} })];
                     if(s.tipe === 'PG'){
-                        const abc = ['a','b','c','d']; let validOps = (s.opsi || []).filter((o, i) => !(isKecil && i > 2) && (o.t || o.i));
-                        let totalChar = validOps.reduce((acc, curr) => acc + (curr.t?curr.t.length:0), 0);
-                        let isLong = validOps.some(o => (o.t && o.t.length > 30)) || totalChar > 60;
-                        if(isKecil){ if(!isLong){ let runs = []; validOps.forEach((v, i) => runs.push(new TextRun({text:`${abc[i]}. ${v.t}      `, font:fontName, size:fontSize}))); qContainer.push(new Paragraph({ children:runs })); } else { validOps.forEach((v, i) => qContainer.push(new Paragraph({ children:[new TextRun({text:`${abc[i]}. ${v.t}`, font:fontName, size:fontSize})] }))); } }
-                        else { if(!isLong){ let rows = []; for(let i=0; i<validOps.length; i+=2){ let cells = [new TableCell({ borders:{top:BorderStyle.NONE, bottom:BorderStyle.NONE, left:BorderStyle.NONE, right:BorderStyle.NONE}, children:[new Paragraph({children:[new TextRun({text:`${abc[i]}. ${validOps[i].t}`, font:fontName, size:fontSize})]})] })]; if(validOps[i+1]) cells.push(new TableCell({ borders:{top:BorderStyle.NONE, bottom:BorderStyle.NONE, left:BorderStyle.NONE, right:BorderStyle.NONE}, children:[new Paragraph({children:[new TextRun({text:`${abc[i+1]}. ${validOps[i+1].t}`, font:fontName, size:fontSize})]})] })); rows.push(new TableRow({ children:cells })); } qContainer.push(new Table({ width:{size:100, type:WidthType.PERCENTAGE}, borders:{top:BorderStyle.NONE, bottom:BorderStyle.NONE, left:BorderStyle.NONE, right:BorderStyle.NONE, insideHorizontal:BorderStyle.NONE, insideVertical:BorderStyle.NONE}, rows })); } else { validOps.forEach((v, i) => qContainer.push(new Paragraph({ children:[new TextRun({text:`${abc[i]}. ${v.t}`, font:fontName, size:fontSize})] }))); } }
+                        const abc = ['a','b','c','d'];
+                        let validOps = (s.opsi || []).filter((o, i) => !(isKecil && i > 2) && (o.t || o.i));
+                        let isLong = validOps.some(o => (o.t && o.t.length > 30));
+                        validOps.forEach((v, i) => qContainer.push(new Paragraph({ children:[new TextRun({text:`${abc[i]}. ${v.t}`, font:fontName, size:fontSize})] })));
                     }
-                    let mainCells = [ new TableCell({ width:{size:4, type:WidthType.PERCENTAGE}, children:[new Paragraph({ text:(idx+1)+".", font:fontName, size:fontSize })] }), new TableCell({ width:{size:96, type:WidthType.PERCENTAGE}, children:qContainer }) ];
-                    if(s.imgS){ try { mainCells.splice(1, 0, new TableCell({ width:{size:25, type:WidthType.PERCENTAGE}, children:[new Paragraph({ children:[new ImageRun({ data:Uint8Array.from(atob(s.imgS.split(',')[1]), c => c.charCodeAt(0)), transformation:{width:120, height:90} })], alignment:AlignmentType.CENTER })] })); } catch(e){} }
+                    let mainCells = [
+                        new TableCell({ width:{size:4, type:WidthType.PERCENTAGE}, children:[new Paragraph({ text:(idx+1)+".", font:fontName, size:fontSize })] }),
+                        new TableCell({ width:{size:96, type:WidthType.PERCENTAGE}, children:qContainer })
+                    ];
+                    if(s.imgS){
+                        try { 
+                            // Ukuran gambar disesuaikan agar tidak gepeng di Word
+                            mainCells.splice(1, 0, new TableCell({ width:{size:25, type:WidthType.PERCENTAGE}, children:[new Paragraph({ children:[new ImageRun({ data:Uint8Array.from(atob(s.imgS.split(',')[1]), c => c.charCodeAt(0)), transformation:{width:150, height:110} })], alignment:AlignmentType.CENTER })] })); 
+                        } catch(e){}
+                    }
                     children.push(new Table({ rows:[new TableRow({ children:mainCells, cantSplit:true })], width:{size:100, type:WidthType.PERCENTAGE}, borders:{top:BorderStyle.NONE, bottom:BorderStyle.NONE, left:BorderStyle.NONE, right:BorderStyle.NONE, insideHorizontal:BorderStyle.NONE, insideVertical:BorderStyle.NONE} }));
                     children.push(new Paragraph({ text:"", spacing:{after:150} }));
                 }
