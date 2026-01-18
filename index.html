@@ -893,10 +893,20 @@
             if(s.tipe === 'PG') {
                 const fileInputs = document.querySelectorAll('#pgBox input[type=file]');
                 const getOImg = (idx) => (oldData && oldData.opsi && oldData.opsi[idx] ? oldData.opsi[idx].i : ""); 
+                
                 s.opsi = [
                     { t: document.getElementById('oa').value, i: (await compressImage(fileInputs[0].files[0])) || getOImg(0) || "" },
                     { t: document.getElementById('ob').value, i: (await compressImage(fileInputs[1].files[0])) || getOImg(1) || "" },
                     { t: document.getElementById('oc').value, i: (await compressImage(fileInputs[2].files[0])) || getOImg(2) || "" }
+                ];
+
+                if(k != "1" && k != "2") {
+                    s.opsi.push({ 
+                        t: document.getElementById('od').value, 
+                        i: (await compressImage(fileInputs[3].files[0])) || getOImg(3) || "" 
+                    });
+                }
+            }
                 ];
                 if(k != "1" && k != "2") s.opsi.push({ t: document.getElementById('od').value, i: (await compressImage(fileInputs[3].files[0])) || getOImg(3) || "" });
             }
@@ -1124,5 +1134,6 @@
 </script>
 </body>
 </html>
+
 
 
