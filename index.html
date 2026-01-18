@@ -557,14 +557,16 @@
 
     // --- AUTH LOGIC ---
     window.handleLogin = function() {
-        const email = document.getElementById('loginEmail').value;
-        const pass = document.getElementById('loginPass').value;
-        const errorEl = document.getElementById('loginError');
-        errorEl.innerText = "⏳ Memverifikasi...";
-        signInWithEmailAndPassword(auth, email, pass).catch(err => {
-            errorEl.innerText = "❌ Login Gagal: Cek kembali email/password.";
-        });
-    };
+    const email = document.getElementById('loginEmail').value;
+    const pass = document.getElementById('loginPass').value;
+    const errorEl = document.getElementById('loginError');
+    
+    errorEl.innerText = ""; // Mengosongkan pesan agar tidak ada teks "Memverifikasi"
+    
+    signInWithEmailAndPassword(auth, email, pass).catch(err => {
+        errorEl.innerText = "❌ Login Gagal: Cek kembali email/password.";
+    });
+};
 
     window.handleLogout = function() {
         if(confirm("Keluar dari aplikasi?")) signOut(auth);
@@ -1132,4 +1134,5 @@
 </script>
 </body>
 </html>
+
 
