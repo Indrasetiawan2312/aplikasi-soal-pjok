@@ -463,11 +463,11 @@
                     <div class="form-group"><label>Opsi B</label><input type="text" id="ob"><input type="file" onchange="showPv(this, 'pb')" style="margin-top:5px;"><div id="pb"></div></div>
                     <div class="form-group" id="rowC"><label>Opsi C</label><input type="text" id="oc"><input type="file" onchange="showPv(this, 'pc')" style="margin-top:5px;"><div id="pc"></div></div>
                     <div class="form-group" id="rowD">
-    <label>Opsi D</label>
-    <input type="text" id="od">
-    <input type="file" onchange="showPv(this, 'pd')" style="margin-top:5px;">
-    <div id="pd"></div>
-</div>
+                        <label>Opsi D</label>
+                        <input type="text" id="od">
+                        <input type="file" onchange="showPv(this, 'pd')" style="margin-top:5px;">
+                        <div id="pd"></div>
+                    </div>
                 </div>
                 <div class="form-group">
                     <label>Kunci Jawaban</label>
@@ -508,7 +508,7 @@
 
     let KUR_DB = [];
     let SOAL_DB = [];
-    let userAksesKelas = null; // Global untuk simpan akses guru
+    let userAksesKelas = null;
 
     // --- AUTH LOGIC ---
     window.handleLogin = function() {
@@ -537,22 +537,16 @@
             onValue(ref(db, 'users/' + userId), (snap) => {
                 const userData = snap.val();
                 if(userData && userData.role === "GURU") {
-                    // LOGIKA GURU
                     userAksesKelas = userData.aksesKelas;
                     displayUser.innerText = "Guru Kelas " + userAksesKelas;
-                    
                     document.getElementById('mainFilterKelas').value = userAksesKelas;
                     document.getElementById('mainFilterKelas').disabled = true;
                     if(btnTabUser) btnTabUser.classList.add('hidden');
-                    
-                    // Sembunyikan fitur restore/logo untuk guru
                     document.getElementById('adminLogoBar').classList.add('hidden');
                     document.getElementById('adminRestoreBar').classList.add('hidden');
                 } else {
-                    // LOGIKA ADMIN
                     userAksesKelas = null;
                     displayUser.innerText = "Indra Setiawan, S.Pd.Gr";
-                    
                     document.getElementById('mainFilterKelas').disabled = false;
                     if(btnTabUser) btnTabUser.classList.remove('hidden');
                     document.getElementById('adminLogoBar').classList.remove('hidden');
@@ -566,14 +560,11 @@
         }
     });
 
-    // --- MANAJEMEN GURU ---
     window.registerGuru = async function() {
         const email = document.getElementById('regEmail').value;
         const pass = document.getElementById('regPass').value;
         const kelas = document.getElementById('regKelas').value;
-
         if(!email || !pass) return alert("Isi email dan password!");
-
         try {
             const userId = btoa(email).replace(/=/g, "");
             await set(ref(db, 'users/' + userId), {
@@ -606,7 +597,6 @@
         if(confirm("Hapus akses guru ini?")) remove(ref(db, 'users/' + key));
     };
 
-    // --- PROTEKSI DATA BERDASARKAN KELAS ---
     window.hapusDataUniversal = function(path, id, kelasData) {
         if(userAksesKelas && kelasData != userAksesKelas) {
             alert("Maaf, Anda hanya bisa mengelola data Kelas " + userAksesKelas);
@@ -615,7 +605,6 @@
         if(confirm('Yakin ingin menghapus data ini?')) remove(ref(path + '/' + id));
     };
 
-    // --- UTILITIES ---
     window.saveLogoToLocal = async function(input) {
         if(input.files[0]) {
             const base64 = await compressImage(input.files[0]);
@@ -636,7 +625,6 @@
         const btnRestore = document.querySelector('button[onclick*="fileRestore"]');
         const originalText = btnRestore.innerText;
         btnRestore.innerText = "⏳ PROCESSING..."; btnRestore.disabled = true;
-
         const reader = new FileReader();
         reader.onload = async function(e) {
             try {
@@ -654,7 +642,6 @@
         reader.readAsText(input.files[0]);
     };
 
-    // --- FIREBASE LISTENERS ---
     if(db) {
         onValue(ref(db, ".info/connected"), (s) => {
             const el = document.getElementById('statusIndicator'); const txt = document.getElementById('statusText');
@@ -665,7 +652,6 @@
         onValue(ref(db, 'soal'), (s) => { SOAL_DB = s.val() ? Object.values(s.val()) : []; renderSoal(); });
     }
 
-    // --- TAB & UI CONTROL ---
     window.switchTab = function(e, n) { 
         document.querySelectorAll('.tab-content').forEach(x => x.classList.add('hidden')); 
         document.querySelectorAll('.tab-btn').forEach(x => x.classList.remove('active')); 
@@ -676,13 +662,10 @@
         if(inp.files[0]) { const r = new FileReader(); r.onload = e => document.getElementById(id).innerHTML = `<img src="${e.target.result}" class="preview-img">`; r.readAsDataURL(inp.files[0]); } 
     };
 
-    // --- KURIKULUM OPS ---
     window.openFormKur = function() { 
         document.getElementById('editKurId').value = ""; document.getElementById('tpInputs').innerHTML = ""; addTPField(''); 
-        
         const filterVal = document.getElementById('mainFilterKelas').value;
         const inputKelas = document.getElementById('fKelas');
-        
         if(userAksesKelas) {
             inputKelas.value = userAksesKelas;
             inputKelas.disabled = true;
@@ -692,7 +675,6 @@
         } else {
             inputKelas.disabled = false;
         }
-        
         document.getElementById('formKur').classList.remove('hidden'); 
     };
     window.addTPField = function(v) { document.getElementById('tpInputs').insertAdjacentHTML('beforeend', `<div style="display:flex; gap:5px; margin-bottom:5px;"><input type="text" class="tp-val" value="${v}" style="flex:1" placeholder="Isi Tujuan Pembelajaran..."><button class="btn btn-red" onclick="this.parentElement.remove()" style="padding:5px 10px;">✕</button></div>`); };
@@ -700,7 +682,6 @@
         const idStr = document.getElementById('editKurId').value;
         const id = idStr ? parseInt(idStr) : Date.now();
         const kValue = document.getElementById('fKelas').value;
-        
         const data = { 
             id: id, fase: document.getElementById('fFase').value, rombel: kValue, sem: document.getElementById('fSem').value, cp: document.getElementById('fCp').value, 
             tpSet: Array.from(document.querySelectorAll('.tp-val')).map(i => i.value).filter(x => x.trim() !== "") 
@@ -719,20 +700,17 @@
     window.editKur = function(id) { 
         const d = KUR_DB.find(x => x.id === id); if(!d) return;
         if(userAksesKelas && d.rombel != userAksesKelas) return alert("Hanya bisa mengedit Kelas " + userAksesKelas);
-        
         document.getElementById('editKurId').value = d.id; document.getElementById('fFase').value = d.fase; document.getElementById('fKelas').value = d.rombel; document.getElementById('fSem').value = d.sem; document.getElementById('fCp').value = d.cp; 
         document.getElementById('tpInputs').innerHTML = ""; (d.tpSet || []).forEach(t => addTPField(t)); 
         document.getElementById('formKur').classList.remove('hidden'); 
     };
 
-    // --- SOAL OPS ---
     window.populateKelas = function() { 
         const s = document.getElementById('sKelas'); const currentVal = s.value; s.innerHTML = "<option value=''>- Pilih Kelas -</option>"; 
         [...new Set(KUR_DB.map(x => x.rombel))].sort().forEach(k => s.innerHTML += `<option value="${k}">${k}</option>`); 
         if(currentVal) s.value = currentVal;
     };
     
-    // --- PERBAIKAN LOGIKA OPSI JAWABAN KELAS 1-2 vs 3-6 ---
     window.loadTP = function() {
         const k = document.getElementById('sKelas').value; 
         const s = document.getElementById('sTP'); 
@@ -740,10 +718,8 @@
         const kat = document.getElementById('sKategori').value;
         const filterKelas = (kat === 'US') ? "6" : k;
         
-        // Load Data TP
         KUR_DB.filter(x => x.rombel == filterKelas).forEach(d => (d.tpSet||[]).forEach(t => s.innerHTML += `<option value="${t}">${t}</option>`));
 
-        // LOGIKA DINAMIS OPSI D (Pastikan bagian ini lengkap)
         const isRendah = (k == "1" || k == "2");
         const rowD = document.getElementById('rowD');
         const sKunci = document.getElementById('sKunci');
@@ -756,20 +732,6 @@
             sKunci.innerHTML = `<option value="a">A</option><option value="b">B</option><option value="c">C</option><option value="d">D</option>`;
         }
     };
-        
-        // Cek apakah kelas 1 atau 2 (Tiga Opsi: A, B, C)
-        const isTigaOpsi = (k == "1" || k == "2");
-        
-        // Sembunyikan Input Opsi D jika kelas 1 atau 2
-        document.getElementById('rowD').classList.toggle('hidden', isTigaOpsi);
-        
-        // Sesuaikan Dropdown Kunci Jawaban
-        if (isTigaOpsi) {
-            document.getElementById('sKunci').innerHTML = `<option value="a">A</option><option value="b">B</option><option value="c">C</option>`;
-        } else {
-            document.getElementById('sKunci').innerHTML = `<option value="a">A</option><option value="b">B</option><option value="c">C</option><option value="d">D</option>`;
-        }
-    };
 
     window.cekKaidah = function(el) { if(el.value.toUpperCase().includes("KECUALI")) { alert("Sesuai kaidah, hindari kata 'KECUALI'."); el.value = el.value.replace(/KECUALI/gi, ""); } };
     window.checkSoalType = function() { 
@@ -780,7 +742,6 @@
 
     window.openFormSoal = function(kategori = 'REGULER') { 
         const sk = document.getElementById('sKelas');
-        
         if(userAksesKelas && kategori === 'REGULER') {
             sk.value = userAksesKelas;
             sk.disabled = true;
@@ -789,7 +750,6 @@
         } else {
             sk.disabled = false;
         }
-
         document.getElementById('editSoalId').value = ""; 
         document.getElementById('sKategori').value = kategori;
         document.getElementById('labelKategori').innerText = kategori === 'US' ? "[ MODE UJIAN SEKOLAH ]" : "";
@@ -798,11 +758,9 @@
         document.getElementById('sMateri').value = ""; document.getElementById('sIndikator').value = ""; 
         document.getElementById('sTanya').value = ""; document.getElementById('sJawabanEssay').value = "";
         document.querySelectorAll('#pgBox input[type=text]').forEach(i => i.value = ""); document.querySelectorAll('#pgBox div[id^=p]').forEach(i => i.innerHTML = ""); document.querySelectorAll('input[type=file]').forEach(i => i.value = "");
-        
         populateKelas(); 
         if(kategori === 'US') document.getElementById('sKelas').value = "6"; 
         else if(userAksesKelas) document.getElementById('sKelas').value = userAksesKelas;
-
         loadTP(); checkSoalType(); 
     };
 
@@ -811,31 +769,23 @@
         const s = SOAL_DB.find(x => x.id == id); 
         if(!s) return;
         if(userAksesKelas && s.kelas != userAksesKelas) return alert("Hanya bisa mengedit Kelas " + userAksesKelas);
-
         document.getElementById('editSoalId').value = s.id;
         document.getElementById('sKategori').value = s.kategori || 'REGULER';
         document.getElementById('labelKategori').innerText = s.kategori === 'US' ? "[ MODE UJIAN SEKOLAH ]" : "";
         document.getElementById('sType').value = s.tipe; 
         document.getElementById('sKelas').value = s.kelas;
-        
-        // Panggil loadTP untuk setelan visual opsi
         loadTP(); 
-        
-        // Timeout agar dropdown terisi dulu sebelum value di-set
         setTimeout(() => { 
             document.getElementById('sTP').value = s.tp; 
             document.getElementById('sKunci').value = s.kunci; 
         }, 300);
-
         document.getElementById('sMateri').value = s.materi || "";
         document.getElementById('sIndikator').value = s.indikator || "";
         document.getElementById('sLevel').value = s.level || "L1";
         document.getElementById('sSkor').value = s.skor || 1;
         document.getElementById('sTanya').value = s.tanya;
         document.getElementById('sJawabanEssay').value = s.jawaban || "";
-        
         document.getElementById('pvS').innerHTML = s.imgS ? `<img src="${s.imgS}" class="preview-img">` : "";
-        
         if(s.tipe === 'PG' && s.opsi) {
             document.getElementById('oa').value = s.opsi[0]?.t || ""; 
             document.getElementById('pa').innerHTML = s.opsi[0]?.i ? `<img src="${s.opsi[0].i}" class="preview-img">` : "";
@@ -843,8 +793,6 @@
             document.getElementById('pb').innerHTML = s.opsi[1]?.i ? `<img src="${s.opsi[1].i}" class="preview-img">` : "";
             document.getElementById('oc').value = s.opsi[2]?.t || ""; 
             document.getElementById('pc').innerHTML = s.opsi[2]?.i ? `<img src="${s.opsi[2].i}" class="preview-img">` : "";
-            
-            // Tampilkan Opsi D hanya jika bukan kelas 1-2
             if(s.kelas != "1" && s.kelas != "2" && s.opsi[3]) {
                 document.getElementById('od').value = s.opsi[3]?.t || ""; 
                 document.getElementById('pd').innerHTML = s.opsi[3]?.i ? `<img src="${s.opsi[3].i}" class="preview-img">` : "";
@@ -891,30 +839,17 @@
             if(s.tipe === 'PG') {
                 const fileInputs = document.querySelectorAll('#pgBox input[type=file]');
                 const getOImg = (idx) => (oldData && oldData.opsi && oldData.opsi[idx] ? oldData.opsi[idx].i : ""); 
-                
                 s.opsi = [
                     { t: document.getElementById('oa').value, i: (await compressImage(fileInputs[0].files[0])) || getOImg(0) || "" },
                     { t: document.getElementById('ob').value, i: (await compressImage(fileInputs[1].files[0])) || getOImg(1) || "" },
                     { t: document.getElementById('oc').value, i: (await compressImage(fileInputs[2].files[0])) || getOImg(2) || "" }
                 ];
-
                 if(k != "1" && k != "2") {
                     s.opsi.push({ 
                         t: document.getElementById('od').value, 
                         i: (await compressImage(fileInputs[3].files[0])) || getOImg(3) || "" 
                     });
                 }
-            }
-
-                if(k != "1" && k != "2") {
-                    s.opsi.push({ 
-                        t: document.getElementById('od').value, 
-                        i: (await compressImage(fileInputs[3].files[0])) || getOImg(3) || "" 
-                    });
-                }
-            }
-                ];
-                if(k != "1" && k != "2") s.opsi.push({ t: document.getElementById('od').value, i: (await compressImage(fileInputs[3].files[0])) || getOImg(3) || "" });
             }
             await set(ref(db, 'soal/' + uniqueId), s);
             alert("✅ Berhasil!"); closeForm('formSoal');
@@ -927,14 +862,11 @@
         const u = document.getElementById('usSoalContainer'); 
         const rReg = document.getElementById('rekapStats');
         const rUS = document.getElementById('rekapStatsUS');
-        
         l.innerHTML = ""; u.innerHTML = ""; 
         const filterVal = document.getElementById('mainFilterKelas').value;
-        
         let filteredReg = SOAL_DB.filter(s => (s.kategori === 'REGULER' || !s.kategori));
         if(filterVal !== 'ALL') filteredReg = filteredReg.filter(s => s.kelas == filterVal);
         let usData = SOAL_DB.filter(s => s.kategori === 'US');
-
         const getRekapHtml = (data, title) => {
             const c = { L1: 0, L2: 0, L3: 0, total: data.length };
             data.forEach(s => { if(c[s.level] !== undefined) c[s.level]++; });
@@ -945,10 +877,8 @@
                 <div class="rekap-card" style="background:#fef3c7"><div class="rekap-val">${p(c.L3)}%</div><div class="rekap-label">LEVEL 3</div><div class="rekap-target">Target: 20% (${c.L3} Soal)</div></div>
             </div>`;
         };
-
         if(rReg) rReg.innerHTML = getRekapHtml(filteredReg, `Rekapitulasi STS/SAS (Fokus: ${filterVal})`);
         if(rUS) rUS.innerHTML = getRekapHtml(usData, `Rekapitulasi Ujian Sekolah (US)`);
-
         filteredReg.sort((a, b) => (a.tipe === b.tipe) ? 0 : (a.tipe === 'PG' ? -1 : 1));
         filteredReg.forEach((s, i) => {
             let contentHtml = s.imgS ? `<div class="soal-item"><div class="soal-number">${i+1}.</div><div class="soal-image-container"><img src="${s.imgS}"></div><div class="soal-text-content">${s.tanya}</div></div>` : `<b>${i+1}.</b> ${s.tanya}`;
@@ -960,12 +890,10 @@
         });
     }
 
-    // --- EKSPOR WORD ---
     window.exportWord = function(mode) {
         const { Document, Packer, Paragraph, TextRun, ImageRun, Table, TableRow, TableCell, WidthType, BorderStyle, AlignmentType, VerticalAlign } = docx;
         const sections = []; const filterVal = document.getElementById('mainFilterKelas').value;
         let dataToExport = []; let labelJudul = "PJOK";
-        
         if(mode.startsWith('us_')) {
             dataToExport = SOAL_DB.filter(x => x.kategori === 'US'); labelJudul = "UJIAN SEKOLAH (US) PJOK";
         } else {
@@ -974,19 +902,15 @@
         if(dataToExport.length === 0) return alert("Data Kosong!");
         const klList = [...new Set(dataToExport.map(x => x.kelas))].sort();
         const savedLogo = localStorage.getItem('pjok_logo_kop');
-
         for(let k of klList) {
             let isKecil = (k == "1" || k == "2");
             let fontName = isKecil ? "Arial" : "Times New Roman";
             let fontSize = 24; 
             const children = [];
             let headerText = labelJudul;
-
             if(mode.includes('kisi')) headerText = "KISI-KISI SOAL " + labelJudul;
             else if(mode.includes('kunci')) headerText = "KUNCI JAWABAN " + labelJudul;
             else if(mode.includes('skor')) headerText = "PEDOMAN PENSKORAN " + labelJudul;
-
-            // KOP SURAT
             let headerCells = [];
             if (savedLogo) {
                 try {
@@ -1005,9 +929,7 @@
             }));
             children.push(new Table({ rows: [new TableRow({ children: headerCells })], width: { size: 100, type: WidthType.PERCENTAGE }, borders: { top: {style: BorderStyle.NONE}, bottom: {style: BorderStyle.DOUBLE, size: 3}, left: {style: BorderStyle.NONE}, right: {style: BorderStyle.NONE}, insideHorizontal: {style: BorderStyle.NONE}, insideVertical: {style: BorderStyle.NONE} } }));
             children.push(new Paragraph({ text: "", spacing: { after: 200 } }));
-
             let soals = dataToExport.filter(x => x.kelas == k).sort((a, b) => (a.tipe === b.tipe) ? 0 : (a.tipe === 'PG' ? -1 : 1));
-
             if(mode.includes('kisi')) {
                 const kisiRows = [
                     new TableRow({ children: ["NO", "TP", "MATERI", "INDIKATOR", "LEVEL", "TIPE", "SKOR"].map(t => new TableCell({ shading:{fill:"EEEEEE"}, children:[new Paragraph({ children:[new TextRun({text:t, bold:true, size:18, font:fontName})], alignment:AlignmentType.CENTER })] })) })
@@ -1054,7 +976,6 @@
                 let pgSoals = soals.filter(s => s.tipe === 'PG');
                 let esSoals = soals.filter(s => s.tipe === 'Essay');
                 children.push(new Paragraph({ children:[new TextRun({text:"A. PILIHAN GANDA", bold:true, font:fontName, size:22})], spacing:{after:150} }));
-                
                 const rowsPerCol = 5; const totalCols = Math.ceil(pgSoals.length / rowsPerCol);
                 let tableRowsArr = [];
                 for(let r=0; r<rowsPerCol; r++){
@@ -1069,7 +990,6 @@
                     tableRowsArr.push(new TableRow({ children:cells }));
                 }
                 children.push(new Table({ width:{size:100, type:WidthType.PERCENTAGE}, rows:tableRowsArr }));
-
                 if(esSoals.length > 0){
                     children.push(new Paragraph({ children:[new TextRun({text:"\nB. ESSAY / URAIAN", bold:true, font:fontName, size:22})], spacing:{before:200, after:100} }));
                     esSoals.forEach((s, idx) => {
@@ -1087,15 +1007,12 @@
                         children.push(new Paragraph({ children:[new TextRun({text:"II. Isilah titik-titik dibawah ini dengan jawaban yang benar!", bold:true, italics:true, font:fontName, size:fontSize})], spacing:{before:300, after:200} })); 
                         esDoneFlag = true; 
                     }
-
                     let qContainer = [new Paragraph({ children:[new TextRun({text:s.tanya, font:fontName, size:fontSize})], alignment:AlignmentType.JUSTIFIED, spacing:{after:120} })];
-                    
                     if(s.tipe === 'PG'){
                         const abc = ['a','b','c','d'];
                         let validOps = (s.opsi || []).filter((o, i) => !(isKecil && i > 2) && (o.t || o.i));
                         let totalChar = validOps.reduce((acc, curr) => acc + (curr.t?curr.t.length:0), 0);
                         let isLong = validOps.some(o => (o.t && o.t.length > 30)) || totalChar > 60;
-
                         if(isKecil){
                             if(!isLong){
                                 let runs = []; validOps.forEach((v, i) => runs.push(new TextRun({text:`${abc[i]}. ${v.t}      `, font:fontName, size:fontSize})));
@@ -1117,7 +1034,6 @@
                             }
                         }
                     }
-
                     let mainCells = [
                         new TableCell({ width:{size:4, type:WidthType.PERCENTAGE}, children:[new Paragraph({ text:(idx+1)+".", font:fontName, size:fontSize })] }),
                         new TableCell({ width:{size:96, type:WidthType.PERCENTAGE}, children:qContainer })
@@ -1140,8 +1056,3 @@
 </script>
 </body>
 </html>
-
-
-
-
-
