@@ -905,6 +905,14 @@
                     });
                 }
             }
+
+                if(k != "1" && k != "2") {
+                    s.opsi.push({ 
+                        t: document.getElementById('od').value, 
+                        i: (await compressImage(fileInputs[3].files[0])) || getOImg(3) || "" 
+                    });
+                }
+            }
                 ];
                 if(k != "1" && k != "2") s.opsi.push({ t: document.getElementById('od').value, i: (await compressImage(fileInputs[3].files[0])) || getOImg(3) || "" });
             }
@@ -1132,6 +1140,7 @@
 </script>
 </body>
 </html>
+
 
 
 
