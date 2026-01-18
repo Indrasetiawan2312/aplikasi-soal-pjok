@@ -1046,7 +1046,7 @@
                         let isLong = validOps.some(o => (o.t && o.t.length > 30)) || totalChar > 60;
                         if(isKecil){
                             if(!isLong){
-                                let runs = []; validOps.forEach((v, i) => runs.push(new TextRun({text:`${abc[i]}. ${v.t}      `, font:fontName, size:fontSize})));
+                                let runs = []; validOps.forEach((v, i) => runs.push(new TextRun({text:`${abc[i]}. ${v.t}${" ".repeat(15)}`, font:fontName, size:fontSize})));
                                 qContainer.push(new Paragraph({ children:runs }));
                             } else {
                                 validOps.forEach((v, i) => qContainer.push(new Paragraph({ children:[new TextRun({text:`${abc[i]}. ${v.t}`, font:fontName, size:fontSize})] })));
@@ -1087,6 +1087,7 @@
 </script>
 </body>
 </html>
+
 
 
 
