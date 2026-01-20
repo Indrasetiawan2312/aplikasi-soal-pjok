@@ -239,11 +239,6 @@
             margin-bottom: 15px; margin-top: 5px; letter-spacing: 0.5px; text-transform: uppercase;
         }
         
-        .soal-item { display: flex; align-items: flex-start; gap: 15px; margin-bottom: 10px; }
-        .soal-number { font-weight: bold; min-width: 25px; color: var(--accent); }
-        .soal-image-container img { width: 100%; border-radius: 6px; border: 1px solid #e2e8f0; }
-        .soal-text-content { flex-grow: 1; font-size: 14px; line-height: 1.6; }
-
         .logo-preview-box {
             width: 45px; height: 45px; border: 2px dashed #cbd5e1; border-radius: 6px;
             display: flex; align-items: center; justify-content: center; overflow: hidden; background: #fff;
@@ -251,17 +246,9 @@
         .logo-preview-box img { width: 100%; height: 100%; object-fit: contain; }
 
         .rekap-container {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
-            margin-top: 10px;
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 10px;
         }
-        .rekap-card {
-            padding: 12px;
-            border-radius: 8px;
-            text-align: center;
-            border: 1px solid #e2e8f0;
-        }
+        .rekap-card { padding: 12px; border-radius: 8px; text-align: center; border: 1px solid #e2e8f0; }
         .rekap-val { font-size: 20px; font-weight: 800; }
         .rekap-label { font-size: 10px; font-weight: bold; color: #64748b; margin-top: 5px; }
         .rekap-target { font-size: 9px; color: #94a3b8; }
@@ -305,7 +292,6 @@
                 <h1>TIM KKGO KECAMATAN MAJALENGKA</h1>
                 <p>Aplikasi Pembuat Soal STS/SAS/US 2025/2026</p>
             </div>
-            
             <div class="top-right-badge">
                 <div class="creator-name" id="displayUserName">Memuat...</div>
                 <button class="btn btn-red" onclick="handleLogout()" style="padding:4px 8px; font-size:10px;">LOGOUT</button>
@@ -319,8 +305,6 @@
     <div class="running-text-container">
         <div class="marquee-prefix">INFO TERKINI:</div>
         <div class="marquee-content">
-            MAJALENGKA LANGKUNG SAE - "BERGERAK DINAMIS, MENCETAK GENERASI MUDA DI ERA DIGITAL." 
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ★ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             MAJALENGKA LANGKUNG SAE - "BERGERAK DINAMIS, MENCETAK GENERASI MUDA DI ERA DIGITAL."
         </div>
     </div>
@@ -349,7 +333,6 @@
                     </select>
                 </div>
             </div>
-
             <div id="adminLogoBar" style="display:flex; align-items:center; gap:12px; border-left: 1px solid #e2e8f0; padding-left: 15px;">
                 <div>
                     <div style="font-size:10px; font-weight:bold; color:#64748b; margin-bottom:2px; text-transform:uppercase;">Logo Cetak Kop:</div>
@@ -359,7 +342,6 @@
                     <span style="font-size: 8px; color: #94a3b8;">NO LOGO</span>
                 </div>
             </div>
-
             <div style="display:flex; gap:10px;" id="adminRestoreBar">
                  <button class="btn btn-dark" onclick="document.getElementById('fileRestore').click()" style="font-size:11px;">🔄 RESTORE DATA</button>
                  <input type="file" id="fileRestore" class="hidden" accept=".json" onchange="uploadBackupToCloud(this)">
@@ -370,7 +352,7 @@
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
                 <h2 style="margin:0; color:#1e293b; font-size:18px;">Repositori CP & TP</h2>
                 <div style="display:flex; gap:10px;">
-                     <button class="btn btn-purple" onclick="exportWord('tp')">📄 CETAK TP</button>
+                    <button class="btn btn-purple" onclick="exportWord('tp')">📄 CETAK TP</button>
                     <button class="btn btn-green" onclick="openFormKur()">➕ TAMBAH DATA</button>
                 </div>
             </div>
@@ -405,8 +387,8 @@
                     <div class="print-group">
                         <span style="font-size:10px; font-weight:800; color:#475569; margin-right:5px;">MENU CETAK:</span>
                         <button class="btn btn-blue" style="font-size:11px;" onclick="exportWord('soal_only')">📄 SOAL</button>
-                        <button class="btn btn-orange" style="font-size:11px;" onclick="exportWord('kisi_only')">📋 KISI-KISI</button>
-                        <button class="btn btn-purple" style="font-size:11px;" onclick="exportWord('skor_only')">📊 PENSKORAN</button>
+                        <button class="btn btn-orange" style="font-size:11px;" onclick="exportWord('kisi_only')">📋 KISI</button>
+                        <button class="btn btn-purple" style="font-size:11px;" onclick="exportWord('skor_only')">📊 SKOR</button>
                         <button class="btn btn-dark" style="font-size:11px;" onclick="exportWord('kunci_only')">🔑 KUNCI</button>
                     </div>
                 </div>
@@ -418,14 +400,13 @@
             <div id="rekapStatsUS" class="card" style="background: #fdf2ff; border: 1px solid #e9d5ff;"></div>
             <div class="card" style="border-left: 5px solid #8b5cf6;">
                 <h2 style="margin:0; color:#1e293b; font-size:18px;">Modul Ujian Sekolah (US)</h2>
-                <p style="font-size: 12px; color: #64748b;">Khusus pembuatan soal US dengan referensi Tujuan Pembelajaran Kelas 6.</p>
+                <p style="font-size: 12px; color: #64748b;">Khusus Kelas 6.</p>
                 <div style="display:flex; gap:10px; margin-top:15px; flex-wrap: wrap;">
                     <button class="btn btn-purple" onclick="openFormSoal('US')">➕ TAMBAH SOAL US</button>
                     <div class="print-group">
-                        <span style="font-size:10px; font-weight:800; color:#475569; margin-right:5px;">CETAK US:</span>
                         <button class="btn btn-blue" onclick="exportWord('us_soal')">📄 SOAL US</button>
-                        <button class="btn btn-orange" onclick="exportWord('us_kisi')">📋 KISI-KISI US</button>
-                        <button class="btn btn-purple" onclick="exportWord('us_skor')">📊 PENSKORAN US</button>
+                        <button class="btn btn-orange" onclick="exportWord('us_kisi')">📋 KISI US</button>
+                        <button class="btn btn-purple" onclick="exportWord('us_skor')">📊 SKOR US</button>
                         <button class="btn btn-dark" onclick="exportWord('us_kunci')">🔑 KUNCI US</button>
                     </div>
                 </div>
@@ -470,58 +451,40 @@
 
             <div class="section-title">2. Detail Akademik</div>
             <div class="grid-2">
-                <div class="form-group"><label>Materi Pokok</label><input type="text" id="sMateri" placeholder="Contoh: Aktivitas Senam Lantai"></div>
-                <div class="form-group"><label>Indikator Soal</label><input type="text" id="sIndikator" placeholder="Contoh: Disajikan gambar, peserta didik dapat..."></div>
+                <div class="form-group"><label>Materi Pokok</label><input type="text" id="sMateri"></div>
+                <div class="form-group"><label>Indikator Soal</label><input type="text" id="sIndikator"></div>
             </div>
             <div class="grid-2">
-                <div class="form-group">
-                    <label>Level Kognitif</label>
-                    <select id="sLevel">
-                        <option value="L1">Level 1 (Pengetahuan/Pemahaman)</option>
-                        <option value="L2">Level 2 (Aplikasi/Penerapan)</option>
-                        <option value="L3">Level 3 (Penalaran/HOTS)</option>
-                    </select>
-                </div>
+                <div class="form-group"><label>Level Kognitif</label><select id="sLevel"><option value="L1">L1</option><option value="L2">L2</option><option value="L3">L3</option></select></div>
                 <div class="form-group"><label>Bobot Skor</label><input type="number" id="sSkor" value="1"></div>
             </div>
 
             <div class="section-title">3. Konten Soal</div>
             <div class="form-group">
                 <label>Pertanyaan / Stimulus</label>
-                <textarea id="sTanya" rows="3" oninput="cekKaidah(this)" placeholder="Ketik pertanyaan di sini..."></textarea>
-                <div style="margin-top:5px;">
-                    <label style="font-size:11px; color:#64748b;">Upload Gambar Soal (Opsional):</label>
-                    <input type="file" id="fImgS" onchange="showPv(this, 'pvS')">
-                </div>
+                <textarea id="sTanya" rows="3" oninput="cekKaidah(this)"></textarea>
+                <input type="file" id="fImgS" onchange="showPv(this, 'pvS')">
                 <div id="pvS"></div>
             </div>
 
             <div id="essayBox" class="hidden form-group">
-                <label style="color:#2563eb;">KUNCI JAWABAN (URAIAN/ESSAY)</label>
-                <textarea id="sJawabanEssay" rows="3" placeholder="Tuliskan kunci jawaban lengkap..."></textarea>
+                <label>Kunci Jawaban Essay</label>
+                <textarea id="sJawabanEssay" rows="3"></textarea>
             </div>
             
             <div id="pgBox">
                 <div class="grid-2">
-                    <div class="form-group"><label>Opsi A</label><input type="text" id="oa"><input type="file" onchange="showPv(this, 'pa')" style="margin-top:5px;"><div id="pa"></div></div>
-                    <div class="form-group"><label>Opsi B</label><input type="text" id="ob"><input type="file" onchange="showPv(this, 'pb')" style="margin-top:5px;"><div id="pb"></div></div>
-                    <div class="form-group" id="rowC"><label>Opsi C</label><input type="text" id="oc"><input type="file" onchange="showPv(this, 'pc')" style="margin-top:5px;"><div id="pc"></div></div>
-                    <div class="form-group" id="rowD">
-                        <label>Opsi D</label>
-                        <input type="text" id="od">
-                        <input type="file" onchange="showPv(this, 'pd')" style="margin-top:5px;">
-                        <div id="pd"></div>
-                    </div>
+                    <div class="form-group"><label>Opsi A</label><input type="text" id="oa"><input type="file" onchange="showPv(this, 'pa')"><div id="pa"></div></div>
+                    <div class="form-group"><label>Opsi B</label><input type="text" id="ob"><input type="file" onchange="showPv(this, 'pb')"><div id="pb"></div></div>
+                    <div class="form-group" id="rowC"><label>Opsi C</label><input type="text" id="oc"><input type="file" onchange="showPv(this, 'pc')"><div id="pc"></div></div>
+                    <div class="form-group" id="rowD"><label>Opsi D</label><input type="text" id="od"><input type="file" onchange="showPv(this, 'pd')"><div id="pd"></div></div>
                 </div>
-                <div class="form-group">
-                    <label>Kunci Jawaban</label>
-                    <select id="sKunci" style="width:150px; font-weight:bold;"></select>
-                </div>
+                <div class="form-group"><label>Kunci Jawaban</label><select id="sKunci" style="width:100px;"></select></div>
             </div>
             
             <div style="text-align:right; margin-top:20px; border-top:1px solid #f1f5f9; padding-top:15px;">
                 <button class="btn btn-dark" onclick="closeForm('formSoal')">BATAL</button>
-                <button class="btn btn-blue" id="btnSaveSoal" onclick="saveSoal()">💾 SIMPAN PERUBAHAN</button>
+                <button class="btn btn-blue" id="btnSaveSoal" onclick="saveSoal()">💾 SIMPAN</button>
             </div>
         </div>
     </div>
@@ -548,26 +511,17 @@
         app = initializeApp(firebaseConfig); 
         db = getDatabase(app); 
         auth = getAuth(app);
-    } catch(e) { console.error("Firebase Init Error:", e); }
+    } catch(e) { console.error("Firebase Error:", e); }
 
-    let KUR_DB = [];
-    let SOAL_DB = [];
-    let userAksesKelas = null;
+    let KUR_DB = []; let SOAL_DB = []; let userAksesKelas = null;
 
-    // --- AUTH LOGIC ---
+    // AUTH LOGIC
     window.handleLogin = function() {
         const email = document.getElementById('loginEmail').value;
         const pass = document.getElementById('loginPass').value;
-        const errorEl = document.getElementById('loginError');
-        errorEl.innerText = ""; 
-        signInWithEmailAndPassword(auth, email, pass).catch(err => {
-            errorEl.innerText = "❌ Login Gagal: Cek kembali email/password.";
-        });
+        signInWithEmailAndPassword(auth, email, pass).catch(err => { document.getElementById('loginError').innerText = "Gagal!"; });
     };
-
-    window.handleLogout = function() {
-        if(confirm("Keluar dari aplikasi?")) signOut(auth);
-    };
+    window.handleLogout = function() { if(confirm("Keluar?")) signOut(auth); };
 
     onAuthStateChanged(auth, (user) => {
         const overlay = document.getElementById('loginOverlay');
@@ -575,11 +529,9 @@
         const displayUser = document.getElementById('displayUserName');
         const adminLogoBar = document.getElementById('adminLogoBar');
         const adminRestoreBar = document.getElementById('adminRestoreBar');
-        
         if (user) { 
             overlay.style.display = 'none'; 
             const userId = btoa(user.email).replace(/=/g, "");
-
             onValue(ref(db, 'users/' + userId), (snap) => {
                 const userData = snap.val();
                 if(userData && userData.role === "GURU") {
@@ -592,7 +544,7 @@
                     document.getElementById('mainFilterKelas').disabled = true;
                 } else {
                     userAksesKelas = null;
-                    displayUser.innerText = "Administrator (Indra Setiawan)";
+                    displayUser.innerText = "Administrator";
                     if(btnTabUser) { btnTabUser.style.display = 'block'; btnTabUser.classList.remove('hidden'); }
                     if(adminLogoBar) adminLogoBar.style.display = 'flex';
                     if(adminRestoreBar) adminRestoreBar.style.display = 'flex';
@@ -607,47 +559,43 @@
         const email = document.getElementById('regEmail').value;
         const pass = document.getElementById('regPass').value;
         const kelas = document.getElementById('regKelas').value;
-        if(!email || !pass) return alert("Isi email dan password!");
+        if(!email || !pass) return alert("Isi email!");
         try {
             const userId = btoa(email).replace(/=/g, "");
             await set(ref(db, 'users/' + userId), { email: email, role: "GURU", aksesKelas: kelas });
-            alert("Berhasil! Guru kelas " + kelas + " terdaftar.");
-            document.getElementById('regEmail').value = ""; document.getElementById('regPass').value = "";
-        } catch (err) { alert("Gagal: " + err.message); }
+            alert("Berhasil!");
+        } catch (err) { alert(err.message); }
     };
 
     if(db) {
         onValue(ref(db, 'users'), (snapshot) => {
-            const tbody = document.getElementById('tblUserBody');
-            if(!tbody) return; tbody.innerHTML = "";
-            const users = snapshot.val();
-            if(users) {
+            const tbody = document.getElementById('tblUserBody'); if(!tbody) return; tbody.innerHTML = "";
+            const users = snapshot.val(); if(users) {
                 Object.keys(users).forEach(key => {
                     const u = users[key];
-                    tbody.innerHTML += `<tr><td>${u.email}</td><td>Kelas ${u.aksesKelas}</td><td><button class="btn btn-red" onclick="hapusUser('${key}')">Hapus</button></td></tr>`;
+                    tbody.innerHTML += `<tr><td>${u.email}</td><td>Kelas ${u.aksesKelas}</td><td><button onclick="hapusUser('${key}')">Hapus</button></td></tr>`;
                 });
             }
         });
         onValue(ref(db, ".info/connected"), (s) => {
-            const el = document.getElementById('statusIndicator'); const txt = document.getElementById('statusText');
-            if (s.val()) { el.className = "online-badge online"; txt.innerText = "Online"; } 
-            else { el.className = "online-badge offline"; txt.innerText = "Offline"; }
+            const el = document.getElementById('statusIndicator');
+            if (s.val()) { el.className = "online-badge online"; } 
+            else { el.className = "online-badge offline"; }
         });
         onValue(ref(db, 'kurikulum'), (s) => { KUR_DB = s.val() ? Object.values(s.val()) : []; renderKur(); populateKelas(); });
         onValue(ref(db, 'soal'), (s) => { SOAL_DB = s.val() ? Object.values(s.val()) : []; renderSoal(); });
     }
 
-    window.hapusUser = function(key) { if(confirm("Hapus akses guru ini?")) remove(ref(db, 'users/' + key)); };
+    window.hapusUser = function(key) { if(confirm("Hapus?")) remove(ref(db, 'users/' + key)); };
     window.hapusDataUniversal = function(path, id, kelasData) {
-        if(userAksesKelas && kelasData != userAksesKelas) return alert("⚠️ Akses Ditolak!");
-        if(confirm('Yakin ingin menghapus data ini secara permanen?')) remove(ref(db, path + '/' + id));
+        if(userAksesKelas && kelasData != userAksesKelas) return alert("Ditolak!");
+        if(confirm('Hapus?')) remove(ref(db, path + '/' + id));
     };
 
     window.saveLogoToLocal = async function(input) {
         if(input.files[0]) {
             const base64 = await compressImage(input.files[0]);
-            localStorage.setItem('pjok_logo_kop', base64);
-            renderLogoKop(base64);
+            localStorage.setItem('pjok_logo_kop', base64); renderLogoKop(base64);
         }
     };
     function renderLogoKop(base64) {
@@ -658,20 +606,15 @@
     window.applyFilter = function() { renderKur(); renderSoal(); populateKelas(); };
 
     window.uploadBackupToCloud = function(input) {
-        if (!input.files[0] || !db) return alert("Database belum terhubung!");
-        if(!confirm("⚠️ Yakin ingin restore data?")) { input.value = ''; return; }
-        const btnRestore = document.querySelector('button[onclick*="fileRestore"]');
-        const originalText = btnRestore.innerText;
-        btnRestore.innerText = "⏳ PROCESSING..."; btnRestore.disabled = true;
+        if (!input.files[0]) return;
         const reader = new FileReader();
         reader.onload = async function(e) {
             try {
                 const res = JSON.parse(e.target.result);
-                if (res.kur && Array.isArray(res.kur)) { for (let k of res.kur) { if(k && k.id) await set(ref(db, 'kurikulum/' + k.id), k); } }
-                if (res.soal && Array.isArray(res.soal)) { for (let s of res.soal) { if(s && s.id) await set(ref(db, 'soal/' + s.id), s); } }
-                alert("✅ Restore Selesai!");
-            } catch (err) { alert("❌ Error: " + err.message); } 
-            finally { btnRestore.innerText = originalText; btnRestore.disabled = false; input.value = ''; }
+                if (res.kur) for (let k of res.kur) await set(ref(db, 'kurikulum/' + k.id), k);
+                if (res.soal) for (let s of res.soal) await set(ref(db, 'soal/' + s.id), s);
+                alert("Berhasil!");
+            } catch (err) { alert(err.message); }
         };
         reader.readAsText(input.files[0]);
     };
@@ -686,18 +629,15 @@
         if(inp.files[0]) { const r = new FileReader(); r.onload = e => document.getElementById(id).innerHTML = `<img src="${e.target.result}" class="preview-img">`; r.readAsDataURL(inp.files[0]); } 
     };
 
+    // KURIKULUM LOGIC
     window.openFormKur = function() { 
         document.getElementById('editKurId').value = ""; document.getElementById('tpInputs').innerHTML = ""; addTPField(''); 
-        const filterVal = document.getElementById('mainFilterKelas').value;
-        const inputKelas = document.getElementById('fKelas');
-        if(userAksesKelas) { inputKelas.value = userAksesKelas; inputKelas.disabled = true; } 
-        else if(filterVal !== 'ALL') { inputKelas.value = filterVal; inputKelas.disabled = false; }
+        if(userAksesKelas) document.getElementById('fKelas').value = userAksesKelas;
         document.getElementById('formKur').classList.remove('hidden'); 
     };
-    window.addTPField = function(v) { document.getElementById('tpInputs').insertAdjacentHTML('beforeend', `<div style="display:flex; gap:5px; margin-bottom:5px;"><input type="text" class="tp-val" value="${v}" style="flex:1" placeholder="Isi TP..."><button class="btn btn-red" onclick="this.parentElement.remove()" style="padding:5px 10px;">✕</button></div>`); };
+    window.addTPField = function(v) { document.getElementById('tpInputs').insertAdjacentHTML('beforeend', `<div style="display:flex; gap:5px; margin-bottom:5px;"><input type="text" class="tp-val" value="${v}" style="flex:1"><button onclick="this.parentElement.remove()">✕</button></div>`); };
     window.saveKur = function() { 
-        const idStr = document.getElementById('editKurId').value;
-        const id = idStr ? parseInt(idStr) : Date.now();
+        const id = document.getElementById('editKurId').value || Date.now();
         const data = { 
             id: id, fase: document.getElementById('fFase').value, rombel: document.getElementById('fKelas').value, sem: document.getElementById('fSem').value, cp: document.getElementById('fCp').value, 
             tpSet: Array.from(document.querySelectorAll('.tp-val')).map(i => i.value).filter(x => x.trim() !== "") 
@@ -708,74 +648,48 @@
         const b = document.getElementById('tblKurBody'); b.innerHTML = ""; 
         const filterVal = document.getElementById('mainFilterKelas').value;
         let filteredData = (filterVal !== 'ALL') ? KUR_DB.filter(d => d.rombel == filterVal) : KUR_DB;
-        filteredData.sort((a,b)=>a.rombel - b.rombel).forEach(d => { 
-            b.innerHTML += `<tr><td><span style="font-weight:bold; color:#2563eb;">Kelas ${d.rombel}</span></td><td>${d.sem}</td><td>${d.cp}</td><td><ul style="margin:0; padding-left:20px;">${(d.tpSet||[]).map(t=>`<li>${t}</li>`).join('')}</ul></td><td><div class="action-btns"><button class="btn btn-orange" style="padding:5px 10px;" onclick="editKur(${d.id})">Edit</button><button class="btn btn-red" style="padding:5px 10px;" onclick="hapusDataUniversal('kurikulum', ${d.id}, '${d.rombel}')">Hapus</button></div></td></tr>`; 
+        filteredData.forEach(d => { 
+            b.innerHTML += `<tr><td>Kelas ${d.rombel}</td><td>${d.sem}</td><td>${d.cp}</td><td><ul>${(d.tpSet||[]).map(t=>`<li>${t}</li>`).join('')}</ul></td><td><button onclick="editKur(${d.id})">Edit</button></td></tr>`; 
         }); 
     }
     window.editKur = function(id) { 
-        const d = KUR_DB.find(x => x.id === id); if(!d) return;
-        if(userAksesKelas && d.rombel != userAksesKelas) return alert("Hanya bisa mengedit Kelas " + userAksesKelas);
-        document.getElementById('editKurId').value = d.id; document.getElementById('fFase').value = d.fase; document.getElementById('fKelas').value = d.rombel; document.getElementById('fSem').value = d.sem; document.getElementById('fCp').value = d.cp; 
+        const d = KUR_DB.find(x => x.id == id); if(!d) return;
+        document.getElementById('editKurId').value = d.id; document.getElementById('fKelas').value = d.rombel; document.getElementById('fCp').value = d.cp; 
         document.getElementById('tpInputs').innerHTML = ""; (d.tpSet || []).forEach(t => addTPField(t)); 
         document.getElementById('formKur').classList.remove('hidden'); 
     };
 
+    // SOAL LOGIC
     window.populateKelas = function() { 
-        const s = document.getElementById('sKelas'); const currentVal = s.value; s.innerHTML = "<option value=''>- Pilih Kelas -</option>"; 
+        const s = document.getElementById('sKelas'); s.innerHTML = "<option value=''>- Pilih -</option>"; 
         [...new Set(KUR_DB.map(x => x.rombel))].sort().forEach(k => s.innerHTML += `<option value="${k}">${k}</option>`); 
-        if(currentVal) s.value = currentVal;
     };
-    
     window.loadTP = function() {
         const k = document.getElementById('sKelas').value; const s = document.getElementById('sTP'); s.innerHTML = "";
-        const kat = document.getElementById('sKategori').value; const filterKelas = (kat === 'US') ? "6" : k;
-        KUR_DB.filter(x => x.rombel == filterKelas).forEach(d => (d.tpSet||[]).forEach(t => s.innerHTML += `<option value="${t}">${t}</option>`));
-        const isRendah = (k == "1" || k == "2");
-        const rowD = document.getElementById('rowD'); const sKunci = document.getElementById('sKunci');
-        if (isRendah) { if(rowD) rowD.style.display = 'none'; sKunci.innerHTML = `<option value="a">A</option><option value="b">B</option><option value="c">C</option>`; } 
-        else { if(rowD) rowD.style.display = 'block'; sKunci.innerHTML = `<option value="a">A</option><option value="b">B</option><option value="c">C</option><option value="d">D</option>`; }
+        const kat = document.getElementById('sKategori').value; const fK = (kat === 'US') ? "6" : k;
+        KUR_DB.filter(x => x.rombel == fK).forEach(d => (d.tpSet||[]).forEach(t => s.innerHTML += `<option value="${t}">${t}</option>`));
+        const sKunci = document.getElementById('sKunci');
+        if (k == "1" || k == "2") { document.getElementById('rowD').style.display='none'; sKunci.innerHTML=`<option value="a">A</option><option value="b">B</option><option value="c">C</option>`; } 
+        else { document.getElementById('rowD').style.display='block'; sKunci.innerHTML=`<option value="a">A</option><option value="b">B</option><option value="c">C</option><option value="d">D</option>`; }
     };
-    window.cekKaidah = function(el) { if(el.value.toUpperCase().includes("KECUALI")) { alert("Hindari kata 'KECUALI'."); el.value = el.value.replace(/KECUALI/gi, ""); } };
     window.checkSoalType = function() { 
-        const tipe = document.getElementById('sType').value;
-        document.getElementById('pgBox').classList.toggle('hidden', tipe === 'Essay');
-        document.getElementById('essayBox').classList.toggle('hidden', tipe !== 'Essay');
+        const t = document.getElementById('sType').value;
+        document.getElementById('pgBox').classList.toggle('hidden', t === 'Essay');
+        document.getElementById('essayBox').classList.toggle('hidden', t !== 'Essay');
     };
-
-    window.openFormSoal = function(kategori = 'REGULER') { 
-        const sk = document.getElementById('sKelas');
-        if(userAksesKelas && kategori === 'REGULER') { sk.value = userAksesKelas; sk.disabled = true; } 
-        else if(userAksesKelas && kategori === 'US' && userAksesKelas != "6") { return alert("Modul US khusus Kelas 6."); }
-        document.getElementById('editSoalId').value = ""; document.getElementById('sKategori').value = kategori;
-        document.getElementById('labelKategori').innerText = kategori === 'US' ? "[ MODE UJIAN SEKOLAH ]" : "";
-        document.getElementById('formSoal').classList.remove('hidden'); document.getElementById('pvS').innerHTML = ""; 
-        document.getElementById('sMateri').value = ""; document.getElementById('sIndikator').value = ""; 
-        document.getElementById('sTanya').value = ""; document.getElementById('sJawabanEssay').value = "";
-        document.querySelectorAll('#pgBox input[type=text]').forEach(i => i.value = ""); document.querySelectorAll('#pgBox div[id^=p]').forEach(i => i.innerHTML = ""); document.querySelectorAll('input[type=file]').forEach(i => i.value = "");
-        populateKelas(); 
-        if(kategori === 'US') document.getElementById('sKelas').value = "6"; 
-        else if(userAksesKelas) document.getElementById('sKelas').value = userAksesKelas;
-        loadTP(); checkSoalType(); 
+    window.openFormSoal = function(kat = 'REGULER') { 
+        document.getElementById('editSoalId').value = ""; document.getElementById('sKategori').value = kat;
+        document.getElementById('formSoal').classList.remove('hidden'); populateKelas();
+        if(userAksesKelas) document.getElementById('sKelas').value = userAksesKelas;
     };
-
     window.editSoal = function(id) {
-        populateKelas(); const s = SOAL_DB.find(x => x.id == id); if(!s) return;
-        if(userAksesKelas && s.kelas != userAksesKelas) return alert("Akses Ditolak!");
+        const s = SOAL_DB.find(x => x.id == id); if(!s) return;
         document.getElementById('editSoalId').value = s.id; document.getElementById('sKategori').value = s.kategori || 'REGULER';
-        document.getElementById('labelKategori').innerText = s.kategori === 'US' ? "[ MODE UJIAN SEKOLAH ]" : "";
         document.getElementById('sType').value = s.tipe; document.getElementById('sKelas').value = s.kelas;
-        loadTP(); 
-        setTimeout(() => { document.getElementById('sTP').value = s.tp; document.getElementById('sKunci').value = s.kunci; }, 300);
-        document.getElementById('sMateri').value = s.materi || ""; document.getElementById('sIndikator').value = s.indikator || "";
-        document.getElementById('sLevel').value = s.level || "L1"; document.getElementById('sSkor').value = s.skor || 1;
-        document.getElementById('sTanya').value = s.tanya; document.getElementById('sJawabanEssay').value = s.jawaban || "";
-        document.getElementById('pvS').innerHTML = s.imgS ? `<img src="${s.imgS}" class="preview-img">` : "";
-        if(s.tipe === 'PG' && s.opsi) {
-            ['a','b','c','d'].forEach((x, i) => { if(document.getElementById('o'+x)) document.getElementById('o'+x).value = s.opsi[i]?.t || ""; if(document.getElementById('p'+x)) document.getElementById('p'+x).innerHTML = s.opsi[i]?.i ? `<img src="${s.opsi[i].i}" class="preview-img">` : ""; });
-        }
-        checkSoalType(); document.getElementById('formSoal').classList.remove('hidden');
+        loadTP(); setTimeout(()=> { document.getElementById('sTP').value = s.tp; document.getElementById('sKunci').value = s.kunci; }, 300);
+        document.getElementById('sTanya').value = s.tanya;
+        document.getElementById('formSoal').classList.remove('hidden'); checkSoalType();
     };
-
     async function compressImage(file) {
         if(!file) return null;
         return new Promise((resolve) => {
@@ -783,81 +697,50 @@
             reader.onload = (event) => {
                 const img = new Image(); img.src = event.target.result;
                 img.onload = () => {
-                    const canvas = document.createElement('canvas'); const MAX_WIDTH = 600;
-                    const scaleSize = MAX_WIDTH / img.width; canvas.width = MAX_WIDTH; canvas.height = img.height * scaleSize;
-                    const ctx = canvas.getContext('2d'); ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    const canvas = document.createElement('canvas'); canvas.width = 400; canvas.height = 300;
+                    canvas.getContext('2d').drawImage(img, 0, 0, 400, 300);
                     resolve(canvas.toDataURL('image/jpeg', 0.7)); 
                 };
             };
         });
     }
-
     window.saveSoal = async function() {
-        const btn = document.getElementById('btnSaveSoal'); btn.innerText = "⏳ Memproses..."; btn.disabled = true;
-        try {
-            const idStr = document.getElementById('editSoalId').value;
-            const uniqueId = idStr ? (isNaN(idStr) ? idStr : parseInt(idStr)) : Date.now();
-            const k = document.getElementById('sKelas').value;
-            const oldData = idStr ? SOAL_DB.find(x => x.id == uniqueId) : null;
-            const getImg = (prop) => (oldData ? oldData[prop] : ""); 
-            const s = {
-                id: uniqueId, kelas: k, kategori: document.getElementById('sKategori').value,
-                tipe: document.getElementById('sType').value, tp: document.getElementById('sTP').value,
-                materi: document.getElementById('sMateri').value || "", indikator: document.getElementById('sIndikator').value || "",
-                level: document.getElementById('sLevel').value, skor: parseInt(document.getElementById('sSkor').value) || 1,
-                tanya: document.getElementById('sTanya').value, kunci: document.getElementById('sKunci').value,
-                jawaban: document.getElementById('sJawabanEssay').value, 
-                imgS: (await compressImage(document.getElementById('fImgS').files[0])) || getImg('imgS') || "", opsi: []
-            };
-            if(s.tipe === 'PG') {
-                const fI = document.querySelectorAll('#pgBox input[type=file]');
-                const getOImg = (idx) => (oldData && oldData.opsi && oldData.opsi[idx] ? oldData.opsi[idx].i : ""); 
-                s.opsi = [
-                    { t: document.getElementById('oa').value, i: (await compressImage(fI[0].files[0])) || getOImg(0) || "" },
-                    { t: document.getElementById('ob').value, i: (await compressImage(fI[1].files[0])) || getOImg(1) || "" },
-                    { t: document.getElementById('oc').value, i: (await compressImage(fI[2].files[0])) || getOImg(2) || "" }
-                ];
-                if(k != "1" && k != "2") s.opsi.push({ t: document.getElementById('od').value, i: (await compressImage(fI[3].files[0])) || getOImg(3) || "" });
-            }
-            await set(ref(db, 'soal/' + uniqueId), s);
-            alert("✅ Berhasil!"); closeForm('formSoal');
-        } catch (err) { alert("⚠️ Gagal: " + err.message); } 
-        finally { btn.innerText = "💾 SIMPAN PERUBAHAN"; btn.disabled = false; }
+        const id = document.getElementById('editSoalId').value || Date.now();
+        const s = {
+            id: id, kelas: document.getElementById('sKelas').value, kategori: document.getElementById('sKategori').value,
+            tipe: document.getElementById('sType').value, tp: document.getElementById('sTP').value,
+            tanya: document.getElementById('sTanya').value, kunci: document.getElementById('sKunci').value,
+            jawaban: document.getElementById('sJawabanEssay').value, level: document.getElementById('sLevel').value,
+            skor: document.getElementById('sSkor').value, materi: document.getElementById('sMateri').value,
+            opsi: [
+                { t: document.getElementById('oa').value, i: "" },
+                { t: document.getElementById('ob').value, i: "" },
+                { t: document.getElementById('oc').value, i: "" },
+                { t: document.getElementById('od').value, i: "" }
+            ]
+        };
+        await set(ref(db, 'soal/' + id), s); alert("Berhasil!"); closeForm('formSoal');
     };
 
     function renderSoal() {
         const l = document.getElementById('soalContainer'); const u = document.getElementById('usSoalContainer'); 
-        const rReg = document.getElementById('rekapStats'); const rUS = document.getElementById('rekapStatsUS');
-        l.innerHTML = ""; u.innerHTML = ""; const filterVal = document.getElementById('mainFilterKelas').value;
-        let filteredReg = SOAL_DB.filter(s => (s.kategori === 'REGULER' || !s.kategori));
-        if(filterVal !== 'ALL') filteredReg = filteredReg.filter(s => s.kelas == filterVal);
-        let usData = SOAL_DB.filter(s => s.kategori === 'US');
-        const getRekapHtml = (data, title) => {
-            const c = { L1: 0, L2: 0, L3: 0, total: data.length };
-            data.forEach(s => { if(c[s.level] !== undefined) c[s.level]++; });
-            const p = (v) => c.total > 0 ? Math.round((v / c.total) * 100) : 0;
-            return `<div class="section-title">📊 ${title}</div><div class="rekap-container">
-                <div class="rekap-card" style="background:#dcfce7"><div class="rekap-val">${p(c.L1)}%</div><div class="rekap-label">LEVEL 1</div><div class="rekap-target">${c.L1} Soal</div></div>
-                <div class="rekap-card" style="background:#e0f2fe"><div class="rekap-val">${p(c.L2)}%</div><div class="rekap-label">LEVEL 2</div><div class="rekap-target">${c.L2} Soal</div></div>
-                <div class="rekap-card" style="background:#fef3c7"><div class="rekap-val">${p(c.L3)}%</div><div class="rekap-label">LEVEL 3</div><div class="rekap-target">${c.L3} Soal</div></div>
-            </div>`;
-        };
-        if(rReg) rReg.innerHTML = getRekapHtml(filteredReg, `Fokus: ${filterVal}`);
-        if(rUS) rUS.innerHTML = getRekapHtml(usData, `Ujian Sekolah`);
-        filteredReg.sort((a,b) => (a.tipe === b.tipe) ? 0 : (a.tipe === 'PG' ? -1 : 1)).forEach((s, i) => {
-            l.innerHTML += `<div class="card" style="border-left:5px solid var(--accent);"><small>KELAS ${s.kelas} | ${s.tipe} | ${s.level}</small><br><b>${i+1}.</b> ${s.tanya}<div class="action-btns" style="margin-top:10px;"><button class="btn btn-orange" onclick="editSoal('${s.id}')">EDIT</button><button class="btn btn-red" onclick="hapusDataUniversal('soal', '${s.id}', '${s.kelas}')">HAPUS</button></div></div>`;
+        l.innerHTML = ""; u.innerHTML = ""; const fV = document.getElementById('mainFilterKelas').value;
+        SOAL_DB.filter(s => (s.kategori||'REGULER') === 'REGULER').filter(s => fV === 'ALL' || s.kelas == fV).forEach(s => {
+            l.innerHTML += `<div class="card"><b>Kelas ${s.kelas}</b>: ${s.tanya} <button onclick="editSoal('${s.id}')">Edit</button></div>`;
         });
-        usData.forEach((s, i) => {
-            u.innerHTML += `<div class="card" style="border-left:5px solid #8b5cf6;"><small>US | ${s.tipe} | ${s.level}</small><br><b>${i+1}.</b> ${s.tanya}<div class="action-btns" style="margin-top:10px;"><button class="btn btn-orange" onclick="editSoal('${s.id}')">EDIT</button><button class="btn btn-red" onclick="hapusDataUniversal('soal', '${s.id}', '${s.kelas}')">HAPUS</button></div></div>`;
+        SOAL_DB.filter(s => s.kategori === 'US').forEach(s => {
+            u.innerHTML += `<div class="card"><b>US</b>: ${s.tanya} <button onclick="editSoal('${s.id}')">Edit</button></div>`;
         });
     }
 
+    // EXPORT WORD LOGIC
     window.exportWord = function(mode) {
         const { Document, Packer, Paragraph, TextRun, ImageRun, Table, TableRow, TableCell, WidthType, BorderStyle, AlignmentType, VerticalAlign } = docx;
         const sections = []; const filterVal = document.getElementById('mainFilterKelas').value;
+        
         let dataToExport = []; let labelJudul = "PJOK";
 
-        // --- FIX LOGIKA PEMILIHAN DATA ---
+        // LOGIKA PEMILIHAN DATA TP ATAU SOAL
         if (mode === 'tp') {
             dataToExport = (filterVal !== 'ALL') ? KUR_DB.filter(k => k.rombel == filterVal) : KUR_DB;
             labelJudul = "TUJUAN PEMBELAJARAN (TP)";
@@ -876,104 +759,79 @@
             let isKecil = (k == "1" || k == "2");
             let fontName = isKecil ? "Arial" : "Times New Roman";
             let fontSize = 24; const children = [];
-            let headerText = labelJudul;
-            if(mode.includes('kisi')) headerText = "KISI-KISI SOAL " + labelJudul;
-            else if(mode.includes('kunci')) headerText = "KUNCI JAWABAN " + labelJudul;
-            else if(mode.includes('skor')) headerText = "PEDOMAN PENSKORAN " + labelJudul;
-            
+
+            // HEADER / KOP
             let headerCells = [];
             if (savedLogo) {
                 try {
-                    const base64Data = savedLogo.split(',')[1];
-                    headerCells.push(new TableCell({ width: { size: 15, type: WidthType.PERCENTAGE }, children: [new Paragraph({ children: [new ImageRun({ data: Uint8Array.from(atob(base64Data), c => c.charCodeAt(0)), transformation: { width: 60, height: 60 } })], alignment: AlignmentType.CENTER })] }));
-                } catch(e) {}
+                    const b64 = savedLogo.split(',')[1];
+                    headerCells.push(new TableCell({ width: { size: 15, type: WidthType.PERCENTAGE }, children: [new Paragraph({ children: [new ImageRun({ data: Uint8Array.from(atob(b64), c => c.charCodeAt(0)), transformation: { width: 60, height: 60 } })], alignment: AlignmentType.CENTER })] }));
+                } catch(e){}
             }
             headerCells.push(new TableCell({
-                width: { size: savedLogo ? 85 : 100, type: WidthType.PERCENTAGE },
+                width: { size: 85, type: WidthType.PERCENTAGE },
                 children: [
                     new Paragraph({ children: [new TextRun({ text: "TIM KKGO KECAMATAN MAJALENGKA", bold: true, size: 26, font: fontName })], alignment: AlignmentType.CENTER }),
-                    new Paragraph({ children: [new TextRun({ text: headerText + " KELAS " + k, bold: true, size: 22, font: fontName })], alignment: AlignmentType.CENTER }),
-                    new Paragraph({ children: [new TextRun({ text: "TAHUN PELAJARAN 2025/2026", size: 18, font: fontName })], alignment: AlignmentType.CENTER })
-                ],
-                verticalAlign: VerticalAlign.CENTER
+                    new Paragraph({ children: [new TextRun({ text: labelJudul + " KELAS " + k, bold: true, size: 22, font: fontName })], alignment: AlignmentType.CENTER })
+                ]
             }));
-            children.push(new Table({ rows: [new TableRow({ children: headerCells })], width: { size: 100, type: WidthType.PERCENTAGE }, borders: { top: {style: BorderStyle.NONE}, bottom: {style: BorderStyle.DOUBLE, size: 3}, left: {style: BorderStyle.NONE}, right: {style: BorderStyle.NONE}, insideHorizontal: {style: BorderStyle.NONE}, insideVertical: {style: BorderStyle.NONE} } }));
-            children.push(new Paragraph({ text: "", spacing: { after: 200 } }));
+            children.push(new Table({ rows: [new TableRow({ children: headerCells })], width: { size: 100, type: WidthType.PERCENTAGE }, borders: { bottom: {style: BorderStyle.DOUBLE, size: 3}, top: {style: BorderStyle.NONE}, left: {style: BorderStyle.NONE}, right: {style: BorderStyle.NONE} } }));
+            children.push(new Paragraph({ text: "" }));
 
-            // --- JIKA MODE ADALAH CETAK TP ---
             if (mode === 'tp') {
-                const tpRows = [
-                    new TableRow({ children: ["NO", "FASE", "SEMESTER", "CAPAIAN PEMBELAJARAN", "TUJUAN PEMBELAJARAN"].map(t => new TableCell({ shading:{fill:"EEEEEE"}, children:[new Paragraph({ children:[new TextRun({text:t, bold:true, size:18, font:fontName})], alignment:AlignmentType.CENTER })] })) })
-                ];
-                dataToExport.filter(x => x.rombel == k).forEach((d, idx) => {
-                    tpRows.push(new TableRow({
-                        children: [
-                            new TableCell({ children:[new Paragraph({ text:(idx+1).toString(), alignment:AlignmentType.CENTER, font:fontName })] }),
-                            new TableCell({ children:[new Paragraph({ text:d.fase, alignment:AlignmentType.CENTER, font:fontName })] }),
-                            new TableCell({ children:[new Paragraph({ text:d.sem, alignment:AlignmentType.CENTER, font:fontName })] }),
-                            new TableCell({ children:[new Paragraph({ text:d.cp, size:18, font:fontName })] }),
-                            new TableCell({ children:(d.tpSet||[]).map(t => new Paragraph({ text:"• " + t, size:18, font:fontName })) })
-                        ]
-                    }));
+                const tpRows = [new TableRow({ children: ["NO", "CP", "DAFTAR TP"].map(t => new TableCell({ children: [new Paragraph({ text: t, bold: true })] })) })];
+                dataToExport.filter(x => x.rombel == k).forEach((d, i) => {
+                    tpRows.push(new TableRow({ children: [new TableCell({ children: [new Paragraph({ text: (i+1).toString() })] }), new TableCell({ children: [new Paragraph({ text: d.cp })] }), new TableCell({ children: (d.tpSet||[]).map(t => new Paragraph({ text: "- " + t })) })] }));
                 });
-                children.push(new Table({ width:{size:100, type:WidthType.PERCENTAGE}, rows:tpRows }));
-            } 
-            // --- JIKA MODE ADALAH CETAK SOAL/KISI/KUNCI ---
-            else {
-                let soals = dataToExport.filter(x => x.kelas == k).sort((a, b) => (a.tipe === b.tipe) ? 0 : (a.tipe === 'PG' ? -1 : 1));
-                if(mode.includes('kisi')) {
-                    const kisiRows = [new TableRow({ children: ["NO", "TP", "MATERI", "INDIKATOR", "LEVEL", "TIPE", "SKOR"].map(t => new TableCell({ shading:{fill:"EEEEEE"}, children:[new Paragraph({ children:[new TextRun({text:t, bold:true, size:18, font:fontName})], alignment:AlignmentType.CENTER })] })) })];
-                    soals.forEach((s, idx) => kisiRows.push(new TableRow({ children: [ new TableCell({ children:[new Paragraph({ text:(idx+1).toString(), alignment:AlignmentType.CENTER, font:fontName })] }), new TableCell({ children:[new Paragraph({ text:s.tp || "-", size:18, font:fontName })] }), new TableCell({ children:[new Paragraph({ text:s.materi || "-", size:18, font:fontName })] }), new TableCell({ children:[new Paragraph({ text:s.indikator || "-", size:18, font:fontName })] }), new TableCell({ children:[new Paragraph({ text:s.level || "-", alignment:AlignmentType.CENTER, font:fontName })] }), new TableCell({ children:[new Paragraph({ text:s.tipe, alignment:AlignmentType.CENTER, font:fontName })] }), new TableCell({ children:[new Paragraph({ text:(s.skor||1).toString(), alignment:AlignmentType.CENTER, font:fontName })] }) ] })));
-                    children.push(new Table({ width:{size:100, type:WidthType.PERCENTAGE}, rows:kisiRows }));
-                } 
-                else if(mode.includes('skor')) {
-                    let grandTotal = 0;
-                    let skorRows = [new TableRow({ children: [{t:"No", w:5}, {t:"Level", w:10}, {t:"Kunci / Unsur Jawaban", w:40}, {t:"Rubrik", w:30}, {t:"Skor", w:15}].map(h => new TableCell({ shading:{fill:"F2F2F2"}, children:[new Paragraph({ children:[new TextRun({text:h.t, bold:true, font:fontName, size:18})], alignment:AlignmentType.CENTER })], width:{size:h.w, type:WidthType.PERCENTAGE} })) })];
-                    soals.forEach((s, idx) => { let sMax = parseInt(s.skor) || 1; grandTotal += sMax; skorRows.push(new TableRow({ children: [ new TableCell({ children:[new Paragraph({ text:(idx+1).toString(), alignment:AlignmentType.CENTER, font:fontName })] }), new TableCell({ children:[new Paragraph({ text:s.level||"-", alignment:AlignmentType.CENTER, font:fontName })] }), new TableCell({ children:[new Paragraph({ text:s.tipe==='PG'?s.kunci.toUpperCase():s.jawaban, font:fontName, size:18 })] }), new TableCell({ children:[new Paragraph({ text:s.tipe==='PG'?"Benar 1, Salah 0":"Sesuai kunci", font:fontName, size:18 })] }), new TableCell({ children:[new Paragraph({ text:sMax.toString(), alignment:AlignmentType.CENTER, font:fontName })] }) ] })); });
-                    children.push(new Table({ width:{size:100, type:WidthType.PERCENTAGE}, rows:skorRows }));
-                }
-                else if(mode.includes('kunci')) {
-                    let pgSoals = soals.filter(s => s.tipe === 'PG');
-                    let esSoals = soals.filter(s => s.tipe === 'Essay');
-                    children.push(new Paragraph({ children:[new TextRun({text:"A. PILIHAN GANDA", bold:true, font:fontName, size:22})], spacing:{after:150} }));
-                    const rPC = 5; const tC = Math.ceil(pgSoals.length / rPC);
-                    let tableRowsArr = [];
-                    for(let r=0; r<rPC; r++){
-                        let cells = [];
-                        for(let c=0; c<tC; c++){ let idx = r + (c * rPC); let s = pgSoals[idx]; cells.push(new TableCell({ borders:{top:BorderStyle.NONE, bottom:BorderStyle.NONE, left:BorderStyle.NONE, right:BorderStyle.NONE}, children:[new Paragraph({ children:[new TextRun({text:s?`${idx+1}. ${s.kunci.toUpperCase()}`:"", font:fontName, size:fontSize})], alignment:AlignmentType.LEFT })] })); }
-                        tableRowsArr.push(new TableRow({ children:cells }));
-                    }
-                    children.push(new Table({ width:{size:100, type:WidthType.PERCENTAGE}, rows:tableRowsArr }));
-                    if(esSoals.length > 0){
-                        children.push(new Paragraph({ children:[new TextRun({text:"\nB. ESSAY / URAIAN", bold:true, font:fontName, size:22})], spacing:{before:200, after:100} }));
-                        esSoals.forEach((s, idx) => children.push(new Paragraph({ children:[new TextRun({text:`${pgSoals.length+idx+1}. `, bold:true, font:fontName}), new TextRun({text:s.jawaban, font:fontName})], spacing:{after:50} })));
-                    }
-                } else {
-                    let pgDone = false; let esDone = false;
-                    for(let [idx, s] of soals.entries()){
-                        if(s.tipe === 'PG' && !pgDone){ children.push(new Paragraph({ children:[new TextRun({text:"I. Pilihlah salah satu jawaban yang paling benar!", bold:true, italics:true, font:fontName, size:fontSize})], spacing:{after:200} })); pgDone = true; }
-                        if(s.tipe === 'Essay' && !esDone){ children.push(new Paragraph({ children:[new TextRun({text:"II. Isilah titik-titik dibawah ini dengan jawaban yang benar!", bold:true, italics:true, font:fontName, size:fontSize})], spacing:{before:300, after:200} })); esDone = true; }
-                        let qC = [new Paragraph({ children:[new TextRun({text:s.tanya, font:fontName, size:fontSize})], alignment:AlignmentType.JUSTIFIED, spacing:{after:120} })];
-                        if(s.tipe === 'PG'){
-                            const abc = ['a','b','c','d'];
-                            let validOps = (s.opsi || []).filter((o, i) => !(isKecil && i > 2) && (o.t || o.i));
-                            validOps.forEach((v, i) => qC.push(new Paragraph({ children:[new TextRun({text:`${abc[i]}. ${v.t}`, font:fontName, size:fontSize})] })));
+                children.push(new Table({ rows: tpRows, width: { size: 100, type: WidthType.PERCENTAGE } }));
+            } else {
+                let soals = dataToExport.filter(x => x.kelas == k);
+                soals.forEach((s, idx) => {
+                    let qC = [new Paragraph({ children: [new TextRun({ text: s.tanya, font: fontName, size: fontSize })] })];
+                    
+                    if(s.tipe === 'PG') {
+                        const abc = ['a', 'b', 'c', 'd'];
+                        let validOps = (s.opsi || []).filter((o, i) => !(isKecil && i > 2) && (o.t || o.i));
+
+                        if (isKecil) {
+                            // LAYOUT SEJAJAR HORIZONTAL UNTUK KELAS 1-2
+                            let rowOpsi = [];
+                            validOps.forEach((v, i) => {
+                                rowOpsi.push(new TableCell({ 
+                                    borders: { top: BorderStyle.NONE, bottom: BorderStyle.NONE, left: BorderStyle.NONE, right: BorderStyle.NONE },
+                                    children: [new Paragraph({ children: [new TextRun({ text: `${abc[i]}. ${v.t}`, font: fontName, size: fontSize })] })] 
+                                }));
+                            });
+                            qC.push(new Table({ width: { size: 100, type: WidthType.PERCENTAGE }, rows: [new TableRow({ children: rowOpsi })], borders: { top: BorderStyle.NONE, bottom: BorderStyle.NONE, left: BorderStyle.NONE, right: BorderStyle.NONE, insideHorizontal: BorderStyle.NONE, insideVertical: BorderStyle.NONE } }));
+                        } else {
+                            // LAYOUT 2 KOLOM (KIRI-KANAN) UNTUK KELAS 3-6
+                            let gridRows = [
+                                new TableRow({ children: [
+                                    new TableCell({ borders: { top: BorderStyle.NONE, bottom: BorderStyle.NONE, left: BorderStyle.NONE, right: BorderStyle.NONE }, children: [new Paragraph({ children: [new TextRun({ text: `a. ${validOps[0]?.t || ""}`, font: fontName, size: fontSize })] })] }),
+                                    new TableCell({ borders: { top: BorderStyle.NONE, bottom: BorderStyle.NONE, left: BorderStyle.NONE, right: BorderStyle.NONE }, children: [new Paragraph({ children: [new TextRun({ text: `c. ${validOps[2]?.t || ""}`, font: fontName, size: fontSize })] })] })
+                                ]}),
+                                new TableRow({ children: [
+                                    new TableCell({ borders: { top: BorderStyle.NONE, bottom: BorderStyle.NONE, left: BorderStyle.NONE, right: BorderStyle.NONE }, children: [new Paragraph({ children: [new TextRun({ text: `b. ${validOps[1]?.t || ""}`, font: fontName, size: fontSize })] })] }),
+                                    new TableCell({ borders: { top: BorderStyle.NONE, bottom: BorderStyle.NONE, left: BorderStyle.NONE, right: BorderStyle.NONE }, children: [new Paragraph({ children: [new TextRun({ text: `d. ${validOps[3]?.t || ""}`, font: fontName, size: fontSize })] })] })
+                                ]})
+                            ];
+                            qC.push(new Table({ width: { size: 100, type: WidthType.PERCENTAGE }, rows: gridRows, borders: { top: BorderStyle.NONE, bottom: BorderStyle.NONE, left: BorderStyle.NONE, right: BorderStyle.NONE, insideHorizontal: BorderStyle.NONE, insideVertical: BorderStyle.NONE } }));
                         }
-                        let mainCells = [new TableCell({ width:{size:4, type:WidthType.PERCENTAGE}, children:[new Paragraph({ text:(idx+1)+".", font:fontName, size:fontSize })] }), new TableCell({ width:{size:96, type:WidthType.PERCENTAGE}, children:qC })];
-                        if(s.imgS){ try { mainCells.splice(1, 0, new TableCell({ width:{size:25, type:WidthType.PERCENTAGE}, children:[new Paragraph({ children:[new ImageRun({ data:Uint8Array.from(atob(s.imgS.split(',')[1]), c => c.charCodeAt(0)), transformation:{width:120, height:90} })], alignment:AlignmentType.CENTER })] })); } catch(e){} }
-                        children.push(new Table({ rows:[new TableRow({ children:mainCells, cantSplit:true })], width:{size:100, type:WidthType.PERCENTAGE}, borders:{top: BorderStyle.NONE, bottom: BorderStyle.NONE, left: BorderStyle.NONE, right: BorderStyle.NONE, insideHorizontal: BorderStyle.NONE, insideVertical: BorderStyle.NONE} }));
-                        children.push(new Paragraph({ text:"", spacing:{after:80} }));
                     }
-                }
+                    children.push(new Table({ 
+                        rows: [new TableRow({ children: [new TableCell({ width: {size:5, type:WidthType.PERCENTAGE}, children: [new Paragraph({ text: (idx+1) + "." })] }), new TableCell({ children: qC })] })], 
+                        borders: { top: BorderStyle.NONE, bottom: BorderStyle.NONE, left: BorderStyle.NONE, right: BorderStyle.NONE, insideHorizontal: BorderStyle.NONE, insideVertical: BorderStyle.NONE }
+                    }));
+                    children.push(new Paragraph({ text: "" }));
+                });
             }
-            sections.push({ properties: { page: { margin: { top: 1134, right: 1134, bottom: 1134, left: 1134 } } }, children });
+            sections.push({ children });
         }
         const doc = new Document({ sections });
-        const fName = `CETAK_${mode.toUpperCase()}_KELAS_${filterVal}.docx`;
-        Packer.toBlob(doc).then(blob => saveAs(blob, fName));
+        Packer.toBlob(doc).then(blob => saveAs(blob, "CETAK_SOAL.docx"));
     };
 
-    window.onload = () => { const logo = localStorage.getItem('pjok_logo_kop'); if(logo) renderLogoKop(logo); };
+    window.onload = () => { const l = localStorage.getItem('pjok_logo_kop'); if(l) renderLogoKop(l); };
 </script>
 </body>
 </html>
