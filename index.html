@@ -1005,7 +1005,18 @@
                 ],
                 verticalAlign: VerticalAlign.CENTER
             }));
-            children.push(new Table({ rows: [new TableRow({ children: headerCells })], width: { size: 100, type: WidthType.PERCENTAGE }, borders: { top: {style: BorderStyle.NONE}, bottom: {style: BorderStyle.DOUBLE, size: 3}, left: {style: BorderStyle.NONE}, right: {style: BorderStyle.NONE}, insideHorizontal: {style: BorderStyle.NONE}, insideVertical: {style: BorderStyle.NONE} } }));
+            children.push(new Table({ 
+    rows: [new TableRow({ children: mainCells, cantSplit: true })], 
+    width: { size: 100, type: WidthType.PERCENTAGE }, 
+    borders: { 
+        top: { style: BorderStyle.NONE }, 
+        bottom: { style: BorderStyle.NONE }, 
+        left: { style: BorderStyle.NONE }, 
+        right: { style: BorderStyle.NONE }, 
+        insideHorizontal: { style: BorderStyle.NONE }, 
+        insideVertical: { style: BorderStyle.NONE } 
+    } 
+}));
             children.push(new Paragraph({ text: "", spacing: { after: 200 } }));
             let soals = dataToExport.filter(x => x.kelas == k).sort((a, b) => (a.tipe === b.tipe) ? 0 : (a.tipe === 'PG' ? -1 : 1));
             if(mode.includes('kisi')) {
@@ -1134,5 +1145,6 @@
 </script>
 </body>
 </html>
+
 
 
