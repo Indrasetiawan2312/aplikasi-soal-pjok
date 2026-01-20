@@ -796,7 +796,7 @@
             sKunci.innerHTML = `<option value="a">A</option><option value="b">B</option><option value="c">C</option>`;
         } else {
             if(rowD) rowD.style.display = 'block'; // Tampilkan input Opsi D
-            sKunci.innerHTML = `<option value="a">A</option><option value="b">B</option><option value="c">C</option><option value="d">D</option>`;
+            sKunci.innerHTML = `<option value="a">A</option><option value="b">B</option><option value="c">C</option>`;
         }
     };
     window.cekKaidah = function(el) { if(el.value.toUpperCase().includes("KECUALI")) { alert("Sesuai kaidah, hindari kata 'KECUALI'."); el.value = el.value.replace(/KECUALI/gi, ""); } };
@@ -1005,18 +1005,7 @@
                 ],
                 verticalAlign: VerticalAlign.CENTER
             }));
-            children.push(new Table({ 
-    rows: [new TableRow({ children: mainCells, cantSplit: true })], 
-    width: { size: 100, type: WidthType.PERCENTAGE }, 
-    borders: { 
-        top: { style: BorderStyle.NONE }, 
-        bottom: { style: BorderStyle.NONE }, 
-        left: { style: BorderStyle.NONE }, 
-        right: { style: BorderStyle.NONE }, 
-        insideHorizontal: { style: BorderStyle.NONE }, 
-        insideVertical: { style: BorderStyle.NONE } 
-    } 
-}));
+            children.push(new Table({ rows: [new TableRow({ children: headerCells })], width: { size: 100, type: WidthType.PERCENTAGE }, borders: { top: {style: BorderStyle.NONE}, bottom: {style: BorderStyle.DOUBLE, size: 3}, left: {style: BorderStyle.NONE}, right: {style: BorderStyle.NONE}, insideHorizontal: {style: BorderStyle.NONE}, insideVertical: {style: BorderStyle.NONE} } }));
             children.push(new Paragraph({ text: "", spacing: { after: 200 } }));
             let soals = dataToExport.filter(x => x.kelas == k).sort((a, b) => (a.tipe === b.tipe) ? 0 : (a.tipe === 'PG' ? -1 : 1));
             if(mode.includes('kisi')) {
@@ -1130,7 +1119,19 @@
                     if(s.imgS){
                         try { mainCells.splice(1, 0, new TableCell({ width:{size:25, type:WidthType.PERCENTAGE}, children:[new Paragraph({ children:[new ImageRun({ data:Uint8Array.from(atob(s.imgS.split(',')[1]), c => c.charCodeAt(0)), transformation:{width:120, height:90} })], alignment:AlignmentType.CENTER })] })); } catch(e){}
                     }
-                    children.push(new Table({ rows:[new TableRow({ children:mainCells, cantSplit:true })], width:{size:100, type:WidthType.PERCENTAGE}, borders:{top:BorderStyle.NONE, bottom:BorderStyle.NONE, left:BorderStyle.NONE, right:BorderStyle.NONE, insideHorizontal:BorderStyle.NONE, insideVertical:BorderStyle.NONE} }));
+                    // BAGIAN YANG DIUBAH: Menambahkan BorderStyle.NONE pada semua sisi tabel soal
+                    children.push(new Table({ 
+                        rows:[new TableRow({ children:mainCells, cantSplit:true })], 
+                        width:{size:100, type:WidthType.PERCENTAGE}, 
+                        borders:{
+                            top: {style: BorderStyle.NONE}, 
+                            bottom: {style: BorderStyle.NONE}, 
+                            left: {style: BorderStyle.NONE}, 
+                            right: {style: BorderStyle.NONE}, 
+                            insideHorizontal: {style: BorderStyle.NONE}, 
+                            insideVertical: {style: BorderStyle.NONE}
+                        } 
+                    }));
                     children.push(new Paragraph({ text:"", spacing:{after:80} }));
                 }
             }
@@ -1145,6 +1146,3 @@
 </script>
 </body>
 </html>
-
-
-
