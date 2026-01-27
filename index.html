@@ -784,7 +784,7 @@
         // Load Data TP
         KUR_DB.filter(x => x.rombel == filterKelas).forEach(d => (d.tpSet||[]).forEach(t => s.innerHTML += `<option value="${t}">${t}</option>`));
 
-        // --- LOGIKA SEMBUNYIKAN OPSI D ---
+        // --- LOGIKA OPSI D (DIPERBAIKI) ---
         const isRendah = (k == "1" || k == "2");
         const rowD = document.getElementById('rowD');
         const sKunci = document.getElementById('sKunci');
@@ -793,7 +793,7 @@
             if(rowD) rowD.style.display = 'none'; // Sembunyikan input Opsi D
             sKunci.innerHTML = `<option value="a">A</option><option value="b">B</option><option value="c">C</option>`;
         } else {
-            if(rowD) rowD.style.display = 'block'; // Tampilkan input Opsi D
+            if(rowD) rowD.style.display = 'block'; // Tampilkan input Opsi D untuk kelas 3-6
             sKunci.innerHTML = `<option value="a">A</option><option value="b">B</option><option value="c">C</option><option value="d">D</option>`;
         }
     };
@@ -838,19 +838,20 @@
         document.getElementById('labelKategori').innerText = s.kategori === 'US' ? "[ MODE UJIAN SEKOLAH ]" : "";
         document.getElementById('sType').value = s.tipe; 
         document.getElementById('sKelas').value = s.kelas;
-        loadTP(); // Ini akan memicu penyembunyian Opsi D otomatis
+        loadTP(); 
         
         setTimeout(() => { 
             document.getElementById('sTP').value = s.tp;
             
-            // Cek ulang apakah kelas 1 atau 2 untuk sinkronisasi dropdown kunci
+            // Cek ulang apakah kelas rendah untuk sinkronisasi dropdown kunci
             const isRendah = (s.kelas == "1" || s.kelas == "2");
             const sKunci = document.getElementById('sKunci');
             
             if (isRendah) {
                 sKunci.innerHTML = `<option value="a">A</option><option value="b">B</option><option value="c">C</option>`;
             } else {
-                sKunci.innerHTML = `<option value="a">A</option><option value="b">B</option><option value="c">C</option>`;
+                // DIPERBAIKI: Munculkan opsi D di dropdown kunci untuk kelas 3-6
+                sKunci.innerHTML = `<option value="a">A</option><option value="b">B</option><option value="c">C</option><option value="d">D</option>`;
             }
             
             sKunci.value = s.kunci; 
@@ -1132,4 +1133,3 @@
 </script>
 </body>
 </html>
-
