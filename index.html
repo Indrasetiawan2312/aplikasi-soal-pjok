@@ -852,7 +852,7 @@
                 sKunci.innerHTML = `<option value="a">A</option><option value="b">B</option><option value="c">C</option>`;
             } else {
                 // DIPERBAIKI: Munculkan opsi D di dropdown kunci untuk kelas 3-6
-                sKunci.innerHTML = `<option value="a">A</option><option value="b">B</option><option value="c">C</option><option value="d">D</option>`;
+                sKunci.innerHTML = `<option value="a">A</option><option value="b">B</option><option value="c">C</option>`;
             }
             
             sKunci.value = s.kunci; 
@@ -967,11 +967,17 @@
             u.innerHTML += `<div class="card" style="border-left:5px solid #8b5cf6;"><small>UJIAN SEKOLAH | ${s.tipe} | ${s.level} | Skor: ${s.skor||1}</small><br>${contentHtml}<div class="action-btns" style="margin-top:10px;"><button class="btn btn-orange" onclick="editSoal('${s.id}')">EDIT</button><button class="btn btn-red" onclick="hapusDataUniversal('soal', '${s.id}', '${s.kelas}')">HAPUS</button></div></div>`;
         });
     }
-// FITUR: DOWNLOAD JSON KHUSUS SOAL
+
+    // --- PERBAIKAN: DOWNLOAD JSON KHUSUS SOAL ---
     window.downloadSoalJSON = function() {
         const filterVal = document.getElementById('mainFilterKelas').value;
         let dataToExport = [];
         
+        // Memastikan SOAL_DB terisi
+        if (!SOAL_DB || SOAL_DB.length === 0) {
+            return alert("Tidak ada data soal tersedia di database!");
+        }
+
         // Filter data berdasarkan kelas yang sedang dipilih di aplikasi
         if(filterVal !== 'ALL') {
             dataToExport = SOAL_DB.filter(s => s.kelas == filterVal && (s.kategori === 'REGULER' || !s.kategori));
@@ -980,25 +986,34 @@
         }
 
         if (dataToExport.length === 0) {
-            return alert("Tidak ada data soal untuk diunduh!");
+            return alert("Tidak ada data soal untuk kelas " + filterVal + "!");
         }
 
         // Format dibuat agar bisa langsung di-RESTORE kembali ke aplikasi
         const backupData = {
             soal: dataToExport,
-            kur: [], 
+            kur: KUR_DB.filter(k => filterVal === 'ALL' || k.rombel == filterVal), 
             exportedAt: new Date().toISOString(),
             kelas: filterVal
         };
 
-        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backupData, null, 2));
-        const downloadAnchorNode = document.createElement('a');
-        downloadAnchorNode.setAttribute("href", dataStr);
-        downloadAnchorNode.setAttribute("download", `BACKUP_SOAL_KELAS_${filterVal}_${new Date().toLocaleDateString()}.json`);
-        document.body.appendChild(downloadAnchorNode);
-        downloadAnchorNode.click();
-        downloadAnchorNode.remove();
+        try {
+            const dataStr = JSON.stringify(backupData, null, 2);
+            const blob = new Blob([dataStr], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            
+            const downloadAnchorNode = document.createElement('a');
+            downloadAnchorNode.setAttribute("href", url);
+            downloadAnchorNode.setAttribute("download", `BACKUP_SOAL_KELAS_${filterVal}_${new Date().toLocaleDateString().replace(/\//g, '-')}.json`);
+            document.body.appendChild(downloadAnchorNode);
+            downloadAnchorNode.click();
+            downloadAnchorNode.remove();
+            URL.revokeObjectURL(url);
+        } catch (e) {
+            alert("Gagal mengunduh JSON: " + e.message);
+        }
     };
+
     window.exportWord = function(mode) {
         const { Document, Packer, Paragraph, TextRun, ImageRun, Table, TableRow, TableCell, WidthType, BorderStyle, AlignmentType, VerticalAlign } = docx;
         const sections = []; const filterVal = document.getElementById('mainFilterKelas').value;
@@ -1165,5 +1180,3 @@
 </script>
 </body>
 </html>
-
-
