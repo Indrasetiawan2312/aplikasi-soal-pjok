@@ -967,7 +967,38 @@
             u.innerHTML += `<div class="card" style="border-left:5px solid #8b5cf6;"><small>UJIAN SEKOLAH | ${s.tipe} | ${s.level} | Skor: ${s.skor||1}</small><br>${contentHtml}<div class="action-btns" style="margin-top:10px;"><button class="btn btn-orange" onclick="editSoal('${s.id}')">EDIT</button><button class="btn btn-red" onclick="hapusDataUniversal('soal', '${s.id}', '${s.kelas}')">HAPUS</button></div></div>`;
         });
     }
+// FITUR: DOWNLOAD JSON KHUSUS SOAL
+    window.downloadSoalJSON = function() {
+        const filterVal = document.getElementById('mainFilterKelas').value;
+        let dataToExport = [];
+        
+        // Filter data berdasarkan kelas yang sedang dipilih di aplikasi
+        if(filterVal !== 'ALL') {
+            dataToExport = SOAL_DB.filter(s => s.kelas == filterVal && (s.kategori === 'REGULER' || !s.kategori));
+        } else {
+            dataToExport = SOAL_DB.filter(s => s.kategori === 'REGULER' || !s.kategori);
+        }
 
+        if (dataToExport.length === 0) {
+            return alert("Tidak ada data soal untuk diunduh!");
+        }
+
+        // Format dibuat agar bisa langsung di-RESTORE kembali ke aplikasi
+        const backupData = {
+            soal: dataToExport,
+            kur: [], 
+            exportedAt: new Date().toISOString(),
+            kelas: filterVal
+        };
+
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backupData, null, 2));
+        const downloadAnchorNode = document.createElement('a');
+        downloadAnchorNode.setAttribute("href", dataStr);
+        downloadAnchorNode.setAttribute("download", `BACKUP_SOAL_KELAS_${filterVal}_${new Date().toLocaleDateString()}.json`);
+        document.body.appendChild(downloadAnchorNode);
+        downloadAnchorNode.click();
+        downloadAnchorNode.remove();
+    };
     window.exportWord = function(mode) {
         const { Document, Packer, Paragraph, TextRun, ImageRun, Table, TableRow, TableCell, WidthType, BorderStyle, AlignmentType, VerticalAlign } = docx;
         const sections = []; const filterVal = document.getElementById('mainFilterKelas').value;
@@ -1134,4 +1165,5 @@
 </script>
 </body>
 </html>
+
 
