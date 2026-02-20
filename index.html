@@ -1137,40 +1137,58 @@
                         const abc = ['a','b','c','d'];
                         let validOps = (s.opsi || []).filter((o, i) => !(isKecil && i > 2) && (o.t || o.i));
                         let totalChar = validOps.reduce((acc, curr) => acc + (curr.t?curr.t.length:0), 0);
-                        let isLong = validOps.some(o => (o.t && o.t.length > 30)) || totalChar > 60;
-                        
-                        if(isKecil){
-                            if(!isLong){
-                                let runs = []; validOps.forEach((v, i) => runs.push(new TextRun({text:`${abc[i]}. ${v.t}${" ".repeat(15)}`, font:fontName, size:fontSize})));
-                                qContainer.push(new Paragraph({ children:runs }));
-                            } else {
-                                validOps.forEach((v, i) => qContainer.push(new Paragraph({ children:[new TextRun({text:`${abc[i]}. ${v.t}`, font:fontName, size:fontSize})] })));
-                            }
-                        } else {
-                            if(!isLong){
-                                let rows = [];
-                                for(let i=0; i<validOps.length; i+=2){
-                                    // MODIFIKASI: Border NONE pada sel opsi
-                                    let cells = [new TableCell({ 
+                        // Cek apakah ada opsi yang sangat panjang
+                        let isLong = validOps.some(o => (o.t && o.t.length > 35)) || totalChar > 70;
+
+                        if(!isLong){
+                            // MODE 2 KOLOM (SIMETRIS KANAN-KIRI)
+                            let rows = [];
+                            for(let i=0; i<validOps.length; i+=2){
+                                let cells = [
+                                    new TableCell({ 
                                         borders:{top:BorderStyle.NONE, bottom:BorderStyle.NONE, left:BorderStyle.NONE, right:BorderStyle.NONE},
-                                        children:[new Paragraph({children:[new TextRun({text:`${abc[i]}. ${validOps[i].t}`, font:fontName, size:fontSize})]})] 
-                                    })];
-                                    if(validOps[i+1]) {
-                                        cells.push(new TableCell({ 
-                                            borders:{top:BorderStyle.NONE, bottom:BorderStyle.NONE, left:BorderStyle.NONE, right:BorderStyle.NONE},
-                                            children:[new Paragraph({children:[new TextRun({text:`${abc[i+1]}. ${validOps[i+1].t}`, font:fontName, size:fontSize})]})] 
-                                        }));
-                                    }
-                                    rows.push(new TableRow({ children:cells }));
-                                }
-                                qContainer.push(new Table({ 
-                                    width:{size:100, type:WidthType.PERCENTAGE}, 
-                                    borders:{top:BorderStyle.NONE, bottom:BorderStyle.NONE, left:BorderStyle.NONE, right:BorderStyle.NONE, insideHorizontal:BorderStyle.NONE, insideVertical:BorderStyle.NONE}, 
-                                    rows 
+                                        children:[new Paragraph({
+                                            children:[new TextRun({text:`${abc[i].toUpperCase()}. ${validOps[i].t}`, font:fontName, size:fontSize})],
+                                            indent: { left: 0 }
+                                        })],
+                                        width: { size: 45, type: WidthType.PERCENTAGE } // Kolom Kiri
+                                    })
+                                ];
+                                // Berikan spasi/jarak tengah antara kolom kiri dan kanan
+                                cells.push(new TableCell({ 
+                                    borders:{top:BorderStyle.NONE, bottom:BorderStyle.NONE, left:BorderStyle.NONE, right:BorderStyle.NONE},
+                                    children:[new Paragraph({text:""})],
+                                    width: { size: 10, type: WidthType.PERCENTAGE } 
                                 }));
-                            } else {
-                                validOps.forEach((v, i) => qContainer.push(new Paragraph({ children:[new TextRun({text:`${abc[i]}. ${v.t}`, font:fontName, size:fontSize})] })));
+
+                                if(validOps[i+1]) {
+                                    cells.push(new TableCell({ 
+                                        borders:{top:BorderStyle.NONE, bottom:BorderStyle.NONE, left:BorderStyle.NONE, right:BorderStyle.NONE},
+                                        children:[new Paragraph({
+                                            children:[new TextRun({text:`${abc[i+1].toUpperCase()}. ${validOps[i+1].t}`, font:fontName, size:fontSize})],
+                                            indent: { left: 0 }
+                                        })],
+                                        width: { size: 45, type: WidthType.PERCENTAGE } // Kolom Kanan
+                                    }));
+                                } else {
+                                    cells.push(new TableCell({ borders:{top:BorderStyle.NONE, bottom:BorderStyle.NONE, left:BorderStyle.NONE, right:BorderStyle.NONE}, children:[] }));
+                                }
+                                rows.push(new TableRow({ children:cells }));
                             }
+                            qContainer.push(new Table({ 
+                                width:{size:100, type:WidthType.PERCENTAGE}, 
+                                borders: { top:BorderStyle.NONE, bottom:BorderStyle.NONE, left:BorderStyle.NONE, right:BorderStyle.NONE, insideHorizontal:BorderStyle.NONE, insideVertical:BorderStyle.NONE },
+                                rows 
+                            }));
+                        } else {
+                            // MODE MENURUN (JIKA OPSI PANJANG)
+                            validOps.forEach((v, i) => {
+                                qContainer.push(new Paragraph({ 
+                                    children: [new TextRun({text: `${abc[i].toUpperCase()}. ${v.t}`, font: fontName, size: fontSize })],
+                                    indent: { left: 400, hanging: 400 }, // Agar baris ke-2 lurus dengan awal teks
+                                    spacing: { before: 50, after: 50 }
+                                }));
+                            });
                         }
                     }
 
@@ -1217,4 +1235,5 @@
 </script>
 </body>
 </html>
+
 
