@@ -1132,11 +1132,13 @@
                         esDoneFlag = true; 
                     }
                     let qContainer = [new Paragraph({ children:[new TextRun({text:s.tanya, font:fontName, size:fontSize})], alignment:AlignmentType.JUSTIFIED, spacing:{after:120} })];
+                    
                     if(s.tipe === 'PG'){
                         const abc = ['a','b','c','d'];
                         let validOps = (s.opsi || []).filter((o, i) => !(isKecil && i > 2) && (o.t || o.i));
                         let totalChar = validOps.reduce((acc, curr) => acc + (curr.t?curr.t.length:0), 0);
                         let isLong = validOps.some(o => (o.t && o.t.length > 30)) || totalChar > 60;
+                        
                         if(isKecil){
                             if(!isLong){
                                 let runs = []; validOps.forEach((v, i) => runs.push(new TextRun({text:`${abc[i]}. ${v.t}${" ".repeat(15)}`, font:fontName, size:fontSize})));
@@ -1148,24 +1150,59 @@
                             if(!isLong){
                                 let rows = [];
                                 for(let i=0; i<validOps.length; i+=2){
-                                    let cells = [new TableCell({ borders:{top:BorderStyle.NONE, bottom:BorderStyle.NONE, left:BorderStyle.NONE, right:BorderStyle.NONE}, children:[new Paragraph({children:[new TextRun({text:`${abc[i]}. ${validOps[i].t}`, font:fontName, size:fontSize})]})] })];
-                                    if(validOps[i+1]) cells.push(new TableCell({ borders:{top:BorderStyle.NONE, bottom:BorderStyle.NONE, left:BorderStyle.NONE, right:BorderStyle.NONE}, children:[new Paragraph({children:[new TextRun({text:`${abc[i+1]}. ${validOps[i+1].t}`, font:fontName, size:fontSize})]})] }));
+                                    // MODIFIKASI: Border NONE pada sel opsi
+                                    let cells = [new TableCell({ 
+                                        borders:{top:BorderStyle.NONE, bottom:BorderStyle.NONE, left:BorderStyle.NONE, right:BorderStyle.NONE},
+                                        children:[new Paragraph({children:[new TextRun({text:`${abc[i]}. ${validOps[i].t}`, font:fontName, size:fontSize})]})] 
+                                    })];
+                                    if(validOps[i+1]) {
+                                        cells.push(new TableCell({ 
+                                            borders:{top:BorderStyle.NONE, bottom:BorderStyle.NONE, left:BorderStyle.NONE, right:BorderStyle.NONE},
+                                            children:[new Paragraph({children:[new TextRun({text:`${abc[i+1]}. ${validOps[i+1].t}`, font:fontName, size:fontSize})]})] 
+                                        }));
+                                    }
                                     rows.push(new TableRow({ children:cells }));
                                 }
-                                qContainer.push(new Table({ width:{size:100, type:WidthType.PERCENTAGE}, borders:{top:BorderStyle.NONE, bottom:BorderStyle.NONE, left:BorderStyle.NONE, right:BorderStyle.NONE, insideHorizontal:BorderStyle.NONE, insideVertical:BorderStyle.NONE}, rows }));
+                                qContainer.push(new Table({ 
+                                    width:{size:100, type:WidthType.PERCENTAGE}, 
+                                    borders:{top:BorderStyle.NONE, bottom:BorderStyle.NONE, left:BorderStyle.NONE, right:BorderStyle.NONE, insideHorizontal:BorderStyle.NONE, insideVertical:BorderStyle.NONE}, 
+                                    rows 
+                                }));
                             } else {
                                 validOps.forEach((v, i) => qContainer.push(new Paragraph({ children:[new TextRun({text:`${abc[i]}. ${v.t}`, font:fontName, size:fontSize})] })));
                             }
                         }
                     }
+
+                    // MODIFIKASI: Border NONE pada nomor dan isi soal
                     let mainCells = [
-                        new TableCell({ width:{size:4, type:WidthType.PERCENTAGE}, children:[new Paragraph({ text:(idx+1)+".", font:fontName, size:fontSize })] }),
-                        new TableCell({ width:{size:96, type:WidthType.PERCENTAGE}, children:qContainer })
+                        new TableCell({ 
+                            width:{size:4, type:WidthType.PERCENTAGE}, 
+                            borders:{top:BorderStyle.NONE, bottom:BorderStyle.NONE, left:BorderStyle.NONE, right:BorderStyle.NONE},
+                            children:[new Paragraph({ text:(idx+1)+".", font:fontName, size:fontSize })] 
+                        }),
+                        new TableCell({ 
+                            width:{size:96, type:WidthType.PERCENTAGE}, 
+                            borders:{top:BorderStyle.NONE, bottom:BorderStyle.NONE, left:BorderStyle.NONE, right:BorderStyle.NONE},
+                            children:qContainer 
+                        })
                     ];
+                    
                     if(s.imgS){
-                        try { mainCells.splice(1, 0, new TableCell({ width:{size:25, type:WidthType.PERCENTAGE}, children:[new Paragraph({ children:[new ImageRun({ data:Uint8Array.from(atob(s.imgS.split(',')[1]), c => c.charCodeAt(0)), transformation:{width:120, height:90} })], alignment:AlignmentType.CENTER })] })); } catch(e){}
+                        try { 
+                            mainCells.splice(1, 0, new TableCell({ 
+                                width:{size:25, type:WidthType.PERCENTAGE}, 
+                                borders:{top:BorderStyle.NONE, bottom:BorderStyle.NONE, left:BorderStyle.NONE, right:BorderStyle.NONE},
+                                children:[new Paragraph({ children:[new ImageRun({ data:Uint8Array.from(atob(s.imgS.split(',')[1]), c => c.charCodeAt(0)), transformation:{width:120, height:90} })], alignment:AlignmentType.CENTER })] 
+                            })); 
+                        } catch(e){}
                     }
-                    children.push(new Table({ rows:[new TableRow({ children:mainCells, cantSplit:true })], width:{size:100, type:WidthType.PERCENTAGE}, borders:{top:BorderStyle.NONE, bottom:BorderStyle.NONE, left:BorderStyle.NONE, right:BorderStyle.NONE, insideHorizontal:BorderStyle.NONE, insideVertical:BorderStyle.NONE} }));
+
+                    children.push(new Table({ 
+                        rows:[new TableRow({ children:mainCells, cantSplit:true })], 
+                        width:{size:100, type:WidthType.PERCENTAGE}, 
+                        borders:{top:BorderStyle.NONE, bottom:BorderStyle.NONE, left:BorderStyle.NONE, right:BorderStyle.NONE, insideHorizontal:BorderStyle.NONE, insideVertical:BorderStyle.NONE} 
+                    }));
                     children.push(new Paragraph({ text:"", spacing:{after:80} }));
                 }
             }
@@ -1180,3 +1217,4 @@
 </script>
 </body>
 </html>
+
