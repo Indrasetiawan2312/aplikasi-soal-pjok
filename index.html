@@ -1135,18 +1135,16 @@
                     
                    if(s.tipe === 'PG'){
                         const abc = ['A','B','C','D'];
-                        // Filter opsi: Kelas 1-2 hanya A,B,C. Kelas 3-6 A,B,C,D
                         let validOps = (s.opsi || []).filter((o, i) => !(isKecil && i > 2) && (o.t || o.i));
                         
-                        // Deteksi panjang teks untuk menentukan format (Menyamping atau Menurun)
+                        // Hitung panjang untuk menentukan format
                         let totalChar = validOps.reduce((acc, curr) => acc + (curr.t ? curr.t.length : 0), 0);
-                        let isLong = validOps.some(o => (o.t && o.t.length > 30)) || totalChar > 65;
+                        let isLong = validOps.some(o => (o.t && o.t.length > 25)) || totalChar > 60;
 
                         if(!isLong){
-                            // --- FORMAT SEJAJAR / SIMETRIS ---
                             let rows = [];
                             if(isKecil){
-                                // KELAS 1-2: A, B, C Sejajar Horizontal (3 Kolom Tetap)
+                                // --- KELAS 1-2: PASTI 1 BARIS (A, B, C) ---
                                 let cells = validOps.map((v, i) => new TableCell({
                                     width: { size: 33, type: WidthType.PERCENTAGE },
                                     borders: { top: BorderStyle.NONE, bottom: BorderStyle.NONE, left: BorderStyle.NONE, right: BorderStyle.NONE },
@@ -1157,7 +1155,7 @@
                                 }));
                                 rows.push(new TableRow({ children: cells }));
                             } else {
-                                // KELAS 3-6: 2 Kanan, 2 Kiri (Simetris)
+                                // --- KELAS 3-6: 2 KOLOM (A-B atas, C-D bawah) ---
                                 for(let i=0; i<validOps.length; i+=2){
                                     let cells = [
                                         new TableCell({ 
@@ -1165,7 +1163,6 @@
                                             borders: { top: BorderStyle.NONE, bottom: BorderStyle.NONE, left: BorderStyle.NONE, right: BorderStyle.NONE },
                                             children: [new Paragraph({ children: [new TextRun({text: `${abc[i]}. ${validOps[i].t}`, font: fontName, size: fontSize})] })]
                                         }),
-                                        // Gutter/Jarak Tengah agar tidak mepet
                                         new TableCell({ width: { size: 4, type: WidthType.PERCENTAGE }, borders: { top: BorderStyle.NONE, bottom: BorderStyle.NONE, left: BorderStyle.NONE, right: BorderStyle.NONE }, children: [] }),
                                         new TableCell({ 
                                             width: { size: 48, type: WidthType.PERCENTAGE },
@@ -1188,7 +1185,7 @@
                             validOps.forEach((v, i) => {
                                 qContainer.push(new Paragraph({ 
                                     children: [new TextRun({ text: `${abc[i]}. ${v.t}`, font: fontName, size: fontSize })],
-                                    indent: { left: 420, hanging: 420 }, // Baris kedua otomatis masuk ke dalam
+                                    indent: { left: 420, hanging: 420 },
                                     spacing: { before: 40, after: 40 }
                                 }));
                             });
@@ -1238,6 +1235,7 @@
 </script>
 </body>
 </html>
+
 
 
 
