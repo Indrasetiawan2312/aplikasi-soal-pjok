@@ -869,6 +869,18 @@
     document.getElementById('oa').value = s.opsi[0]?.t || "";
     document.getElementById('ob').value = s.opsi[1]?.t || "";
     document.getElementById('oc').value = s.opsi[2]?.t || "";
+
+    // --- MASUKKAN KODE INI DI BAWAHNYA ---
+    document.getElementById('pa').innerHTML = s.opsi[0]?.i ? `<img src="${s.opsi[0].i}" class="preview-img">` : "";
+    document.getElementById('pb').innerHTML = s.opsi[1]?.i ? `<img src="${s.opsi[1].i}" class="preview-img">` : "";
+    document.getElementById('pc').innerHTML = s.opsi[2]?.i ? `<img src="${s.opsi[2].i}" class="preview-img">` : "";
+    
+    if(s.kelas != "1" && s.kelas != "2") {
+        document.getElementById('od').value = s.opsi[3]?.t || "";
+        document.getElementById('pd').innerHTML = s.opsi[3]?.i ? `<img src="${s.opsi[3].i}" class="preview-img">` : "";
+    }
+    // --------------------------------------
+}
     
     // Tampilkan gambar opsi jika ada (Penting!)
     document.getElementById('pa').innerHTML = s.opsi[0]?.i ? `<img src="${s.opsi[0].i}" style="max-width:100px; display:block; margin-top:5px;">` : "";
@@ -1194,4 +1206,5 @@
 </script>
 </body>
 </html>
+
 
