@@ -864,18 +864,25 @@
         document.getElementById('sTanya').value = s.tanya;
         document.getElementById('sJawabanEssay').value = s.jawaban || "";
         document.getElementById('pvS').innerHTML = s.imgS ? `<img src="${s.imgS}" class="preview-img">` : "";
-        if(s.tipe === 'PG' && s.opsi) {
-            document.getElementById('oa').value = s.opsi[0]?.t || ""; 
-            document.getElementById('pa').innerHTML = s.opsi[0]?.i ? `<img src="${s.opsi[0].i}" class="preview-img">` : "";
-            document.getElementById('ob').value = s.opsi[1]?.t || ""; 
-            document.getElementById('pb').innerHTML = s.opsi[1]?.i ? `<img src="${s.opsi[1].i}" class="preview-img">` : "";
-            document.getElementById('oc').value = s.opsi[2]?.t || ""; 
-            document.getElementById('pc').innerHTML = s.opsi[2]?.i ? `<img src="${s.opsi[2].i}" class="preview-img">` : "";
-            if(s.kelas != "1" && s.kelas != "2" && s.opsi[3]) {
-                document.getElementById('od').value = s.opsi[3]?.t || ""; 
-                document.getElementById('pd').innerHTML = s.opsi[3]?.i ? `<img src="${s.opsi[3].i}" class="preview-img">` : "";
-            }
-        }
+       if(s.tipe === 'PG' && s.opsi) {
+    // Isi teks opsi
+    document.getElementById('oa').value = s.opsi[0]?.t || "";
+    document.getElementById('ob').value = s.opsi[1]?.t || "";
+    document.getElementById('oc').value = s.opsi[2]?.t || "";
+    
+    // Tampilkan gambar opsi jika ada (Penting!)
+    document.getElementById('pa').innerHTML = s.opsi[0]?.i ? `<img src="${s.opsi[0].i}" style="max-width:100px; display:block; margin-top:5px;">` : "";
+    document.getElementById('pb').innerHTML = s.opsi[1]?.i ? `<img src="${s.opsi[1].i}" style="max-width:100px; display:block; margin-top:5px;">` : "";
+    document.getElementById('pc').innerHTML = s.opsi[2]?.i ? `<img src="${s.opsi[2].i}" style="max-width:100px; display:block; margin-top:5px;">` : "";
+
+    if(s.kelas != "1" && s.kelas != "2") {
+        document.getElementById('rowD').style.display = 'block';
+        document.getElementById('od').value = s.opsi[3]?.t || "";
+        document.getElementById('pd').innerHTML = s.opsi[3]?.i ? `<img src="${s.opsi[3].i}" style="max-width:100px; display:block; margin-top:5px;">` : "";
+    } else {
+        document.getElementById('rowD').style.display = 'none';
+    }
+}
         checkSoalType(); 
         document.getElementById('formSoal').classList.remove('hidden');
     };
@@ -915,20 +922,27 @@
                 imgS: (await compressImage(document.getElementById('fImgS').files[0])) || getImg('imgS') || "", opsi: []
             };
             if(s.tipe === 'PG') {
-                const fileInputs = document.querySelectorAll('#pgBox input[type=file]');
-                const getOImg = (idx) => (oldData && oldData.opsi && oldData.opsi[idx] ? oldData.opsi[idx].i : ""); 
-                s.opsi = [
-                    { t: document.getElementById('oa').value, i: (await compressImage(fileInputs[0].files[0])) || getOImg(0) || "" },
-                    { t: document.getElementById('ob').value, i: (await compressImage(fileInputs[1].files[0])) || getOImg(1) || "" },
-                    { t: document.getElementById('oc').value, i: (await compressImage(fileInputs[2].files[0])) || getOImg(2) || "" }
-                ];
-                if(k != "1" && k != "2") {
-                    s.opsi.push({ 
-                        t: document.getElementById('od').value, 
-                        i: (await compressImage(fileInputs[3].files[0])) || getOImg(3) || "" 
-                    });
-                }
-            }
+    const fA = document.querySelectorAll('#pgBox input[type=file]')[0];
+    const fB = document.querySelectorAll('#pgBox input[type=file]')[1];
+    const fC = document.querySelectorAll('#pgBox input[type=file]')[2];
+    const fD = document.querySelectorAll('#pgBox input[type=file]')[3];
+
+    // Fungsi pengecek: Jika tidak ada file baru, pakai gambar lama (oldData)
+    const imgA = (await compressImage(fA.files[0])) || (oldData?.opsi?.[0]?.i || "");
+    const imgB = (await compressImage(fB.files[0])) || (oldData?.opsi?.[1]?.i || "");
+    const imgC = (await compressImage(fC.files[0])) || (oldData?.opsi?.[2]?.i || "");
+
+    s.opsi = [
+        { t: document.getElementById('oa').value, i: imgA },
+        { t: document.getElementById('ob').value, i: imgB },
+        { t: document.getElementById('oc').value, i: imgC }
+    ];
+
+    if(k != "1" && k != "2") {
+        const imgD = (await compressImage(fD.files[0])) || (oldData?.opsi?.[3]?.i || "");
+        s.opsi.push({ t: document.getElementById('od').value, i: imgD });
+    }
+}
             await set(ref(db, 'soal/' + uniqueId), s);
             alert("✅ Berhasil!"); closeForm('formSoal');
         } catch (err) { alert("⚠️ Gagal: " + err.message); } 
@@ -1180,3 +1194,4 @@
 </script>
 </body>
 </html>
+
