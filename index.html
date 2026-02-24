@@ -4,8 +4,340 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PJOK - APLIKASI PEMBUAT SOAL STS/SAS/US 2025/2026</title>
-    <script src="https://unpkg.com/docx@7.1.1/build/index.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <script src="https://unpkg.com/docx@7.1.1/build/index.js">
+function base64ToUint8Array(base64) {
+    const binaryString = atob(base64.split(',')[1]);
+    const len = binaryString.length;
+    const bytes = new Uint8Array(len);
+    for (let i = 0; i < len; i++) {
+        bytes[i] = binaryString.charCodeAt(i);
+    }
+    return bytes;
+}
+
+
+window.exportWord = async function(mode) {
+
+    const { Document, Packer, Paragraph, TextRun, ImageRun } = docx;
+
+    const filterVal = document.getElementById('mainFilterKelas')?.value || "ALL";
+    let dataToExport = [];
+    let labelJudul = "PJOK";
+
+    if(mode && mode.startsWith('us_')) {
+        dataToExport = SOAL_DB.filter(x => x.kategori === 'US');
+        labelJudul = "UJIAN SEKOLAH (US) PJOK";
+    } else {
+        dataToExport = (filterVal !== 'ALL') 
+            ? SOAL_DB.filter(s => s.kelas == filterVal && (s.kategori === 'REGULER' || !s.kategori))
+            : SOAL_DB.filter(s => s.kategori === 'REGULER' || !s.kategori);
+    }
+
+    if(dataToExport.length === 0) return alert("Data Kosong!");
+
+    const children = [];
+
+    children.push(
+        new Paragraph({
+            children: [
+                new TextRun({ text: labelJudul, bold: true, size: 32 })
+            ],
+            spacing: { after: 300 }
+        })
+    );
+
+    dataToExport.forEach((s, idx) => {
+
+        children.push(
+            new Paragraph({
+                children: [
+                    new TextRun({
+                        text: (idx + 1) + ". " + s.tanya,
+                        size: 24
+                    })
+                ],
+                spacing: { after: 200 }
+            })
+        );
+
+        if (s.imgS) {
+            children.push(
+                new Paragraph({
+                    children: [
+                        new ImageRun({
+                            data: base64ToUint8Array(s.imgS),
+                            transformation: { width: 250, height: 180 }
+                        })
+                    ],
+                    spacing: { after: 200 }
+                })
+            );
+        }
+
+        if(mode && mode.includes("soal")) {
+
+            if(s.tipe === "PG" && s.opsi) {
+
+                const huruf = ["A","B","C","D"];
+
+                s.opsi.forEach((o, index) => {
+
+                    children.push(
+                        new Paragraph({
+                            children: [
+                                new TextRun({
+                                    text: huruf[index] + ". " + (o.t || ""),
+                                    size: 24
+                                })
+                            ],
+                            spacing: { after: 100 }
+                        })
+                    );
+
+                    if(o.i) {
+                        children.push(
+                            new Paragraph({
+                                children: [
+                                    new ImageRun({
+                                        data: base64ToUint8Array(o.i),
+                                        transformation: { width: 150, height: 120 }
+                                    })
+                                ],
+                                spacing: { after: 200 }
+                            })
+                        );
+                    }
+                });
+            }
+
+            if(s.tipe === "Essay") {
+                children.push(
+                    new Paragraph({
+                        children: [
+                            new TextRun({
+                                text: "Jawaban: ________________________________",
+                                italics: true,
+                                size: 22
+                            })
+                        ],
+                        spacing: { after: 300 }
+                    })
+                );
+            }
+        }
+
+        if(mode && mode.includes("kunci")) {
+            children.push(
+                new Paragraph({
+                    children: [
+                        new TextRun({
+                            text: "Kunci: " + (s.tipe === "PG" ? s.kunci?.toUpperCase() : s.jawaban),
+                            bold: true,
+                            size: 24
+                        })
+                    ],
+                    spacing: { after: 200 }
+                })
+            );
+        }
+
+        if(mode && mode.includes("skor")) {
+            children.push(
+                new Paragraph({
+                    children: [
+                        new TextRun({
+                            text: "Skor: " + (s.skor || 1),
+                            bold: true,
+                            size: 24
+                        })
+                    ],
+                    spacing: { after: 200 }
+                })
+            );
+        }
+
+        children.push(new Paragraph({ text: "" }));
+    });
+
+    const doc = new Document({
+        sections: [{
+            properties: {},
+            children: children
+        }]
+    });
+
+    const blob = await Packer.toBlob(doc);
+    saveAs(blob, "SOAL_PJOK.docx");
+};
+
+</script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js">
+function base64ToUint8Array(base64) {
+    const binaryString = atob(base64.split(',')[1]);
+    const len = binaryString.length;
+    const bytes = new Uint8Array(len);
+    for (let i = 0; i < len; i++) {
+        bytes[i] = binaryString.charCodeAt(i);
+    }
+    return bytes;
+}
+
+
+window.exportWord = async function(mode) {
+
+    const { Document, Packer, Paragraph, TextRun, ImageRun } = docx;
+
+    const filterVal = document.getElementById('mainFilterKelas')?.value || "ALL";
+    let dataToExport = [];
+    let labelJudul = "PJOK";
+
+    if(mode && mode.startsWith('us_')) {
+        dataToExport = SOAL_DB.filter(x => x.kategori === 'US');
+        labelJudul = "UJIAN SEKOLAH (US) PJOK";
+    } else {
+        dataToExport = (filterVal !== 'ALL') 
+            ? SOAL_DB.filter(s => s.kelas == filterVal && (s.kategori === 'REGULER' || !s.kategori))
+            : SOAL_DB.filter(s => s.kategori === 'REGULER' || !s.kategori);
+    }
+
+    if(dataToExport.length === 0) return alert("Data Kosong!");
+
+    const children = [];
+
+    children.push(
+        new Paragraph({
+            children: [
+                new TextRun({ text: labelJudul, bold: true, size: 32 })
+            ],
+            spacing: { after: 300 }
+        })
+    );
+
+    dataToExport.forEach((s, idx) => {
+
+        children.push(
+            new Paragraph({
+                children: [
+                    new TextRun({
+                        text: (idx + 1) + ". " + s.tanya,
+                        size: 24
+                    })
+                ],
+                spacing: { after: 200 }
+            })
+        );
+
+        if (s.imgS) {
+            children.push(
+                new Paragraph({
+                    children: [
+                        new ImageRun({
+                            data: base64ToUint8Array(s.imgS),
+                            transformation: { width: 250, height: 180 }
+                        })
+                    ],
+                    spacing: { after: 200 }
+                })
+            );
+        }
+
+        if(mode && mode.includes("soal")) {
+
+            if(s.tipe === "PG" && s.opsi) {
+
+                const huruf = ["A","B","C","D"];
+
+                s.opsi.forEach((o, index) => {
+
+                    children.push(
+                        new Paragraph({
+                            children: [
+                                new TextRun({
+                                    text: huruf[index] + ". " + (o.t || ""),
+                                    size: 24
+                                })
+                            ],
+                            spacing: { after: 100 }
+                        })
+                    );
+
+                    if(o.i) {
+                        children.push(
+                            new Paragraph({
+                                children: [
+                                    new ImageRun({
+                                        data: base64ToUint8Array(o.i),
+                                        transformation: { width: 150, height: 120 }
+                                    })
+                                ],
+                                spacing: { after: 200 }
+                            })
+                        );
+                    }
+                });
+            }
+
+            if(s.tipe === "Essay") {
+                children.push(
+                    new Paragraph({
+                        children: [
+                            new TextRun({
+                                text: "Jawaban: ________________________________",
+                                italics: true,
+                                size: 22
+                            })
+                        ],
+                        spacing: { after: 300 }
+                    })
+                );
+            }
+        }
+
+        if(mode && mode.includes("kunci")) {
+            children.push(
+                new Paragraph({
+                    children: [
+                        new TextRun({
+                            text: "Kunci: " + (s.tipe === "PG" ? s.kunci?.toUpperCase() : s.jawaban),
+                            bold: true,
+                            size: 24
+                        })
+                    ],
+                    spacing: { after: 200 }
+                })
+            );
+        }
+
+        if(mode && mode.includes("skor")) {
+            children.push(
+                new Paragraph({
+                    children: [
+                        new TextRun({
+                            text: "Skor: " + (s.skor || 1),
+                            bold: true,
+                            size: 24
+                        })
+                    ],
+                    spacing: { after: 200 }
+                })
+            );
+        }
+
+        children.push(new Paragraph({ text: "" }));
+    });
+
+    const doc = new Document({
+        sections: [{
+            properties: {},
+            children: children
+        }]
+    });
+
+    const blob = await Packer.toBlob(doc);
+    saveAs(blob, "SOAL_PJOK.docx");
+};
+
+</script>
     
     <style>
         /* --- TEMA PREMIUM CLEAN --- */
@@ -1177,6 +1509,172 @@
     };
 
     window.onload = () => { const logo = localStorage.getItem('pjok_logo_kop'); if(logo) renderLogoKop(logo); };
+
+function base64ToUint8Array(base64) {
+    const binaryString = atob(base64.split(',')[1]);
+    const len = binaryString.length;
+    const bytes = new Uint8Array(len);
+    for (let i = 0; i < len; i++) {
+        bytes[i] = binaryString.charCodeAt(i);
+    }
+    return bytes;
+}
+
+
+window.exportWord = async function(mode) {
+
+    const { Document, Packer, Paragraph, TextRun, ImageRun } = docx;
+
+    const filterVal = document.getElementById('mainFilterKelas')?.value || "ALL";
+    let dataToExport = [];
+    let labelJudul = "PJOK";
+
+    if(mode && mode.startsWith('us_')) {
+        dataToExport = SOAL_DB.filter(x => x.kategori === 'US');
+        labelJudul = "UJIAN SEKOLAH (US) PJOK";
+    } else {
+        dataToExport = (filterVal !== 'ALL') 
+            ? SOAL_DB.filter(s => s.kelas == filterVal && (s.kategori === 'REGULER' || !s.kategori))
+            : SOAL_DB.filter(s => s.kategori === 'REGULER' || !s.kategori);
+    }
+
+    if(dataToExport.length === 0) return alert("Data Kosong!");
+
+    const children = [];
+
+    children.push(
+        new Paragraph({
+            children: [
+                new TextRun({ text: labelJudul, bold: true, size: 32 })
+            ],
+            spacing: { after: 300 }
+        })
+    );
+
+    dataToExport.forEach((s, idx) => {
+
+        children.push(
+            new Paragraph({
+                children: [
+                    new TextRun({
+                        text: (idx + 1) + ". " + s.tanya,
+                        size: 24
+                    })
+                ],
+                spacing: { after: 200 }
+            })
+        );
+
+        if (s.imgS) {
+            children.push(
+                new Paragraph({
+                    children: [
+                        new ImageRun({
+                            data: base64ToUint8Array(s.imgS),
+                            transformation: { width: 250, height: 180 }
+                        })
+                    ],
+                    spacing: { after: 200 }
+                })
+            );
+        }
+
+        if(mode && mode.includes("soal")) {
+
+            if(s.tipe === "PG" && s.opsi) {
+
+                const huruf = ["A","B","C","D"];
+
+                s.opsi.forEach((o, index) => {
+
+                    children.push(
+                        new Paragraph({
+                            children: [
+                                new TextRun({
+                                    text: huruf[index] + ". " + (o.t || ""),
+                                    size: 24
+                                })
+                            ],
+                            spacing: { after: 100 }
+                        })
+                    );
+
+                    if(o.i) {
+                        children.push(
+                            new Paragraph({
+                                children: [
+                                    new ImageRun({
+                                        data: base64ToUint8Array(o.i),
+                                        transformation: { width: 150, height: 120 }
+                                    })
+                                ],
+                                spacing: { after: 200 }
+                            })
+                        );
+                    }
+                });
+            }
+
+            if(s.tipe === "Essay") {
+                children.push(
+                    new Paragraph({
+                        children: [
+                            new TextRun({
+                                text: "Jawaban: ________________________________",
+                                italics: true,
+                                size: 22
+                            })
+                        ],
+                        spacing: { after: 300 }
+                    })
+                );
+            }
+        }
+
+        if(mode && mode.includes("kunci")) {
+            children.push(
+                new Paragraph({
+                    children: [
+                        new TextRun({
+                            text: "Kunci: " + (s.tipe === "PG" ? s.kunci?.toUpperCase() : s.jawaban),
+                            bold: true,
+                            size: 24
+                        })
+                    ],
+                    spacing: { after: 200 }
+                })
+            );
+        }
+
+        if(mode && mode.includes("skor")) {
+            children.push(
+                new Paragraph({
+                    children: [
+                        new TextRun({
+                            text: "Skor: " + (s.skor || 1),
+                            bold: true,
+                            size: 24
+                        })
+                    ],
+                    spacing: { after: 200 }
+                })
+            );
+        }
+
+        children.push(new Paragraph({ text: "" }));
+    });
+
+    const doc = new Document({
+        sections: [{
+            properties: {},
+            children: children
+        }]
+    });
+
+    const blob = await Packer.toBlob(doc);
+    saveAs(blob, "SOAL_PJOK.docx");
+};
+
 </script>
 </body>
 </html>
