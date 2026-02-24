@@ -19,28 +19,43 @@ function base64ToUint8Array(base64) {
 
 
 
+
+
+
 window.exportWord = async function(mode) {
 
-    const { Document, Packer, Paragraph, TextRun, ImageRun, Table, TableRow, TableCell, WidthType } = docx;
+    const { Document, Packer, Paragraph, TextRun, ImageRun, 
+            Table, TableRow, TableCell, WidthType, BorderStyle } = docx;
 
     const filterVal = document.getElementById('mainFilterKelas')?.value || "ALL";
-    let dataToExport = [];
-
-    if(filterVal !== "ALL"){
-        dataToExport = SOAL_DB.filter(s => s.kelas == filterVal);
-    } else {
-        dataToExport = SOAL_DB;
-    }
+    let dataToExport = (filterVal !== "ALL") 
+        ? SOAL_DB.filter(s => s.kelas == filterVal)
+        : SOAL_DB;
 
     if(dataToExport.length === 0) return alert("Data Kosong!");
 
     const children = [];
 
+    function noBorderTable(rows){
+        return new Table({
+            width:{ size:100, type:WidthType.PERCENTAGE },
+            borders:{
+                top:{ style:BorderStyle.NONE, size:0, color:"FFFFFF" },
+                bottom:{ style:BorderStyle.NONE, size:0, color:"FFFFFF" },
+                left:{ style:BorderStyle.NONE, size:0, color:"FFFFFF" },
+                right:{ style:BorderStyle.NONE, size:0, color:"FFFFFF" },
+                insideHorizontal:{ style:BorderStyle.NONE, size:0, color:"FFFFFF" },
+                insideVertical:{ style:BorderStyle.NONE, size:0, color:"FFFFFF" }
+            },
+            rows:rows
+        });
+    }
+
     dataToExport.forEach((s, idx) => {
 
         children.push(
             new Paragraph({
-                children: [ new TextRun({ text: (idx+1)+". "+s.tanya, bold:true, size:24 }) ],
+                children:[ new TextRun({ text:(idx+1)+". "+s.tanya, bold:true, size:24 }) ],
                 spacing:{ after:200 }
             })
         );
@@ -61,43 +76,47 @@ window.exportWord = async function(mode) {
 
         if(s.tipe === "PG" && s.opsi){
 
-            const huruf3 = ["A","B","C"];
-            const huruf4 = ["A","B","C","D"];
+            const huruf = ["A","B","C","D"];
 
-            // ===== KELAS 1 & 2 =====
+            // ===== KELAS 1-2 =====
             if(s.kelas == "1" || s.kelas == "2"){
 
-                let short = s.opsi.every(o => (o.t || "").length < 25);
+                let short = s.opsi.every(o => (o.t || "").length < 25 && !o.i);
 
                 if(short){
-                    // Sejajar 1 baris (A B C)
                     children.push(
-                        new Table({
-                            width:{ size:100, type:WidthType.PERCENTAGE },
-                            rows:[
-                                new TableRow({
-                                    children: s.opsi.map((o,i)=>
-                                        new TableCell({
-                                            children:[
-                                                new Paragraph({
-                                                    children:[ new TextRun(huruf3[i]+". "+(o.t||"")) ]
-                                                })
-                                            ]
-                                        })
-                                    )
-                                })
-                            ]
-                        })
+                        noBorderTable([
+                            new TableRow({
+                                children: s.opsi.map((o,i)=>
+                                    new TableCell({
+                                        children:[
+                                            new Paragraph(huruf[i]+". "+(o.t||""))
+                                        ]
+                                    })
+                                )
+                            })
+                        ])
                     );
                 } else {
-                    // Menurun
                     s.opsi.forEach((o,i)=>{
-                        children.push(
-                            new Paragraph({
-                                children:[ new TextRun(huruf3[i]+". "+(o.t||"")) ],
-                                spacing:{ after:100 }
-                            })
-                        );
+                        let cellContent = [
+                            new Paragraph(huruf[i]+". "+(o.t||""))
+                        ];
+
+                        if(o.i){
+                            cellContent.push(
+                                new Paragraph({
+                                    children:[
+                                        new ImageRun({
+                                            data: base64ToUint8Array(o.i),
+                                            transformation:{ width:120, height:100 }
+                                        })
+                                    ]
+                                })
+                            );
+                        }
+
+                        children.push(...cellContent);
                     });
                 }
             }
@@ -105,46 +124,49 @@ window.exportWord = async function(mode) {
             // ===== KELAS 3-6 =====
             if(["3","4","5","6"].includes(s.kelas)){
 
-                let short = s.opsi.every(o => (o.t || "").length < 30);
+                let short = s.opsi.every(o => (o.t || "").length < 30 && !o.i);
 
                 if(short){
-                    // 2 kiri 2 kanan (A B / C D)
                     children.push(
-                        new Table({
-                            width:{ size:100, type:WidthType.PERCENTAGE },
-                            rows:[
-                                new TableRow({
-                                    children:[
-                                        new TableCell({
-                                            children:[ new Paragraph(huruf4[0]+". "+(s.opsi[0]?.t||"")) ]
-                                        }),
-                                        new TableCell({
-                                            children:[ new Paragraph(huruf4[1]+". "+(s.opsi[1]?.t||"")) ]
-                                        })
-                                    ]
-                                }),
-                                new TableRow({
-                                    children:[
-                                        new TableCell({
-                                            children:[ new Paragraph(huruf4[2]+". "+(s.opsi[2]?.t||"")) ]
-                                        }),
-                                        new TableCell({
-                                            children:[ new Paragraph(huruf4[3]+". "+(s.opsi[3]?.t||"")) ]
-                                        })
-                                    ]
-                                })
-                            ]
-                        })
+                        noBorderTable([
+                            new TableRow({
+                                children:[
+                                    new TableCell({ children:[ new Paragraph(huruf[0]+". "+(s.opsi[0]?.t||"")) ] }),
+                                    new TableCell({ children:[ new Paragraph(huruf[1]+". "+(s.opsi[1]?.t||"")) ] })
+                                ]
+                            }),
+                            new TableRow({
+                                children:[
+                                    new TableCell({ children:[ new Paragraph(huruf[2]+". "+(s.opsi[2]?.t||"")) ] }),
+                                    new TableCell({ children:[ new Paragraph(huruf[3]+". "+(s.opsi[3]?.t||"")) ] })
+                                ]
+                            })
+                        ])
                     );
                 } else {
-                    // Menurun jika panjang
+
                     s.opsi.forEach((o,i)=>{
+
                         children.push(
                             new Paragraph({
-                                children:[ new TextRun(huruf4[i]+". "+(o.t||"")) ],
+                                children:[ new TextRun(huruf[i]+". "+(o.t||"")) ],
                                 spacing:{ after:100 }
                             })
                         );
+
+                        if(o.i){
+                            children.push(
+                                new Paragraph({
+                                    children:[
+                                        new ImageRun({
+                                            data: base64ToUint8Array(o.i),
+                                            transformation:{ width:150, height:120 }
+                                        })
+                                    ],
+                                    spacing:{ after:200 }
+                                })
+                            );
+                        }
                     });
                 }
             }
@@ -158,7 +180,7 @@ window.exportWord = async function(mode) {
     });
 
     const blob = await Packer.toBlob(doc);
-    saveAs(blob,"SOAL_PJOK_RAPI.docx");
+    saveAs(blob,"SOAL_PJOK_FINAL_RAPI.docx");
 };
 
 </script>
@@ -177,28 +199,43 @@ function base64ToUint8Array(base64) {
 
 
 
+
+
+
 window.exportWord = async function(mode) {
 
-    const { Document, Packer, Paragraph, TextRun, ImageRun, Table, TableRow, TableCell, WidthType } = docx;
+    const { Document, Packer, Paragraph, TextRun, ImageRun, 
+            Table, TableRow, TableCell, WidthType, BorderStyle } = docx;
 
     const filterVal = document.getElementById('mainFilterKelas')?.value || "ALL";
-    let dataToExport = [];
-
-    if(filterVal !== "ALL"){
-        dataToExport = SOAL_DB.filter(s => s.kelas == filterVal);
-    } else {
-        dataToExport = SOAL_DB;
-    }
+    let dataToExport = (filterVal !== "ALL") 
+        ? SOAL_DB.filter(s => s.kelas == filterVal)
+        : SOAL_DB;
 
     if(dataToExport.length === 0) return alert("Data Kosong!");
 
     const children = [];
 
+    function noBorderTable(rows){
+        return new Table({
+            width:{ size:100, type:WidthType.PERCENTAGE },
+            borders:{
+                top:{ style:BorderStyle.NONE, size:0, color:"FFFFFF" },
+                bottom:{ style:BorderStyle.NONE, size:0, color:"FFFFFF" },
+                left:{ style:BorderStyle.NONE, size:0, color:"FFFFFF" },
+                right:{ style:BorderStyle.NONE, size:0, color:"FFFFFF" },
+                insideHorizontal:{ style:BorderStyle.NONE, size:0, color:"FFFFFF" },
+                insideVertical:{ style:BorderStyle.NONE, size:0, color:"FFFFFF" }
+            },
+            rows:rows
+        });
+    }
+
     dataToExport.forEach((s, idx) => {
 
         children.push(
             new Paragraph({
-                children: [ new TextRun({ text: (idx+1)+". "+s.tanya, bold:true, size:24 }) ],
+                children:[ new TextRun({ text:(idx+1)+". "+s.tanya, bold:true, size:24 }) ],
                 spacing:{ after:200 }
             })
         );
@@ -219,43 +256,47 @@ window.exportWord = async function(mode) {
 
         if(s.tipe === "PG" && s.opsi){
 
-            const huruf3 = ["A","B","C"];
-            const huruf4 = ["A","B","C","D"];
+            const huruf = ["A","B","C","D"];
 
-            // ===== KELAS 1 & 2 =====
+            // ===== KELAS 1-2 =====
             if(s.kelas == "1" || s.kelas == "2"){
 
-                let short = s.opsi.every(o => (o.t || "").length < 25);
+                let short = s.opsi.every(o => (o.t || "").length < 25 && !o.i);
 
                 if(short){
-                    // Sejajar 1 baris (A B C)
                     children.push(
-                        new Table({
-                            width:{ size:100, type:WidthType.PERCENTAGE },
-                            rows:[
-                                new TableRow({
-                                    children: s.opsi.map((o,i)=>
-                                        new TableCell({
-                                            children:[
-                                                new Paragraph({
-                                                    children:[ new TextRun(huruf3[i]+". "+(o.t||"")) ]
-                                                })
-                                            ]
-                                        })
-                                    )
-                                })
-                            ]
-                        })
+                        noBorderTable([
+                            new TableRow({
+                                children: s.opsi.map((o,i)=>
+                                    new TableCell({
+                                        children:[
+                                            new Paragraph(huruf[i]+". "+(o.t||""))
+                                        ]
+                                    })
+                                )
+                            })
+                        ])
                     );
                 } else {
-                    // Menurun
                     s.opsi.forEach((o,i)=>{
-                        children.push(
-                            new Paragraph({
-                                children:[ new TextRun(huruf3[i]+". "+(o.t||"")) ],
-                                spacing:{ after:100 }
-                            })
-                        );
+                        let cellContent = [
+                            new Paragraph(huruf[i]+". "+(o.t||""))
+                        ];
+
+                        if(o.i){
+                            cellContent.push(
+                                new Paragraph({
+                                    children:[
+                                        new ImageRun({
+                                            data: base64ToUint8Array(o.i),
+                                            transformation:{ width:120, height:100 }
+                                        })
+                                    ]
+                                })
+                            );
+                        }
+
+                        children.push(...cellContent);
                     });
                 }
             }
@@ -263,46 +304,49 @@ window.exportWord = async function(mode) {
             // ===== KELAS 3-6 =====
             if(["3","4","5","6"].includes(s.kelas)){
 
-                let short = s.opsi.every(o => (o.t || "").length < 30);
+                let short = s.opsi.every(o => (o.t || "").length < 30 && !o.i);
 
                 if(short){
-                    // 2 kiri 2 kanan (A B / C D)
                     children.push(
-                        new Table({
-                            width:{ size:100, type:WidthType.PERCENTAGE },
-                            rows:[
-                                new TableRow({
-                                    children:[
-                                        new TableCell({
-                                            children:[ new Paragraph(huruf4[0]+". "+(s.opsi[0]?.t||"")) ]
-                                        }),
-                                        new TableCell({
-                                            children:[ new Paragraph(huruf4[1]+". "+(s.opsi[1]?.t||"")) ]
-                                        })
-                                    ]
-                                }),
-                                new TableRow({
-                                    children:[
-                                        new TableCell({
-                                            children:[ new Paragraph(huruf4[2]+". "+(s.opsi[2]?.t||"")) ]
-                                        }),
-                                        new TableCell({
-                                            children:[ new Paragraph(huruf4[3]+". "+(s.opsi[3]?.t||"")) ]
-                                        })
-                                    ]
-                                })
-                            ]
-                        })
+                        noBorderTable([
+                            new TableRow({
+                                children:[
+                                    new TableCell({ children:[ new Paragraph(huruf[0]+". "+(s.opsi[0]?.t||"")) ] }),
+                                    new TableCell({ children:[ new Paragraph(huruf[1]+". "+(s.opsi[1]?.t||"")) ] })
+                                ]
+                            }),
+                            new TableRow({
+                                children:[
+                                    new TableCell({ children:[ new Paragraph(huruf[2]+". "+(s.opsi[2]?.t||"")) ] }),
+                                    new TableCell({ children:[ new Paragraph(huruf[3]+". "+(s.opsi[3]?.t||"")) ] })
+                                ]
+                            })
+                        ])
                     );
                 } else {
-                    // Menurun jika panjang
+
                     s.opsi.forEach((o,i)=>{
+
                         children.push(
                             new Paragraph({
-                                children:[ new TextRun(huruf4[i]+". "+(o.t||"")) ],
+                                children:[ new TextRun(huruf[i]+". "+(o.t||"")) ],
                                 spacing:{ after:100 }
                             })
                         );
+
+                        if(o.i){
+                            children.push(
+                                new Paragraph({
+                                    children:[
+                                        new ImageRun({
+                                            data: base64ToUint8Array(o.i),
+                                            transformation:{ width:150, height:120 }
+                                        })
+                                    ],
+                                    spacing:{ after:200 }
+                                })
+                            );
+                        }
                     });
                 }
             }
@@ -316,7 +360,7 @@ window.exportWord = async function(mode) {
     });
 
     const blob = await Packer.toBlob(doc);
-    saveAs(blob,"SOAL_PJOK_RAPI.docx");
+    saveAs(blob,"SOAL_PJOK_FINAL_RAPI.docx");
 };
 
 </script>
@@ -1506,28 +1550,43 @@ function base64ToUint8Array(base64) {
 
 
 
+
+
+
 window.exportWord = async function(mode) {
 
-    const { Document, Packer, Paragraph, TextRun, ImageRun, Table, TableRow, TableCell, WidthType } = docx;
+    const { Document, Packer, Paragraph, TextRun, ImageRun, 
+            Table, TableRow, TableCell, WidthType, BorderStyle } = docx;
 
     const filterVal = document.getElementById('mainFilterKelas')?.value || "ALL";
-    let dataToExport = [];
-
-    if(filterVal !== "ALL"){
-        dataToExport = SOAL_DB.filter(s => s.kelas == filterVal);
-    } else {
-        dataToExport = SOAL_DB;
-    }
+    let dataToExport = (filterVal !== "ALL") 
+        ? SOAL_DB.filter(s => s.kelas == filterVal)
+        : SOAL_DB;
 
     if(dataToExport.length === 0) return alert("Data Kosong!");
 
     const children = [];
 
+    function noBorderTable(rows){
+        return new Table({
+            width:{ size:100, type:WidthType.PERCENTAGE },
+            borders:{
+                top:{ style:BorderStyle.NONE, size:0, color:"FFFFFF" },
+                bottom:{ style:BorderStyle.NONE, size:0, color:"FFFFFF" },
+                left:{ style:BorderStyle.NONE, size:0, color:"FFFFFF" },
+                right:{ style:BorderStyle.NONE, size:0, color:"FFFFFF" },
+                insideHorizontal:{ style:BorderStyle.NONE, size:0, color:"FFFFFF" },
+                insideVertical:{ style:BorderStyle.NONE, size:0, color:"FFFFFF" }
+            },
+            rows:rows
+        });
+    }
+
     dataToExport.forEach((s, idx) => {
 
         children.push(
             new Paragraph({
-                children: [ new TextRun({ text: (idx+1)+". "+s.tanya, bold:true, size:24 }) ],
+                children:[ new TextRun({ text:(idx+1)+". "+s.tanya, bold:true, size:24 }) ],
                 spacing:{ after:200 }
             })
         );
@@ -1548,43 +1607,47 @@ window.exportWord = async function(mode) {
 
         if(s.tipe === "PG" && s.opsi){
 
-            const huruf3 = ["A","B","C"];
-            const huruf4 = ["A","B","C","D"];
+            const huruf = ["A","B","C","D"];
 
-            // ===== KELAS 1 & 2 =====
+            // ===== KELAS 1-2 =====
             if(s.kelas == "1" || s.kelas == "2"){
 
-                let short = s.opsi.every(o => (o.t || "").length < 25);
+                let short = s.opsi.every(o => (o.t || "").length < 25 && !o.i);
 
                 if(short){
-                    // Sejajar 1 baris (A B C)
                     children.push(
-                        new Table({
-                            width:{ size:100, type:WidthType.PERCENTAGE },
-                            rows:[
-                                new TableRow({
-                                    children: s.opsi.map((o,i)=>
-                                        new TableCell({
-                                            children:[
-                                                new Paragraph({
-                                                    children:[ new TextRun(huruf3[i]+". "+(o.t||"")) ]
-                                                })
-                                            ]
-                                        })
-                                    )
-                                })
-                            ]
-                        })
+                        noBorderTable([
+                            new TableRow({
+                                children: s.opsi.map((o,i)=>
+                                    new TableCell({
+                                        children:[
+                                            new Paragraph(huruf[i]+". "+(o.t||""))
+                                        ]
+                                    })
+                                )
+                            })
+                        ])
                     );
                 } else {
-                    // Menurun
                     s.opsi.forEach((o,i)=>{
-                        children.push(
-                            new Paragraph({
-                                children:[ new TextRun(huruf3[i]+". "+(o.t||"")) ],
-                                spacing:{ after:100 }
-                            })
-                        );
+                        let cellContent = [
+                            new Paragraph(huruf[i]+". "+(o.t||""))
+                        ];
+
+                        if(o.i){
+                            cellContent.push(
+                                new Paragraph({
+                                    children:[
+                                        new ImageRun({
+                                            data: base64ToUint8Array(o.i),
+                                            transformation:{ width:120, height:100 }
+                                        })
+                                    ]
+                                })
+                            );
+                        }
+
+                        children.push(...cellContent);
                     });
                 }
             }
@@ -1592,46 +1655,49 @@ window.exportWord = async function(mode) {
             // ===== KELAS 3-6 =====
             if(["3","4","5","6"].includes(s.kelas)){
 
-                let short = s.opsi.every(o => (o.t || "").length < 30);
+                let short = s.opsi.every(o => (o.t || "").length < 30 && !o.i);
 
                 if(short){
-                    // 2 kiri 2 kanan (A B / C D)
                     children.push(
-                        new Table({
-                            width:{ size:100, type:WidthType.PERCENTAGE },
-                            rows:[
-                                new TableRow({
-                                    children:[
-                                        new TableCell({
-                                            children:[ new Paragraph(huruf4[0]+". "+(s.opsi[0]?.t||"")) ]
-                                        }),
-                                        new TableCell({
-                                            children:[ new Paragraph(huruf4[1]+". "+(s.opsi[1]?.t||"")) ]
-                                        })
-                                    ]
-                                }),
-                                new TableRow({
-                                    children:[
-                                        new TableCell({
-                                            children:[ new Paragraph(huruf4[2]+". "+(s.opsi[2]?.t||"")) ]
-                                        }),
-                                        new TableCell({
-                                            children:[ new Paragraph(huruf4[3]+". "+(s.opsi[3]?.t||"")) ]
-                                        })
-                                    ]
-                                })
-                            ]
-                        })
+                        noBorderTable([
+                            new TableRow({
+                                children:[
+                                    new TableCell({ children:[ new Paragraph(huruf[0]+". "+(s.opsi[0]?.t||"")) ] }),
+                                    new TableCell({ children:[ new Paragraph(huruf[1]+". "+(s.opsi[1]?.t||"")) ] })
+                                ]
+                            }),
+                            new TableRow({
+                                children:[
+                                    new TableCell({ children:[ new Paragraph(huruf[2]+". "+(s.opsi[2]?.t||"")) ] }),
+                                    new TableCell({ children:[ new Paragraph(huruf[3]+". "+(s.opsi[3]?.t||"")) ] })
+                                ]
+                            })
+                        ])
                     );
                 } else {
-                    // Menurun jika panjang
+
                     s.opsi.forEach((o,i)=>{
+
                         children.push(
                             new Paragraph({
-                                children:[ new TextRun(huruf4[i]+". "+(o.t||"")) ],
+                                children:[ new TextRun(huruf[i]+". "+(o.t||"")) ],
                                 spacing:{ after:100 }
                             })
                         );
+
+                        if(o.i){
+                            children.push(
+                                new Paragraph({
+                                    children:[
+                                        new ImageRun({
+                                            data: base64ToUint8Array(o.i),
+                                            transformation:{ width:150, height:120 }
+                                        })
+                                    ],
+                                    spacing:{ after:200 }
+                                })
+                            );
+                        }
                     });
                 }
             }
@@ -1645,7 +1711,7 @@ window.exportWord = async function(mode) {
     });
 
     const blob = await Packer.toBlob(doc);
-    saveAs(blob,"SOAL_PJOK_RAPI.docx");
+    saveAs(blob,"SOAL_PJOK_FINAL_RAPI.docx");
 };
 
 </script>
