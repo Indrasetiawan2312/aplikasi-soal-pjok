@@ -16,158 +16,149 @@ function base64ToUint8Array(base64) {
 }
 
 
+
+
+
 window.exportWord = async function(mode) {
 
-    const { Document, Packer, Paragraph, TextRun, ImageRun } = docx;
+    const { Document, Packer, Paragraph, TextRun, ImageRun, Table, TableRow, TableCell, WidthType } = docx;
 
     const filterVal = document.getElementById('mainFilterKelas')?.value || "ALL";
     let dataToExport = [];
-    let labelJudul = "PJOK";
 
-    if(mode && mode.startsWith('us_')) {
-        dataToExport = SOAL_DB.filter(x => x.kategori === 'US');
-        labelJudul = "UJIAN SEKOLAH (US) PJOK";
+    if(filterVal !== "ALL"){
+        dataToExport = SOAL_DB.filter(s => s.kelas == filterVal);
     } else {
-        dataToExport = (filterVal !== 'ALL') 
-            ? SOAL_DB.filter(s => s.kelas == filterVal && (s.kategori === 'REGULER' || !s.kategori))
-            : SOAL_DB.filter(s => s.kategori === 'REGULER' || !s.kategori);
+        dataToExport = SOAL_DB;
     }
 
     if(dataToExport.length === 0) return alert("Data Kosong!");
 
     const children = [];
 
-    children.push(
-        new Paragraph({
-            children: [
-                new TextRun({ text: labelJudul, bold: true, size: 32 })
-            ],
-            spacing: { after: 300 }
-        })
-    );
-
     dataToExport.forEach((s, idx) => {
 
         children.push(
             new Paragraph({
-                children: [
-                    new TextRun({
-                        text: (idx + 1) + ". " + s.tanya,
-                        size: 24
-                    })
-                ],
-                spacing: { after: 200 }
+                children: [ new TextRun({ text: (idx+1)+". "+s.tanya, bold:true, size:24 }) ],
+                spacing:{ after:200 }
             })
         );
 
-        if (s.imgS) {
+        if(s.imgS){
             children.push(
                 new Paragraph({
-                    children: [
+                    children:[
                         new ImageRun({
                             data: base64ToUint8Array(s.imgS),
-                            transformation: { width: 250, height: 180 }
+                            transformation:{ width:250, height:180 }
                         })
                     ],
-                    spacing: { after: 200 }
+                    spacing:{ after:200 }
                 })
             );
         }
 
-        if(mode && mode.includes("soal")) {
+        if(s.tipe === "PG" && s.opsi){
 
-            if(s.tipe === "PG" && s.opsi) {
+            const huruf3 = ["A","B","C"];
+            const huruf4 = ["A","B","C","D"];
 
-                const huruf = ["A","B","C","D"];
+            // ===== KELAS 1 & 2 =====
+            if(s.kelas == "1" || s.kelas == "2"){
 
-                s.opsi.forEach((o, index) => {
+                let short = s.opsi.every(o => (o.t || "").length < 25);
 
+                if(short){
+                    // Sejajar 1 baris (A B C)
                     children.push(
-                        new Paragraph({
-                            children: [
-                                new TextRun({
-                                    text: huruf[index] + ". " + (o.t || ""),
-                                    size: 24
+                        new Table({
+                            width:{ size:100, type:WidthType.PERCENTAGE },
+                            rows:[
+                                new TableRow({
+                                    children: s.opsi.map((o,i)=>
+                                        new TableCell({
+                                            children:[
+                                                new Paragraph({
+                                                    children:[ new TextRun(huruf3[i]+". "+(o.t||"")) ]
+                                                })
+                                            ]
+                                        })
+                                    )
                                 })
-                            ],
-                            spacing: { after: 100 }
+                            ]
                         })
                     );
-
-                    if(o.i) {
+                } else {
+                    // Menurun
+                    s.opsi.forEach((o,i)=>{
                         children.push(
                             new Paragraph({
-                                children: [
-                                    new ImageRun({
-                                        data: base64ToUint8Array(o.i),
-                                        transformation: { width: 150, height: 120 }
-                                    })
-                                ],
-                                spacing: { after: 200 }
+                                children:[ new TextRun(huruf3[i]+". "+(o.t||"")) ],
+                                spacing:{ after:100 }
                             })
                         );
-                    }
-                });
+                    });
+                }
             }
 
-            if(s.tipe === "Essay") {
-                children.push(
-                    new Paragraph({
-                        children: [
-                            new TextRun({
-                                text: "Jawaban: ________________________________",
-                                italics: true,
-                                size: 22
+            // ===== KELAS 3-6 =====
+            if(["3","4","5","6"].includes(s.kelas)){
+
+                let short = s.opsi.every(o => (o.t || "").length < 30);
+
+                if(short){
+                    // 2 kiri 2 kanan (A B / C D)
+                    children.push(
+                        new Table({
+                            width:{ size:100, type:WidthType.PERCENTAGE },
+                            rows:[
+                                new TableRow({
+                                    children:[
+                                        new TableCell({
+                                            children:[ new Paragraph(huruf4[0]+". "+(s.opsi[0]?.t||"")) ]
+                                        }),
+                                        new TableCell({
+                                            children:[ new Paragraph(huruf4[1]+". "+(s.opsi[1]?.t||"")) ]
+                                        })
+                                    ]
+                                }),
+                                new TableRow({
+                                    children:[
+                                        new TableCell({
+                                            children:[ new Paragraph(huruf4[2]+". "+(s.opsi[2]?.t||"")) ]
+                                        }),
+                                        new TableCell({
+                                            children:[ new Paragraph(huruf4[3]+". "+(s.opsi[3]?.t||"")) ]
+                                        })
+                                    ]
+                                })
+                            ]
+                        })
+                    );
+                } else {
+                    // Menurun jika panjang
+                    s.opsi.forEach((o,i)=>{
+                        children.push(
+                            new Paragraph({
+                                children:[ new TextRun(huruf4[i]+". "+(o.t||"")) ],
+                                spacing:{ after:100 }
                             })
-                        ],
-                        spacing: { after: 300 }
-                    })
-                );
+                        );
+                    });
+                }
             }
         }
 
-        if(mode && mode.includes("kunci")) {
-            children.push(
-                new Paragraph({
-                    children: [
-                        new TextRun({
-                            text: "Kunci: " + (s.tipe === "PG" ? s.kunci?.toUpperCase() : s.jawaban),
-                            bold: true,
-                            size: 24
-                        })
-                    ],
-                    spacing: { after: 200 }
-                })
-            );
-        }
-
-        if(mode && mode.includes("skor")) {
-            children.push(
-                new Paragraph({
-                    children: [
-                        new TextRun({
-                            text: "Skor: " + (s.skor || 1),
-                            bold: true,
-                            size: 24
-                        })
-                    ],
-                    spacing: { after: 200 }
-                })
-            );
-        }
-
-        children.push(new Paragraph({ text: "" }));
+        children.push(new Paragraph({ text:"" }));
     });
 
     const doc = new Document({
-        sections: [{
-            properties: {},
-            children: children
-        }]
+        sections:[{ children:children }]
     });
 
     const blob = await Packer.toBlob(doc);
-    saveAs(blob, "SOAL_PJOK.docx");
+    saveAs(blob,"SOAL_PJOK_RAPI.docx");
 };
 
 </script>
@@ -183,158 +174,149 @@ function base64ToUint8Array(base64) {
 }
 
 
+
+
+
 window.exportWord = async function(mode) {
 
-    const { Document, Packer, Paragraph, TextRun, ImageRun } = docx;
+    const { Document, Packer, Paragraph, TextRun, ImageRun, Table, TableRow, TableCell, WidthType } = docx;
 
     const filterVal = document.getElementById('mainFilterKelas')?.value || "ALL";
     let dataToExport = [];
-    let labelJudul = "PJOK";
 
-    if(mode && mode.startsWith('us_')) {
-        dataToExport = SOAL_DB.filter(x => x.kategori === 'US');
-        labelJudul = "UJIAN SEKOLAH (US) PJOK";
+    if(filterVal !== "ALL"){
+        dataToExport = SOAL_DB.filter(s => s.kelas == filterVal);
     } else {
-        dataToExport = (filterVal !== 'ALL') 
-            ? SOAL_DB.filter(s => s.kelas == filterVal && (s.kategori === 'REGULER' || !s.kategori))
-            : SOAL_DB.filter(s => s.kategori === 'REGULER' || !s.kategori);
+        dataToExport = SOAL_DB;
     }
 
     if(dataToExport.length === 0) return alert("Data Kosong!");
 
     const children = [];
 
-    children.push(
-        new Paragraph({
-            children: [
-                new TextRun({ text: labelJudul, bold: true, size: 32 })
-            ],
-            spacing: { after: 300 }
-        })
-    );
-
     dataToExport.forEach((s, idx) => {
 
         children.push(
             new Paragraph({
-                children: [
-                    new TextRun({
-                        text: (idx + 1) + ". " + s.tanya,
-                        size: 24
-                    })
-                ],
-                spacing: { after: 200 }
+                children: [ new TextRun({ text: (idx+1)+". "+s.tanya, bold:true, size:24 }) ],
+                spacing:{ after:200 }
             })
         );
 
-        if (s.imgS) {
+        if(s.imgS){
             children.push(
                 new Paragraph({
-                    children: [
+                    children:[
                         new ImageRun({
                             data: base64ToUint8Array(s.imgS),
-                            transformation: { width: 250, height: 180 }
+                            transformation:{ width:250, height:180 }
                         })
                     ],
-                    spacing: { after: 200 }
+                    spacing:{ after:200 }
                 })
             );
         }
 
-        if(mode && mode.includes("soal")) {
+        if(s.tipe === "PG" && s.opsi){
 
-            if(s.tipe === "PG" && s.opsi) {
+            const huruf3 = ["A","B","C"];
+            const huruf4 = ["A","B","C","D"];
 
-                const huruf = ["A","B","C","D"];
+            // ===== KELAS 1 & 2 =====
+            if(s.kelas == "1" || s.kelas == "2"){
 
-                s.opsi.forEach((o, index) => {
+                let short = s.opsi.every(o => (o.t || "").length < 25);
 
+                if(short){
+                    // Sejajar 1 baris (A B C)
                     children.push(
-                        new Paragraph({
-                            children: [
-                                new TextRun({
-                                    text: huruf[index] + ". " + (o.t || ""),
-                                    size: 24
+                        new Table({
+                            width:{ size:100, type:WidthType.PERCENTAGE },
+                            rows:[
+                                new TableRow({
+                                    children: s.opsi.map((o,i)=>
+                                        new TableCell({
+                                            children:[
+                                                new Paragraph({
+                                                    children:[ new TextRun(huruf3[i]+". "+(o.t||"")) ]
+                                                })
+                                            ]
+                                        })
+                                    )
                                 })
-                            ],
-                            spacing: { after: 100 }
+                            ]
                         })
                     );
-
-                    if(o.i) {
+                } else {
+                    // Menurun
+                    s.opsi.forEach((o,i)=>{
                         children.push(
                             new Paragraph({
-                                children: [
-                                    new ImageRun({
-                                        data: base64ToUint8Array(o.i),
-                                        transformation: { width: 150, height: 120 }
-                                    })
-                                ],
-                                spacing: { after: 200 }
+                                children:[ new TextRun(huruf3[i]+". "+(o.t||"")) ],
+                                spacing:{ after:100 }
                             })
                         );
-                    }
-                });
+                    });
+                }
             }
 
-            if(s.tipe === "Essay") {
-                children.push(
-                    new Paragraph({
-                        children: [
-                            new TextRun({
-                                text: "Jawaban: ________________________________",
-                                italics: true,
-                                size: 22
+            // ===== KELAS 3-6 =====
+            if(["3","4","5","6"].includes(s.kelas)){
+
+                let short = s.opsi.every(o => (o.t || "").length < 30);
+
+                if(short){
+                    // 2 kiri 2 kanan (A B / C D)
+                    children.push(
+                        new Table({
+                            width:{ size:100, type:WidthType.PERCENTAGE },
+                            rows:[
+                                new TableRow({
+                                    children:[
+                                        new TableCell({
+                                            children:[ new Paragraph(huruf4[0]+". "+(s.opsi[0]?.t||"")) ]
+                                        }),
+                                        new TableCell({
+                                            children:[ new Paragraph(huruf4[1]+". "+(s.opsi[1]?.t||"")) ]
+                                        })
+                                    ]
+                                }),
+                                new TableRow({
+                                    children:[
+                                        new TableCell({
+                                            children:[ new Paragraph(huruf4[2]+". "+(s.opsi[2]?.t||"")) ]
+                                        }),
+                                        new TableCell({
+                                            children:[ new Paragraph(huruf4[3]+". "+(s.opsi[3]?.t||"")) ]
+                                        })
+                                    ]
+                                })
+                            ]
+                        })
+                    );
+                } else {
+                    // Menurun jika panjang
+                    s.opsi.forEach((o,i)=>{
+                        children.push(
+                            new Paragraph({
+                                children:[ new TextRun(huruf4[i]+". "+(o.t||"")) ],
+                                spacing:{ after:100 }
                             })
-                        ],
-                        spacing: { after: 300 }
-                    })
-                );
+                        );
+                    });
+                }
             }
         }
 
-        if(mode && mode.includes("kunci")) {
-            children.push(
-                new Paragraph({
-                    children: [
-                        new TextRun({
-                            text: "Kunci: " + (s.tipe === "PG" ? s.kunci?.toUpperCase() : s.jawaban),
-                            bold: true,
-                            size: 24
-                        })
-                    ],
-                    spacing: { after: 200 }
-                })
-            );
-        }
-
-        if(mode && mode.includes("skor")) {
-            children.push(
-                new Paragraph({
-                    children: [
-                        new TextRun({
-                            text: "Skor: " + (s.skor || 1),
-                            bold: true,
-                            size: 24
-                        })
-                    ],
-                    spacing: { after: 200 }
-                })
-            );
-        }
-
-        children.push(new Paragraph({ text: "" }));
+        children.push(new Paragraph({ text:"" }));
     });
 
     const doc = new Document({
-        sections: [{
-            properties: {},
-            children: children
-        }]
+        sections:[{ children:children }]
     });
 
     const blob = await Packer.toBlob(doc);
-    saveAs(blob, "SOAL_PJOK.docx");
+    saveAs(blob,"SOAL_PJOK_RAPI.docx");
 };
 
 </script>
@@ -1521,158 +1503,149 @@ function base64ToUint8Array(base64) {
 }
 
 
+
+
+
 window.exportWord = async function(mode) {
 
-    const { Document, Packer, Paragraph, TextRun, ImageRun } = docx;
+    const { Document, Packer, Paragraph, TextRun, ImageRun, Table, TableRow, TableCell, WidthType } = docx;
 
     const filterVal = document.getElementById('mainFilterKelas')?.value || "ALL";
     let dataToExport = [];
-    let labelJudul = "PJOK";
 
-    if(mode && mode.startsWith('us_')) {
-        dataToExport = SOAL_DB.filter(x => x.kategori === 'US');
-        labelJudul = "UJIAN SEKOLAH (US) PJOK";
+    if(filterVal !== "ALL"){
+        dataToExport = SOAL_DB.filter(s => s.kelas == filterVal);
     } else {
-        dataToExport = (filterVal !== 'ALL') 
-            ? SOAL_DB.filter(s => s.kelas == filterVal && (s.kategori === 'REGULER' || !s.kategori))
-            : SOAL_DB.filter(s => s.kategori === 'REGULER' || !s.kategori);
+        dataToExport = SOAL_DB;
     }
 
     if(dataToExport.length === 0) return alert("Data Kosong!");
 
     const children = [];
 
-    children.push(
-        new Paragraph({
-            children: [
-                new TextRun({ text: labelJudul, bold: true, size: 32 })
-            ],
-            spacing: { after: 300 }
-        })
-    );
-
     dataToExport.forEach((s, idx) => {
 
         children.push(
             new Paragraph({
-                children: [
-                    new TextRun({
-                        text: (idx + 1) + ". " + s.tanya,
-                        size: 24
-                    })
-                ],
-                spacing: { after: 200 }
+                children: [ new TextRun({ text: (idx+1)+". "+s.tanya, bold:true, size:24 }) ],
+                spacing:{ after:200 }
             })
         );
 
-        if (s.imgS) {
+        if(s.imgS){
             children.push(
                 new Paragraph({
-                    children: [
+                    children:[
                         new ImageRun({
                             data: base64ToUint8Array(s.imgS),
-                            transformation: { width: 250, height: 180 }
+                            transformation:{ width:250, height:180 }
                         })
                     ],
-                    spacing: { after: 200 }
+                    spacing:{ after:200 }
                 })
             );
         }
 
-        if(mode && mode.includes("soal")) {
+        if(s.tipe === "PG" && s.opsi){
 
-            if(s.tipe === "PG" && s.opsi) {
+            const huruf3 = ["A","B","C"];
+            const huruf4 = ["A","B","C","D"];
 
-                const huruf = ["A","B","C","D"];
+            // ===== KELAS 1 & 2 =====
+            if(s.kelas == "1" || s.kelas == "2"){
 
-                s.opsi.forEach((o, index) => {
+                let short = s.opsi.every(o => (o.t || "").length < 25);
 
+                if(short){
+                    // Sejajar 1 baris (A B C)
                     children.push(
-                        new Paragraph({
-                            children: [
-                                new TextRun({
-                                    text: huruf[index] + ". " + (o.t || ""),
-                                    size: 24
+                        new Table({
+                            width:{ size:100, type:WidthType.PERCENTAGE },
+                            rows:[
+                                new TableRow({
+                                    children: s.opsi.map((o,i)=>
+                                        new TableCell({
+                                            children:[
+                                                new Paragraph({
+                                                    children:[ new TextRun(huruf3[i]+". "+(o.t||"")) ]
+                                                })
+                                            ]
+                                        })
+                                    )
                                 })
-                            ],
-                            spacing: { after: 100 }
+                            ]
                         })
                     );
-
-                    if(o.i) {
+                } else {
+                    // Menurun
+                    s.opsi.forEach((o,i)=>{
                         children.push(
                             new Paragraph({
-                                children: [
-                                    new ImageRun({
-                                        data: base64ToUint8Array(o.i),
-                                        transformation: { width: 150, height: 120 }
-                                    })
-                                ],
-                                spacing: { after: 200 }
+                                children:[ new TextRun(huruf3[i]+". "+(o.t||"")) ],
+                                spacing:{ after:100 }
                             })
                         );
-                    }
-                });
+                    });
+                }
             }
 
-            if(s.tipe === "Essay") {
-                children.push(
-                    new Paragraph({
-                        children: [
-                            new TextRun({
-                                text: "Jawaban: ________________________________",
-                                italics: true,
-                                size: 22
+            // ===== KELAS 3-6 =====
+            if(["3","4","5","6"].includes(s.kelas)){
+
+                let short = s.opsi.every(o => (o.t || "").length < 30);
+
+                if(short){
+                    // 2 kiri 2 kanan (A B / C D)
+                    children.push(
+                        new Table({
+                            width:{ size:100, type:WidthType.PERCENTAGE },
+                            rows:[
+                                new TableRow({
+                                    children:[
+                                        new TableCell({
+                                            children:[ new Paragraph(huruf4[0]+". "+(s.opsi[0]?.t||"")) ]
+                                        }),
+                                        new TableCell({
+                                            children:[ new Paragraph(huruf4[1]+". "+(s.opsi[1]?.t||"")) ]
+                                        })
+                                    ]
+                                }),
+                                new TableRow({
+                                    children:[
+                                        new TableCell({
+                                            children:[ new Paragraph(huruf4[2]+". "+(s.opsi[2]?.t||"")) ]
+                                        }),
+                                        new TableCell({
+                                            children:[ new Paragraph(huruf4[3]+". "+(s.opsi[3]?.t||"")) ]
+                                        })
+                                    ]
+                                })
+                            ]
+                        })
+                    );
+                } else {
+                    // Menurun jika panjang
+                    s.opsi.forEach((o,i)=>{
+                        children.push(
+                            new Paragraph({
+                                children:[ new TextRun(huruf4[i]+". "+(o.t||"")) ],
+                                spacing:{ after:100 }
                             })
-                        ],
-                        spacing: { after: 300 }
-                    })
-                );
+                        );
+                    });
+                }
             }
         }
 
-        if(mode && mode.includes("kunci")) {
-            children.push(
-                new Paragraph({
-                    children: [
-                        new TextRun({
-                            text: "Kunci: " + (s.tipe === "PG" ? s.kunci?.toUpperCase() : s.jawaban),
-                            bold: true,
-                            size: 24
-                        })
-                    ],
-                    spacing: { after: 200 }
-                })
-            );
-        }
-
-        if(mode && mode.includes("skor")) {
-            children.push(
-                new Paragraph({
-                    children: [
-                        new TextRun({
-                            text: "Skor: " + (s.skor || 1),
-                            bold: true,
-                            size: 24
-                        })
-                    ],
-                    spacing: { after: 200 }
-                })
-            );
-        }
-
-        children.push(new Paragraph({ text: "" }));
+        children.push(new Paragraph({ text:"" }));
     });
 
     const doc = new Document({
-        sections: [{
-            properties: {},
-            children: children
-        }]
+        sections:[{ children:children }]
     });
 
     const blob = await Packer.toBlob(doc);
-    saveAs(blob, "SOAL_PJOK.docx");
+    saveAs(blob,"SOAL_PJOK_RAPI.docx");
 };
 
 </script>
