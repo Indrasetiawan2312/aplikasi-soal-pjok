@@ -51,7 +51,33 @@ window.exportWord = async function(mode) {
         });
     }
 
-    dataToExport.forEach((s, idx) => {
+    
+// === TAMBAHAN PETUNJUK DI DOKUMEN WORD ===
+children.push(
+    new Paragraph({
+        children: [new TextRun({ text: "Petunjuk Pengerjaan:", bold: true, size: 26 })],
+        spacing: { after: 200 }
+    })
+);
+
+if(tipeSoal === "PG"){
+    children.push(
+        new Paragraph({
+            children: [new TextRun({ text: "Pilihlah jawaban yang paling benar!", size: 24 })],
+            spacing: { after: 300 }
+        })
+    );
+}else if(tipeSoal === "URAIAN"){
+    children.push(
+        new Paragraph({
+            children: [new TextRun({ text: "Isilah titik-titik di bawah ini dengan jawaban yang tepat!", size: 24 })],
+            spacing: { after: 300 }
+        })
+    );
+}
+// === AKHIR TAMBAHAN ===
+
+dataToExport.forEach((s, idx) => {
 
         children.push(
             new Paragraph({
@@ -231,7 +257,33 @@ window.exportWord = async function(mode) {
         });
     }
 
-    dataToExport.forEach((s, idx) => {
+    
+// === TAMBAHAN PETUNJUK DI DOKUMEN WORD ===
+children.push(
+    new Paragraph({
+        children: [new TextRun({ text: "Petunjuk Pengerjaan:", bold: true, size: 26 })],
+        spacing: { after: 200 }
+    })
+);
+
+if(tipeSoal === "PG"){
+    children.push(
+        new Paragraph({
+            children: [new TextRun({ text: "Pilihlah jawaban yang paling benar!", size: 24 })],
+            spacing: { after: 300 }
+        })
+    );
+}else if(tipeSoal === "URAIAN"){
+    children.push(
+        new Paragraph({
+            children: [new TextRun({ text: "Isilah titik-titik di bawah ini dengan jawaban yang tepat!", size: 24 })],
+            spacing: { after: 300 }
+        })
+    );
+}
+// === AKHIR TAMBAHAN ===
+
+dataToExport.forEach((s, idx) => {
 
         children.push(
             new Paragraph({
@@ -637,13 +689,6 @@ window.exportWord = async function(mode) {
     </style>
 </head>
 <body>
-<!-- TAMBAHAN KETERANGAN SOAL -->
-<div style="background:#f5f7fa;border:1px solid #d0d7e2;padding:12px;margin:10px 0;border-radius:8px;">
-  <strong>Petunjuk Pengerjaan:</strong><br>
-  <b>Pilihan Ganda (PG)</b> : Pilihlah jawaban yang paling benar!<br>
-  <b>Uraian</b> : Isilah titik-titik di bawah ini dengan jawaban yang tepat!
-</div>
-
 
 <div id="loginOverlay">
     <div class="login-box">
@@ -1589,7 +1634,33 @@ window.exportWord = async function(mode) {
         });
     }
 
-    dataToExport.forEach((s, idx) => {
+    
+// === TAMBAHAN PETUNJUK DI DOKUMEN WORD ===
+children.push(
+    new Paragraph({
+        children: [new TextRun({ text: "Petunjuk Pengerjaan:", bold: true, size: 26 })],
+        spacing: { after: 200 }
+    })
+);
+
+if(tipeSoal === "PG"){
+    children.push(
+        new Paragraph({
+            children: [new TextRun({ text: "Pilihlah jawaban yang paling benar!", size: 24 })],
+            spacing: { after: 300 }
+        })
+    );
+}else if(tipeSoal === "URAIAN"){
+    children.push(
+        new Paragraph({
+            children: [new TextRun({ text: "Isilah titik-titik di bawah ini dengan jawaban yang tepat!", size: 24 })],
+            spacing: { after: 300 }
+        })
+    );
+}
+// === AKHIR TAMBAHAN ===
+
+dataToExport.forEach((s, idx) => {
 
         children.push(
             new Paragraph({
