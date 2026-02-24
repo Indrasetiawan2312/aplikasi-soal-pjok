@@ -51,33 +51,34 @@ window.exportWord = async function(mode) {
         });
     }
 
-    
-// === TAMBAHAN PETUNJUK DI DOKUMEN WORD ===
-children.push(
-    new Paragraph({
-        children: [new TextRun({ text: "Petunjuk Pengerjaan:", bold: true, size: 26 })],
-        spacing: { after: 200 }
-    })
-);
+    dataToExport.forEach((s, idx) => {
 
-if(tipeSoal === "PG"){
-    children.push(
-        new Paragraph({
-            children: [new TextRun({ text: "Pilihlah jawaban yang paling benar!", size: 24 })],
-            spacing: { after: 300 }
-        })
-    );
-}else if(tipeSoal === "URAIAN"){
-    children.push(
-        new Paragraph({
-            children: [new TextRun({ text: "Isilah titik-titik di bawah ini dengan jawaban yang tepat!", size: 24 })],
-            spacing: { after: 300 }
-        })
-    );
-}
-// === AKHIR TAMBAHAN ===
+        // === TAMBAHAN PETUNJUK DI WORD (AMAN) ===
+        if(idx === 0){
+            let teksPetunjuk = (s.tipe === "PG")
+                ? "Pilihlah jawaban yang paling benar!"
+                : "Isilah titik-titik di bawah ini dengan jawaban yang tepat!";
 
-dataToExport.forEach((s, idx) => {
+            children.push(
+                new Paragraph({
+                    children:[
+                        new TextRun({ text:"PETUNJUK PENGERJAAN", bold:true, size:28 })
+                    ],
+                    spacing:{ after:200 }
+                })
+            );
+
+            children.push(
+                new Paragraph({
+                    children:[
+                        new TextRun({ text:teksPetunjuk, size:24 })
+                    ],
+                    spacing:{ after:300 }
+                })
+            );
+        }
+        // === AKHIR TAMBAHAN ===
+
 
         children.push(
             new Paragraph({
@@ -257,33 +258,7 @@ window.exportWord = async function(mode) {
         });
     }
 
-    
-// === TAMBAHAN PETUNJUK DI DOKUMEN WORD ===
-children.push(
-    new Paragraph({
-        children: [new TextRun({ text: "Petunjuk Pengerjaan:", bold: true, size: 26 })],
-        spacing: { after: 200 }
-    })
-);
-
-if(tipeSoal === "PG"){
-    children.push(
-        new Paragraph({
-            children: [new TextRun({ text: "Pilihlah jawaban yang paling benar!", size: 24 })],
-            spacing: { after: 300 }
-        })
-    );
-}else if(tipeSoal === "URAIAN"){
-    children.push(
-        new Paragraph({
-            children: [new TextRun({ text: "Isilah titik-titik di bawah ini dengan jawaban yang tepat!", size: 24 })],
-            spacing: { after: 300 }
-        })
-    );
-}
-// === AKHIR TAMBAHAN ===
-
-dataToExport.forEach((s, idx) => {
+    dataToExport.forEach((s, idx) => {
 
         children.push(
             new Paragraph({
@@ -1634,33 +1609,7 @@ window.exportWord = async function(mode) {
         });
     }
 
-    
-// === TAMBAHAN PETUNJUK DI DOKUMEN WORD ===
-children.push(
-    new Paragraph({
-        children: [new TextRun({ text: "Petunjuk Pengerjaan:", bold: true, size: 26 })],
-        spacing: { after: 200 }
-    })
-);
-
-if(tipeSoal === "PG"){
-    children.push(
-        new Paragraph({
-            children: [new TextRun({ text: "Pilihlah jawaban yang paling benar!", size: 24 })],
-            spacing: { after: 300 }
-        })
-    );
-}else if(tipeSoal === "URAIAN"){
-    children.push(
-        new Paragraph({
-            children: [new TextRun({ text: "Isilah titik-titik di bawah ini dengan jawaban yang tepat!", size: 24 })],
-            spacing: { after: 300 }
-        })
-    );
-}
-// === AKHIR TAMBAHAN ===
-
-dataToExport.forEach((s, idx) => {
+    dataToExport.forEach((s, idx) => {
 
         children.push(
             new Paragraph({
