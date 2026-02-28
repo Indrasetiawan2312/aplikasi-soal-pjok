@@ -1445,25 +1445,81 @@ window.exportWord = async function() {
 
 
 <script>
-// ===== FIX TAMPILKAN GAMBAR OPSI JAWABAN =====
+// ===== FIX TOTAL GAMBAR OPSI (SIMPAN + TAMPILKAN) =====
+
+function toBase64(file, callback){
+    const reader = new FileReader();
+    reader.onload = function(e){ callback(e.target.result); };
+    if(file) reader.readAsDataURL(file);
+}
+
 document.addEventListener("DOMContentLoaded", function(){
 
-    function tampilkanGambarOpsi(){
-        document.querySelectorAll("[id^='pa'],[id^='pb'],[id^='pc'],[id^='pd']").forEach(container=>{
-            const img = container.querySelector("img");
-            if(img){
-                img.style.display = "block";
-                img.style.maxWidth = "120px";
-                img.style.marginTop = "5px";
+    // Override saveSoal TANPA ubah sistem lain
+    const oldSave = window.saveSoal;
+
+    window.saveSoal = function(){
+
+        const fileA = document.querySelector("#fa")?.files[0];
+        const fileB = document.querySelector("#fb")?.files[0];
+        const fileC = document.querySelector("#fc")?.files[0];
+        const fileD = document.querySelector("#fd")?.files[0];
+
+        let count = 0;
+        let total = 4;
+
+        function done(){
+            count++;
+            if(count >= total){
+                if(oldSave) oldSave();
             }
-        });
-    }
+        }
 
-    // Jalankan saat load
-    tampilkanGambarOpsi();
+        if(fileA){
+            toBase64(fileA, function(res){
+                const img = document.createElement("img");
+                img.src = res;
+                img.style.maxWidth = "120px";
+                document.querySelector("#pa").innerHTML = "";
+                document.querySelector("#pa").appendChild(img);
+                done();
+            });
+        } else done();
 
-    // Jalankan ulang setiap 2 detik untuk memastikan render Firebase
-    setInterval(tampilkanGambarOpsi,2000);
+        if(fileB){
+            toBase64(fileB, function(res){
+                const img = document.createElement("img");
+                img.src = res;
+                img.style.maxWidth = "120px";
+                document.querySelector("#pb").innerHTML = "";
+                document.querySelector("#pb").appendChild(img);
+                done();
+            });
+        } else done();
+
+        if(fileC){
+            toBase64(fileC, function(res){
+                const img = document.createElement("img");
+                img.src = res;
+                img.style.maxWidth = "120px";
+                document.querySelector("#pc").innerHTML = "";
+                document.querySelector("#pc").appendChild(img);
+                done();
+            });
+        } else done();
+
+        if(fileD){
+            toBase64(fileD, function(res){
+                const img = document.createElement("img");
+                img.src = res;
+                img.style.maxWidth = "120px";
+                document.querySelector("#pd").innerHTML = "";
+                document.querySelector("#pd").appendChild(img);
+                done();
+            });
+        } else done();
+
+    };
 
 });
 </script>
