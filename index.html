@@ -1272,6 +1272,7 @@ window.exportWord = async function(mode) {
 
     const children = [];
 
+    // PETUNJUK
     children.push(
         new Paragraph({
             children:[ new TextRun({ text:"PETUNJUK PENGERJAAN", bold:true, size:28 }) ],
@@ -1308,7 +1309,7 @@ window.exportWord = async function(mode) {
                     children:[
                         new ImageRun({
                             data: base64ToUint8Array(s.imgS),
-                            transformation:{ width:250, height:180 }
+                            transformation:{ width:200, height:150 }
                         })
                     ],
                     spacing:{ after:200 }
@@ -1326,17 +1327,34 @@ window.exportWord = async function(mode) {
                 let opsiFinal = s.opsi.slice(0,3);
 
                 opsiFinal.forEach((o,i)=>{
+
+                    let opsiChildren = [
+                        new TextRun({
+                            text: huruf[i] + ". " + (o.t || ""),
+                            size:24
+                        })
+                    ];
+
                     children.push(
                         new Paragraph({
-                            children:[
-                                new TextRun({
-                                    text: huruf[i] + ". " + (o.t || ""),
-                                    size:24
-                                })
-                            ],
+                            children: opsiChildren,
                             spacing:{ after:100 }
                         })
                     );
+
+                    if(o.i){
+                        children.push(
+                            new Paragraph({
+                                children:[
+                                    new ImageRun({
+                                        data: base64ToUint8Array(o.i),
+                                        transformation:{ width:100, height:80 }
+                                    })
+                                ],
+                                spacing:{ after:200 }
+                            })
+                        );
+                    }
                 });
             }
 
@@ -1345,69 +1363,59 @@ window.exportWord = async function(mode) {
 
                 let opsiFinal = s.opsi;
 
+                function cellContent(label, data){
+                    let arr = [
+                        new Paragraph({
+                            children:[
+                                new TextRun({
+                                    text: label + ". " + (data?.t || ""),
+                                    size:24
+                                })
+                            ]
+                        })
+                    ];
+
+                    if(data?.i){
+                        arr.push(
+                            new Paragraph({
+                                children:[
+                                    new ImageRun({
+                                        data: base64ToUint8Array(data.i),
+                                        transformation:{ width:90, height:70 }
+                                    })
+                                ],
+                                spacing:{ before:100 }
+                            })
+                        );
+                    }
+
+                    return arr;
+                }
+
                 let table = new Table({
                     width:{ size:100, type:WidthType.PERCENTAGE },
                     rows:[
-                        // BARIS ATAS → A dan C
                         new TableRow({
                             children:[
                                 new TableCell({
                                     width:{ size:50, type:WidthType.PERCENTAGE },
-                                    children:[
-                                        new Paragraph({
-                                            children:[
-                                                new TextRun({
-                                                    text:"A. " + (opsiFinal[0]?.t || ""),
-                                                    size:24
-                                                })
-                                            ]
-                                        })
-                                    ]
+                                    children: cellContent("A", opsiFinal[0])
                                 }),
                                 new TableCell({
                                     width:{ size:50, type:WidthType.PERCENTAGE },
-                                    children:[
-                                        new Paragraph({
-                                            children:[
-                                                new TextRun({
-                                                    text:"C. " + (opsiFinal[2]?.t || ""),
-                                                    size:24
-                                                })
-                                            ]
-                                        })
-                                    ]
+                                    children: cellContent("C", opsiFinal[2])
                                 })
                             ]
                         }),
-
-                        // BARIS BAWAH → B dan D
                         new TableRow({
                             children:[
                                 new TableCell({
                                     width:{ size:50, type:WidthType.PERCENTAGE },
-                                    children:[
-                                        new Paragraph({
-                                            children:[
-                                                new TextRun({
-                                                    text:"B. " + (opsiFinal[1]?.t || ""),
-                                                    size:24
-                                                })
-                                            ]
-                                        })
-                                    ]
+                                    children: cellContent("B", opsiFinal[1])
                                 }),
                                 new TableCell({
                                     width:{ size:50, type:WidthType.PERCENTAGE },
-                                    children:[
-                                        new Paragraph({
-                                            children:[
-                                                new TextRun({
-                                                    text:"D. " + (opsiFinal[3]?.t || ""),
-                                                    size:24
-                                                })
-                                            ]
-                                        })
-                                    ]
+                                    children: cellContent("D", opsiFinal[3])
                                 })
                             ]
                         })
