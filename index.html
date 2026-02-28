@@ -1445,83 +1445,56 @@ window.exportWord = async function() {
 
 
 <script>
-// ===== FIX TOTAL GAMBAR OPSI (SIMPAN + TAMPILKAN) =====
+// ===== FIX FINAL TAMPILKAN GAMBAR OPSI (STRUKTUR ASLI DATABASE) =====
+// Struktur database:
+// opsi:
+//   0: { t: "teks", i: "base64" }
 
-function toBase64(file, callback){
-    const reader = new FileReader();
-    reader.onload = function(e){ callback(e.target.result); };
-    if(file) reader.readAsDataURL(file);
-}
+function renderSoalFinalFix(data){
+    const list = document.getElementById("listSoal") || 
+                 document.getElementById("daftarSoal");
 
-document.addEventListener("DOMContentLoaded", function(){
+    if(!list || !data) return;
 
-    // Override saveSoal TANPA ubah sistem lain
-    const oldSave = window.saveSoal;
+    list.innerHTML = "";
 
-    window.saveSoal = function(){
+    Object.values(data).forEach((s,i)=>{
 
-        const fileA = document.querySelector("#fa")?.files[0];
-        const fileB = document.querySelector("#fb")?.files[0];
-        const fileC = document.querySelector("#fc")?.files[0];
-        const fileD = document.querySelector("#fd")?.files[0];
+        let html = `
+        <div class="card">
+            <b>${i+1}. ${s.tanya || ""}</b>
+            <hr>
+        `;
 
-        let count = 0;
-        let total = 4;
+        if(s.opsi){
+            const hurufArr = ["A","B","C","D"];
+            Object.keys(s.opsi).forEach((key,index)=>{
 
-        function done(){
-            count++;
-            if(count >= total){
-                if(oldSave) oldSave();
-            }
+                const huruf = hurufArr[index] || "";
+                const teks  = s.opsi[key]?.t || "";
+                const img   = s.opsi[key]?.i || "";
+
+                html += `
+                <div style="margin-bottom:8px;">
+                    <b>${huruf}.</b> ${teks}
+                    ${img ? `<br><img src="${img}" style="max-width:120px;margin-top:5px;">` : ""}
+                </div>
+                `;
+            });
         }
 
-        if(fileA){
-            toBase64(fileA, function(res){
-                const img = document.createElement("img");
-                img.src = res;
-                img.style.maxWidth = "120px";
-                document.querySelector("#pa").innerHTML = "";
-                document.querySelector("#pa").appendChild(img);
-                done();
-            });
-        } else done();
+        html += `</div>`;
+        list.innerHTML += html;
+    });
+}
 
-        if(fileB){
-            toBase64(fileB, function(res){
-                const img = document.createElement("img");
-                img.src = res;
-                img.style.maxWidth = "120px";
-                document.querySelector("#pb").innerHTML = "";
-                document.querySelector("#pb").appendChild(img);
-                done();
-            });
-        } else done();
+// Override listener lama TANPA ubah sistem lain
+try{
+    onValue(ref(db,"soal"), snap=>{
+        renderSoalFinalFix(snap.val());
+    });
+}catch(e){}
 
-        if(fileC){
-            toBase64(fileC, function(res){
-                const img = document.createElement("img");
-                img.src = res;
-                img.style.maxWidth = "120px";
-                document.querySelector("#pc").innerHTML = "";
-                document.querySelector("#pc").appendChild(img);
-                done();
-            });
-        } else done();
-
-        if(fileD){
-            toBase64(fileD, function(res){
-                const img = document.createElement("img");
-                img.src = res;
-                img.style.maxWidth = "120px";
-                document.querySelector("#pd").innerHTML = "";
-                document.querySelector("#pd").appendChild(img);
-                done();
-            });
-        } else done();
-
-    };
-
-});
 </script>
 
 </body>
