@@ -1443,5 +1443,30 @@ window.exportWord = async function() {
 };
 </script>
 
+
+<script>
+// ===== FIX TAMPILKAN GAMBAR OPSI JAWABAN =====
+document.addEventListener("DOMContentLoaded", function(){
+
+    function tampilkanGambarOpsi(){
+        document.querySelectorAll("[id^='pa'],[id^='pb'],[id^='pc'],[id^='pd']").forEach(container=>{
+            const img = container.querySelector("img");
+            if(img){
+                img.style.display = "block";
+                img.style.maxWidth = "120px";
+                img.style.marginTop = "5px";
+            }
+        });
+    }
+
+    // Jalankan saat load
+    tampilkanGambarOpsi();
+
+    // Jalankan ulang setiap 2 detik untuk memastikan render Firebase
+    setInterval(tampilkanGambarOpsi,2000);
+
+});
+</script>
+
 </body>
 </html>
