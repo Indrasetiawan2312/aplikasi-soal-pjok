@@ -1696,6 +1696,7 @@
               if(s.opsi){
                   const hurufArr = ["A","B","C","D"];
                   Object.keys(s.opsi).forEach((key,index)=>{
+                      if((s.kelas=="1"||s.kelas=="2") && index>2) return;
 
                       const huruf = hurufArr[index] || "";
                       const teks  = s.opsi[key]?.t || "";
