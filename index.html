@@ -4,7 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PJOK - APLIKASI PEMBUAT SOAL STS/SAS/US 2025/2026</title>
-    <script src="https://unpkg.com/docx@7.1.1/build/index.js"></script>
+    <script src="https://unpkg.com/docx@7.1.1/build/index.js">
+
+    return bytes;
+}
+
+
+
+
+
+
+
+
+
+
+</script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js">
 
     return bytes;
@@ -1035,18 +1049,13 @@ Uraian : Isilah titik-titik di bawah ini dengan jawaban yang tepat!
         }
     };
 
-    
-function base64ToUint8Array(base64){
-    if(!base64) return new Uint8Array();
-    let pureBase64 = base64.includes(",") ? base64.split(",")[1] : base64;
-    const binaryString = atob(pureBase64);
+    function base64ToUint8Array(base64) {
+    const binaryString = atob(base64.split(',')[1]);
     const len = binaryString.length;
     const bytes = new Uint8Array(len);
     for (let i = 0; i < len; i++) {
         bytes[i] = binaryString.charCodeAt(i);
     }
-    return bytes;
-}
 
 window.exportWord = function(mode) {
         const { Document, Packer, Paragraph, TextRun, ImageRun, Table, TableRow, TableCell, WidthType, BorderStyle, AlignmentType, VerticalAlign } = docx;
