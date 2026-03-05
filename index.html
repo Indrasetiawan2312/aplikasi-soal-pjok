@@ -6,17 +6,23 @@
     <title>PJOK - APLIKASI PEMBUAT SOAL STS/SAS/US 2025/2026</title>
     <script src="https://unpkg.com/docx@7.1.1/build/index.js">
 function base64ToUint8Array(base64){
-if(!base64) return new Uint8Array();
-try{
-if(base64.includes(",")){base64=base64.split(",")[1];}
-const binary=atob(base64);
-const len=binary.length;
-const bytes=new Uint8Array(len);
-for(let i=0;i<len;i++){bytes[i]=binary.charCodeAt(i);}
-return bytes;
-}catch(e){console.log("img error",e);return new Uint8Array();}
+    try{
+        if(!base64) return new Uint8Array();
+        if(base64.includes(",")){
+            base64 = base64.split(",")[1];
+        }
+        const binaryString = atob(base64);
+        const len = binaryString.length;
+        const bytes = new Uint8Array(len);
+        for(let i=0;i<len;i++){
+            bytes[i] = binaryString.charCodeAt(i);
+        }
+        return bytes;
+    }catch(e){
+        console.log("error convert image",e);
+        return new Uint8Array();
+    }
 }
-
     return bytes;
 }
 
@@ -31,18 +37,13 @@ return bytes;
 
 </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js">
-function base64ToUint8Array(base64){
-if(!base64) return new Uint8Array();
-try{
-if(base64.includes(",")){base64=base64.split(",")[1];}
-const binary=atob(base64);
-const len=binary.length;
-const bytes=new Uint8Array(len);
-for(let i=0;i<len;i++){bytes[i]=binary.charCodeAt(i);}
-return bytes;
-}catch(e){console.log("img error",e);return new Uint8Array();}
-}
-
+function base64ToUint8Array(base64) {
+    const binaryString = atob(base64.split(',')[1]);
+    const len = binaryString.length;
+    const bytes = new Uint8Array(len);
+    for (let i = 0; i < len; i++) {
+        bytes[i] = binaryString.charCodeAt(i);
+    }
     return bytes;
 }
 
@@ -1235,18 +1236,13 @@ Uraian : Isilah titik-titik di bawah ini dengan jawaban yang tepat!
 
     window.onload = () => { const logo = localStorage.getItem('pjok_logo_kop'); if(logo) renderLogoKop(logo); };
 
-function base64ToUint8Array(base64){
-if(!base64) return new Uint8Array();
-try{
-if(base64.includes(",")){base64=base64.split(",")[1];}
-const binary=atob(base64);
-const len=binary.length;
-const bytes=new Uint8Array(len);
-for(let i=0;i<len;i++){bytes[i]=binary.charCodeAt(i);}
-return bytes;
-}catch(e){console.log("img error",e);return new Uint8Array();}
-}
-
+function base64ToUint8Array(base64) {
+    const binaryString = atob(base64.split(',')[1]);
+    const len = binaryString.length;
+    const bytes = new Uint8Array(len);
+    for (let i = 0; i < len; i++) {
+        bytes[i] = binaryString.charCodeAt(i);
+    }
     return bytes;
 }
 
@@ -1262,18 +1258,19 @@ return bytes;
 </script>
 
 <script>
-function base64ToUint8Array(base64){
-if(!base64) return new Uint8Array();
-try{
-if(base64.includes(",")){base64=base64.split(",")[1];}
-const binary=atob(base64);
-const len=binary.length;
-const bytes=new Uint8Array(len);
-for(let i=0;i<len;i++){bytes[i]=binary.charCodeAt(i);}
-return bytes;
-}catch(e){console.log("img error",e);return new Uint8Array();}
-}
+function base64ToUint8Array(base64) {
 
+    // Support base64 dengan atau tanpa prefix
+    let pureBase64 = base64.includes(",")
+        ? base64.split(',')[1]
+        : base64;
+
+    const binaryString = atob(pureBase64);
+    const len = binaryString.length;
+    const bytes = new Uint8Array(len);
+    for (let i = 0; i < len; i++) {
+        bytes[i] = binaryString.charCodeAt(i);
+    }
     return bytes;
 }
 
