@@ -566,14 +566,41 @@
 
     // === HELPER: Base64 to Uint8Array ===
     function base64ToUint8Array(base64) {
-        const pureBase64 = base64.includes(",") ? base64.split(',')[1] : base64;
-        const binaryString = atob(pureBase64);
-        const len = binaryString.length;
-        const bytes = new Uint8Array(len);
-        for (let i = 0; i < len; i++) {
-            bytes[i] = binaryString.charCodeAt(i);
+        if(!base64) return null;
+        try {
+            let pureBase64 = base64;
+            if (base64.includes(",")) {
+                pureBase64 = base64.split(',')[1];
+            }
+            const binaryString = atob(pureBase64);
+            const len = binaryString.length;
+            const bytes = new Uint8Array(len);
+            for (let i = 0; i < len; i++) {
+                bytes[i] = binaryString.charCodeAt(i);
+            }
+            return bytes;
+        } catch(e) {
+            console.error("Error converting base64:", e);
+            return null;
         }
-        return bytes;
+    }
+
+    // === HELPER: Buat ImageRun dengan aman ===
+    async function createImageRunSafely(base64Data, width, height) {
+        if(!base64Data) return null;
+        const uint8Array = base64ToUint8Array(base64Data);
+        if(!uint8Array) return null;
+        
+        try {
+            const { ImageRun } = docx;
+            return new ImageRun({
+                data: uint8Array,
+                transformation: { width: width, height: height }
+            });
+        } catch(e) {
+            console.error("Error creating ImageRun:", e);
+            return null;
+        }
     }
 
     // --- AUTH LOGIC ---
@@ -1010,8 +1037,8 @@
         }
     };
 
-    // === EXPORT WORD DENGAN GAMBAR OPSI ===
-    window.exportWord = function(mode) {
+    // === EXPORT WORD - DENGAN GAMBAR OPSI YANG DIPERBAIKI ===
+    window.exportWord = async function(mode) {
         const { Document, Packer, Paragraph, TextRun, ImageRun, Table, TableRow, TableCell, WidthType, BorderStyle, AlignmentType, VerticalAlign } = docx;
         const sections = []; 
         const filterVal = document.getElementById('mainFilterKelas').value;
@@ -1046,14 +1073,17 @@
             let headerCells = [];
             if (savedLogo) {
                 try {
-                    headerCells.push(new TableCell({ 
-                        width: { size: 15, type: WidthType.PERCENTAGE }, 
-                        children: [new Paragraph({ 
-                            children: [new ImageRun({ data: base64ToUint8Array(savedLogo), transformation: { width: 60, height: 60 } })], 
-                            alignment: AlignmentType.CENTER 
-                        })] 
-                    }));
-                } catch(e) {}
+                    const logoData = base64ToUint8Array(savedLogo);
+                    if(logoData) {
+                        headerCells.push(new TableCell({ 
+                            width: { size: 15, type: WidthType.PERCENTAGE }, 
+                            children: [new Paragraph({ 
+                                children: [new ImageRun({ data: logoData, transformation: { width: 60, height: 60 } })], 
+                                alignment: AlignmentType.CENTER 
+                            })] 
+                        }));
+                    }
+                } catch(e) { console.error("Logo error:", e); }
             }
             
             headerCells.push(new TableCell({
@@ -1160,37 +1190,56 @@
                     
                     let qContainer = [new Paragraph({ children:[new TextRun({text:s.tanya, font:fontName, size:fontSize})], alignment:AlignmentType.JUSTIFIED, spacing:{after:120} })];
                     
-                    if(s.tipe === 'PG'){
+                    // === PROSES OPSI PG DENGAN GAMBAR ===
+                    if(s.tipe === 'PG' && s.opsi){
                         const abc = ['a','b','c','d'];
-                        let validOps = (s.opsi || []).filter((o, i) => !(isKecil && i > 2) && (o.t || o.i));
+                        const maxOps = isKecil ? 3 : 4;
                         
-                        // === CHECK APAKAH ADA GAMBAR DI OPSI ===
-                        let hasImage = validOps.some(o => o.i);
+                        // Check apakah ada gambar di opsi
+                        let hasOpsiImage = false;
+                        for(let i = 0; i < maxOps && i < s.opsi.length; i++) {
+                            if(s.opsi[i] && s.opsi[i].i) {
+                                hasOpsiImage = true;
+                                break;
+                            }
+                        }
                         
-                        if(hasImage) {
-                            // RENDER OPSI DENGAN GAMBAR SECARA VERTIKAL
-                            validOps.forEach((v, i) => {
-                                // Teks opsi
+                        if(hasOpsiImage) {
+                            // Render opsi dengan gambar secara vertikal
+                            for(let i = 0; i < maxOps && i < s.opsi.length; i++) {
+                                const op = s.opsi[i];
+                                if(!op) continue;
+                                
+                                const teks = op.t || "";
+                                const imgBase64 = op.i;
+                                
+                                // Tambah teks opsi
                                 qContainer.push(new Paragraph({ 
-                                    children:[new TextRun({text:`${abc[i]}. ${v.t || ""}`, font:fontName, size:fontSize})],
-                                    spacing:{ after: 50 }
+                                    children:[new TextRun({text:`${abc[i]}. ${teks}`, font:fontName, size:fontSize})],
+                                    spacing:{ after: 60 }
                                 }));
                                 
-                                // Gambar opsi jika ada
-                                if(v.i) {
+                                // Tambah gambar opsi jika ada
+                                if(imgBase64) {
                                     try {
-                                        qContainer.push(new Paragraph({
-                                            children:[new ImageRun({
-                                                data: base64ToUint8Array(v.i),
-                                                transformation: { width: 80, height: 60 }
-                                            })],
-                                            spacing:{ after: 120 }
-                                        }));
-                                    } catch(e) { console.error("Error loading option image:", e); }
+                                        const imgData = base64ToUint8Array(imgBase64);
+                                        if(imgData) {
+                                            qContainer.push(new Paragraph({
+                                                children:[new ImageRun({
+                                                    data: imgData,
+                                                    transformation: { width: 100, height: 75 }
+                                                })],
+                                                spacing:{ after: 150 }
+                                            }));
+                                        }
+                                    } catch(e) {
+                                        console.error("Error gambar opsi " + abc[i] + ":", e);
+                                    }
                                 }
-                            });
+                            }
                         } else {
-                            // OPSI TANPA GAMBAR - LOGIC LAMA
+                            // OPSI TANPA GAMBAR - logic lama
+                            let validOps = (s.opsi || []).filter((o, i) => !(isKecil && i > 2) && (o && (o.t || o.i)));
                             let totalChar = validOps.reduce((acc, curr) => acc + (curr.t?curr.t.length:0), 0);
                             let isLong = validOps.some(o => (o.t && o.t.length > 30)) || totalChar > 60;
                             
@@ -1235,15 +1284,18 @@
                     
                     // Gambar soal utama
                     if(s.imgS){
-                        try { 
-                            mainCells.splice(1, 0, new TableCell({ 
-                                width:{size:25, type:WidthType.PERCENTAGE}, 
-                                children:[new Paragraph({ 
-                                    children:[new ImageRun({ data:base64ToUint8Array(s.imgS), transformation:{width:120, height:90} })], 
-                                    alignment:AlignmentType.CENTER 
-                                })] 
-                            })); 
-                        } catch(e){}
+                        try {
+                            const mainImgData = base64ToUint8Array(s.imgS);
+                            if(mainImgData) {
+                                mainCells.splice(1, 0, new TableCell({ 
+                                    width:{size:25, type:WidthType.PERCENTAGE}, 
+                                    children:[new Paragraph({ 
+                                        children:[new ImageRun({ data: mainImgData, transformation:{width:120, height:90} })], 
+                                        alignment:AlignmentType.CENTER 
+                                    })] 
+                                }));
+                            }
+                        } catch(e) { console.error("Error gambar soal:", e); }
                     }
                     
                     children.push(new Table({ 
@@ -1252,7 +1304,7 @@
                         borders:{top:BorderStyle.NONE, bottom:BorderStyle.NONE, left:BorderStyle.NONE, right:BorderStyle.NONE, insideHorizontal:BorderStyle.NONE, insideVertical:BorderStyle.NONE} 
                     }));
                     
-                    children.push(new Paragraph({ text:"", spacing:{after:80} }));
+                    children.push(new Paragraph({ text:"", spacing:{after:100} }));
                 }
             }
             
@@ -1261,7 +1313,14 @@
         
         const doc = new Document({ sections });
         const fileName = `DOKUMEN_${mode.toUpperCase()}_KELAS_${filterVal}.docx`;
-        Packer.toBlob(doc).then(blob => saveAs(blob, fileName));
+        
+        try {
+            const blob = await Packer.toBlob(doc);
+            saveAs(blob, fileName);
+        } catch(e) {
+            alert("Error saat membuat dokumen: " + e.message);
+            console.error(e);
+        }
     };
 
     window.onload = () => { 
