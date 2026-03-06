@@ -1063,8 +1063,7 @@ Uraian : Isilah titik-titik di bawah ini dengan jawaban yang tepat!
 
    window.exportWord = async function() {
 
-    const { Document, Packer, Paragraph, TextRun, ImageRun,
-            Table, TableRow, TableCell, WidthType } = docx;
+        const { Document, Packer, Paragraph, TextRun, ImageRun } = docx;
 
     const filterVal = document.getElementById('mainFilterKelas')?.value || "ALL";
 
@@ -1076,25 +1075,25 @@ Uraian : Isilah titik-titik di bawah ini dengan jawaban yang tepat!
 
     const children = [];
 
-    // PETUNJUK
+    // PETUNJUK PENGERJAAN
     children.push(
         new Paragraph({
-            children:[ new TextRun({ text:"PETUNJUK PENGERJAAN", bold:true, size:28 }) ],
-            spacing:{ after:200 }
+            children: [new TextRun({ text: "PETUNJUK PENGERJAAN", bold: true, size: 28 })],
+            spacing: { after: 200 }
         }),
         new Paragraph({
-            children:[ new TextRun({ text:"A. Pilihan Ganda (PG)", bold:true, size:24 }) ]
+            children: [new TextRun({ text: "A. Pilihan Ganda (PG)", bold: true, size: 24 })]
         }),
         new Paragraph({
-            children:[ new TextRun({ text:"Pilihlah jawaban yang paling benar!", size:24 }) ],
-            spacing:{ after:200 }
+            children: [new TextRun({ text: "Pilihlah jawaban yang paling benar!", size: 24 })],
+            spacing: { after: 200 }
         }),
         new Paragraph({
-            children:[ new TextRun({ text:"B. Uraian", bold:true, size:24 }) ]
+            children: [new TextRun({ text: "B. Uraian", bold: true, size: 24 })]
         }),
         new Paragraph({
-            children:[ new TextRun({ text:"Isilah titik-titik di bawah ini dengan jawaban yang tepat!", size:24 }) ],
-            spacing:{ after:300 }
+            children: [new TextRun({ text: "Isilah titik-titik di bawah ini dengan jawaban yang tepat!", size: 24 })],
+            spacing: { after: 300 }
         })
     );
 
@@ -1102,189 +1101,68 @@ Uraian : Isilah titik-titik di bawah ini dengan jawaban yang tepat!
 
         children.push(
             new Paragraph({
-                children:[ new TextRun({ text:(idx+1)+". "+s.tanya, bold:true, size:24 }) ],
-                spacing:{ after:200 }
+                children: [new TextRun({ text: (idx + 1) + ". " + s.tanya, bold: true, size: 24 })],
+                spacing: { after: 200 }
             })
         );
 
-        if(s.imgS){
+        if (s.imgS) {
             children.push(
                 new Paragraph({
-                    children:[
+                    children: [
                         new ImageRun({
                             data: base64ToUint8Array(s.imgS),
-                            transformation:{ width:180, height:140 }
+                            transformation: { width: 180, height: 140 }
                         })
                     ],
-                    spacing:{ after:200 }
+                    spacing: { after: 200 }
                 })
             );
         }
 
-        if(s.tipe === "PG" && s.opsi){
+        if (s.tipe === "PG" && s.opsi) {
+            const huruf = ["A", "B", "C", "D"];
 
-            const huruf = ["A","B","C","D"];
-
-            // ===== KELAS 1-2 =====
-            if (s.kelas == "1" || s.kelas == "2") {
-
-                let opsiFinal = s.opsi.slice(0,3);
-
-                opsiFinal.forEach((o,i)=>{
-
+            // Loop semua opsi yang ada dan tampilkan teks + gambarnya jika ada
+            for (let i = 0; i < s.opsi.length; i++) {
+                const o = s.opsi[i];
+                children.push(
+                    new Paragraph({
+                        children: [
+                            new TextRun({
+                                text: huruf[i] + ". " + (o.t || ""),
+                                size: 24
+                            })
+                        ],
+                        spacing: { after: 100 }
+                    })
+                );
+                if (o.i) {
                     children.push(
                         new Paragraph({
-                            children:[
-                                new TextRun({
-                                    text: huruf[i] + ". " + (o.t || ""),
-                                    size:24
+                            children: [
+                                new ImageRun({
+                                    data: base64ToUint8Array(o.i),
+                                    transformation: { width: 90, height: 70 }
                                 })
                             ],
-                            spacing:{ after:100 }
+                            spacing: { after: 200 }
                         })
                     );
-
-                    if(o.i){
-                        children.push(
-                            new Paragraph({
-                                children:[
-                                    new ImageRun({
-                                        data: base64ToUint8Array(o.i),
-                                        transformation:{ width:90, height:70 }
-                                    })
-                                ],
-                                spacing:{ after:200 }
-                            })
-                        );
-                    }
-                });
-            }
-
-            // ===== KELAS 3-6 =====
-            else {
-
-                let opsiFinal = s.opsi;
-
-                function cellContent(label, data){
-
-                    let elements = [
-                        new Paragraph({
-                            children:[
-                                new TextRun({
-                                    text: label + ". " + (data?.t || ""),
-                                    size:24
-                                })
-                            ]
-                        })
-                    ];
-
-                    if(data?.i){
-                        elements.push(
-                            new Paragraph({
-                                children:[
-                                    new ImageRun({
-                                        data: base64ToUint8Array(data.i),
-                                        transformation:{ width:80, height:60 }
-                                    })
-                                ],
-                                spacing:{ before:100 }
-                            })
-                        );
-                    }
-
-                    return elements;
                 }
-
-                let table = new Table({
-                    width:{ size:100, type:WidthType.PERCENTAGE },
-                    rows:[
-                        new TableRow({
-                            children:[
-                                new TableCell({
-                                    width:{ size:50, type:WidthType.PERCENTAGE },
-                                    children: cellContent("A", opsiFinal[0])
-                                }),
-                                new TableCell({
-                                    width:{ size:50, type:WidthType.PERCENTAGE },
-                                    children: cellContent("C", opsiFinal[2])
-                                })
-                            ]
-                        }),
-                        new TableRow({
-                            children:[
-                                new TableCell({
-                                    width:{ size:50, type:WidthType.PERCENTAGE },
-                                    children: cellContent("B", opsiFinal[1])
-                                }),
-                                new TableCell({
-                                    width:{ size:50, type:WidthType.PERCENTAGE },
-                                    children: cellContent("D", opsiFinal[3])
-                                })
-                            ]
-                        })
-                    ]
-                });
-
-                children.push(table);
             }
         }
 
-        children.push(new Paragraph({ text:"" }));
+        children.push(new Paragraph({ text: "" }));
     });
 
     const doc = new Document({
-        sections:[{ children:children }]
+        sections: [{ children }]
     });
 
     const blob = await Packer.toBlob(doc);
-    saveAs(blob,"SOAL_PJOK_FINAL_RAPI.docx");
+    saveAs(blob, "SOAL_PJOK_FINAL_RAPI.docx");
 };
-</script>
-
-
-<script>
-// ===== FIX FINAL TAMPILKAN GAMBAR OPSI (STRUKTUR ASLI DATABASE) =====
-// Struktur database:
-// opsi:
-//   0: { t: "teks", i: "base64" }
-
-function renderSoalFinalFix(data){
-    const list = document.getElementById("listSoal") || 
-                 document.getElementById("daftarSoal");
-
-    if(!list || !data) return;
-
-    list.innerHTML = "";
-
-    Object.values(data).forEach((s,i)=>{
-
-        let html = `
-        <div class="card">
-            <b>${i+1}. ${s.tanya || ""}</b>
-            <hr>
-        `;
-
-        if(s.opsi){
-            const hurufArr = ["A","B","C","D"];
-            Object.keys(s.opsi).forEach((key,index)=>{
-
-                const huruf = hurufArr[index] || "";
-                const teks  = s.opsi[key]?.t || "";
-                const img   = s.opsi[key]?.i || "";
-
-                html += `
-                <div style="margin-bottom:8px;">
-                    <b>${huruf}.</b> ${teks}
-                    ${img ? `<br><img src="${img}" style="max-width:120px;margin-top:5px;">` : ""}
-                </div>
-                `;
-            });
-        }
-
-        html += `</div>`;
-        list.innerHTML += html;
-    });
-}
 
 // Override listener lama TANPA ubah sistem lain
 try{
