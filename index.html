@@ -4,9 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SAT & PJOK - APLIKASI PEMBUAT SOAL STS/SAS/US/SAT 2025/2026</title>
+    
+    <!-- Library Docx untuk Export Word -->
     <script src="https://unpkg.com/docx@7.1.1/build/index.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+
     <style>
         :root { 
             --primary-grad: linear-gradient(135deg, #2563eb, #3b82f6); 
@@ -213,8 +220,6 @@
         .btn-orange { background: #f59e0b; } 
         .btn-purple { background: #8b5cf6; }
         .btn-teal { background: #14b8a6; }
-        .btn-pink { background: #ec4899; }
-        .btn-indigo { background: #6366f1; }
         
         .print-group { 
             display: flex; align-items: center; gap: 8px; 
@@ -383,6 +388,7 @@
 </head>
 <body>
 
+<!-- Login Overlay -->
 <div id="loginOverlay">
     <div class="login-box">
         <div style="text-align:center; margin-bottom:25px;">
@@ -398,6 +404,12 @@
             <input type="password" id="loginPass" placeholder="******">
         </div>
         <button class="btn btn-blue" style="width:100%; padding:12px; justify-content:center; margin-top:10px;" onclick="handleLogin()">MASUK KE SISTEM</button>
+        
+        <div id="initAdminSection" style="margin-top: 20px; border-top: 1px solid #eee; padding-top: 15px;">
+            <p style="font-size: 11px; text-align: center; color: #94a3b8; margin-bottom: 5px;">Belum punya akun Admin?</p>
+            <button class="btn btn-green" style="width:100%; padding:10px; justify-content:center; font-size: 11px;" onclick="createFirstAdmin()">BUAT AKUN ADMIN PERTAMA</button>
+        </div>
+
         <div id="loginError" style="color:#ef4444; font-size:12px; margin-top:15px; text-align:center; font-weight:600;"></div>
     </div>
 </div>
@@ -614,10 +626,12 @@
                         <div class="form-group">
                             <label>Akses Mata Pelajaran SAT</label>
                             <div class="multi-select-container" id="mapelAccessContainer"></div>
+                            <small style="color:#64748b; font-size:10px;">*Klik untuk memilih lebih dari satu</small>
                         </div>
                         <div class="form-group">
                             <label>Akses Kelas</label>
                             <div class="multi-select-container" id="kelasAccessContainer"></div>
+                            <small style="color:#64748b; font-size:10px;">*Klik untuk memilih lebih dari satu</small>
                         </div>
                     </div>
                 </div>
@@ -742,11 +756,8 @@
     </div>
 </div>
 
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
-    import { getDatabase, ref, set, onValue, remove } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js";
-    import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
-
+<script>
+    // === FIREBASE INIT ===
     const firebaseConfig = {
         apiKey: "AIzaSyD3QnhV3PzzCKYxpt2JMapdhCZADApAmic",
         authDomain: "pjok-majalengka.firebaseapp.com",
@@ -757,12 +768,9 @@
         appId: "1:996966252466:web:182de1ccd581fe0747aeab"
     };
 
-    let app, db, auth;
-    try { 
-        app = initializeApp(firebaseConfig); 
-        db = getDatabase(app); 
-        auth = getAuth(app);
-    } catch(e) { console.error("Firebase Init Error:", e); }
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+    const auth = firebase.auth();
 
     let KUR_DB = [];
     let SOAL_DB = [];
@@ -813,22 +821,49 @@
         });
     }
 
-    // === AUTH ===
+    // === INIT ADMIN & AUTH ===
+    window.createFirstAdmin = function() {
+        const email = "admin@sekolah.id";
+        const password = "admin123";
+        auth.createUserWithEmailAndPassword(email, password)
+            .then((userCredential) => {
+                const user = userCredential.user;
+                const uid = btoa(email).replace(/=/g, "");
+                // Set Admin Role di Database
+                db.ref('users/' + uid).set({
+                    email: email,
+                    nama: "Super Admin",
+                    role: "ADMIN",
+                    createdAt: new Date().toISOString()
+                }).then(() => {
+                    alert("Admin berhasil dibuat! Silakan login dengan:\nEmail: " + email + "\nPass: " + password);
+                    document.getElementById('initAdminSection').style.display = 'none';
+                });
+            })
+            .catch((error) => {
+                if(error.code === 'auth/email-already-in-use') {
+                    alert("Email admin sudah ada. Silakan coba login.");
+                } else {
+                    alert("Gagal membuat admin: " + error.message);
+                }
+            });
+    };
+
     window.handleLogin = function() {
         const email = document.getElementById('loginEmail').value;
         const pass = document.getElementById('loginPass').value;
         const errorEl = document.getElementById('loginError');
         errorEl.innerText = "Memverifikasi...";
-        signInWithEmailAndPassword(auth, email, pass).catch(err => {
+        auth.signInWithEmailAndPassword(email, pass).catch(err => {
             errorEl.innerText = "Login Gagal: Cek kembali email/password.";
         });
     };
 
     window.handleLogout = function() {
-        if(confirm("Keluar dari aplikasi?")) signOut(auth);
+        if(confirm("Keluar dari aplikasi?")) auth.signOut();
     };
 
-    onAuthStateChanged(auth, (user) => {
+    auth.onAuthStateChanged((user) => {
         const overlay = document.getElementById('loginOverlay');
         const btnTabUser = document.getElementById('btnTabUser');
         const displayUser = document.getElementById('displayUserName');
@@ -839,7 +874,7 @@
             overlay.style.display = 'none'; 
             const userId = btoa(user.email).replace(/=/g, "");
 
-            onValue(ref(db, 'users/' + userId), (snap) => {
+            db.ref('users/' + userId).once('value').then((snap) => {
                 const userData = snap.val();
                 CURRENT_USER = userData || { role: 'UNKNOWN', email: user.email };
                 
@@ -880,11 +915,21 @@
                 
                 applyFilter();
                 renderMapelGrid(); // Refresh grid based on access
-            }, { onlyOnce: true });
+                loadUserList(); // Load list user jika admin
+            });
 
         } else { 
             overlay.style.display = 'flex'; 
             CURRENT_USER = null;
+            // Cek apakah admin sudah ada untuk hide tombol create admin
+            db.ref('users').limitToLast(1).once('value', s => {
+                const users = s.val();
+                let hasAdmin = false;
+                if(users) {
+                    Object.values(users).forEach(u => { if(u.role === 'ADMIN') hasAdmin = true; });
+                }
+                document.getElementById('initAdminSection').style.display = hasAdmin ? 'none' : 'block';
+            });
         }
     });
 
@@ -916,35 +961,46 @@
         
         if(!email || !pass || !nama) return alert("Isi semua field wajib!");
         
-        const userId = btoa(email).replace(/=/g, "");
-        const userData = { email, nama, role };
-        
-        if(role === 'GURU') {
-            const mapelAkses = Array.from(document.querySelectorAll('#mapelAccessContainer input:checked')).map(i => i.value);
-            const kelasAkses = Array.from(document.querySelectorAll('#kelasAccessContainer input:checked')).map(i => i.value);
-            
-            if(mapelAkses.length === 0) return alert("Pilih minimal 1 mata pelajaran!");
-            if(kelasAkses.length === 0) return alert("Pilih minimal 1 kelas!");
-            
-            userData.mapelAkses = mapelAkses;
-            userData.kelasAkses = kelasAkses;
-        }
-        
+        // Buat user di Firebase Auth terlebih dahulu
         try {
-            await set(ref(db, 'users/' + userId), userData);
+            const userCredential = await auth.createUserWithEmailAndPassword(email, pass);
+            const userId = btoa(email).replace(/=/g, ""); // User ID custom based on email
+            
+            const userData = { email, nama, role };
+            
+            if(role === 'GURU') {
+                const mapelAkses = Array.from(document.querySelectorAll('#mapelAccessContainer input:checked')).map(i => i.value);
+                const kelasAkses = Array.from(document.querySelectorAll('#kelasAccessContainer input:checked')).map(i => i.value);
+                
+                if(mapelAkses.length === 0) return alert("Pilih minimal 1 mata pelajaran!");
+                if(kelasAkses.length === 0) return alert("Pilih minimal 1 kelas!");
+                
+                userData.mapelAkses = mapelAkses;
+                userData.kelasAkses = kelasAkses;
+            }
+            
+            await db.ref('users/' + userId).set(userData);
             alert(`Berhasil! ${role === 'ADMIN' ? 'Administrator' : 'Guru'} ${nama} terdaftar.`);
+            
+            // Reset Form
             document.getElementById('regEmail').value = "";
             document.getElementById('regPass').value = "";
             document.getElementById('regNama').value = "";
             document.querySelectorAll('.multi-select-option').forEach(o => o.classList.remove('selected'));
             document.querySelectorAll('.multi-select-container input').forEach(i => i.checked = false);
-        } catch (err) { alert("Gagal: " + err.message); }
+            loadUserList();
+
+        } catch (err) { 
+            alert("Gagal: " + err.message); 
+        }
     };
 
-    if(db) {
-        onValue(ref(db, 'users'), (snapshot) => {
-            const tbody = document.getElementById('tblUserBody');
-            if(!tbody) return;
+    function loadUserList() {
+        const tbody = document.getElementById('tblUserBody');
+        if(!tbody) return;
+        tbody.innerHTML = "Memuat...";
+        
+        db.ref('users').on('value', (snapshot) => {
             tbody.innerHTML = "";
             const users = snapshot.val();
             if(users) {
@@ -975,7 +1031,10 @@
         });
     }
 
-    window.hapusUser = function(key) { if(confirm("Hapus pengguna ini?")) remove(ref(db, 'users/' + key)); };
+    window.hapusUser = function(key) { 
+        if(confirm("Hapus pengguna ini? Data akses akan dihapus, tapi user masih ada di Auth.")) 
+            db.ref('users/' + key).remove(); 
+    };
 
     window.hapusDataUniversal = function(path, id, kelasData, mapelData) {
         if(!CURRENT_USER) return;
@@ -985,7 +1044,7 @@
             if(mapelData && CURRENT_USER.mapelAkses && !CURRENT_USER.mapelAkses.includes(mapelData)) 
                 return alert("Akses Ditolak! Anda tidak memiliki akses ke Mapel ini.");
         }
-        if(confirm('Yakin ingin menghapus data ini secara permanen?')) remove(ref(db, path + '/' + id));
+        if(confirm('Yakin ingin menghapus data ini secara permanen?')) db.ref(path + '/' + id).remove();
     };
 
     window.saveLogoToLocal = async function(input) {
@@ -1004,17 +1063,17 @@
     window.applyFilter = function() { renderKur(); renderSoal(); populateKelas(); };
 
     window.uploadBackupToCloud = function(input) {
-        if (!input.files[0] || !db) return alert("Database belum terhubung!");
+        if (!input.files[0]) return alert("Pilih file backup!");
         if(!confirm("Yakin ingin restore data? Proses ini akan menimpa data lama.")) { input.value = ''; return; }
         const reader = new FileReader();
         reader.onload = async function(e) {
             try {
                 const res = JSON.parse(e.target.result);
                 if (res.kur && Array.isArray(res.kur)) {
-                    for (let k of res.kur) { if(k && k.id) await set(ref(db, 'kurikulum/' + k.id), k); }
+                    for (let k of res.kur) { if(k && k.id) await db.ref('kurikulum/' + k.id).set(k); }
                 }
                 if (res.soal && Array.isArray(res.soal)) {
-                    for (let s of res.soal) { if(s && s.id) await set(ref(db, 'soal/' + s.id), s); }
+                    for (let s of res.soal) { if(s && s.id) await db.ref('soal/' + s.id).set(s); }
                 }
                 alert("Restore PJOK Selesai!");
             } catch (err) { alert("Error: " + err.message); } 
@@ -1024,16 +1083,14 @@
     };
 
     // === FIREBASE LISTENERS ===
-    if(db) {
-        onValue(ref(db, ".info/connected"), (s) => {
-            const el = document.getElementById('statusIndicator'); const txt = document.getElementById('statusText');
-            if (s.val()) { el.className = "online-badge online"; txt.innerText = "Online"; } 
-            else { el.className = "online-badge offline"; txt.innerText = "Offline"; }
-        });
-        onValue(ref(db, 'kurikulum'), (s) => { KUR_DB = s.val() ? Object.values(s.val()) : []; renderKur(); populateKelas(); });
-        onValue(ref(db, 'soal'), (s) => { SOAL_DB = s.val() ? Object.values(s.val()) : []; renderSoal(); });
-        onValue(ref(db, 'sat_soal'), (s) => { SAT_DB = s.val() ? Object.values(s.val()) : []; renderMapelGrid(); renderSATSoal(); renderSATRekap(); });
-    }
+    db.ref(".info/connected").on('value', (s) => {
+        const el = document.getElementById('statusIndicator'); const txt = document.getElementById('statusText');
+        if (s.val()) { el.className = "online-badge online"; txt.innerText = "Online"; } 
+        else { el.className = "online-badge offline"; txt.innerText = "Offline"; }
+    });
+    db.ref('kurikulum').on('value', (s) => { KUR_DB = s.val() ? Object.values(s.val()) : []; renderKur(); populateKelas(); });
+    db.ref('soal').on('value', (s) => { SOAL_DB = s.val() ? Object.values(s.val()) : []; renderSoal(); });
+    db.ref('sat_soal').on('value', (s) => { SAT_DB = s.val() ? Object.values(s.val()) : []; renderMapelGrid(); renderSATSoal(); renderSATRekap(); });
 
     // === NAVIGATION ===
     window.switchTab = function(e, n) { 
@@ -1078,7 +1135,7 @@
             sem: document.getElementById('fSem').value, cp: document.getElementById('fCp').value, 
             tpSet: Array.from(document.querySelectorAll('.tp-val')).map(i => i.value).filter(x => x.trim() !== "") 
         }; 
-        set(ref(db, 'kurikulum/' + id), data).then(() => { closeForm('formKur'); });
+        db.ref('kurikulum/' + id).set(data).then(() => { closeForm('formKur'); });
     };
     function renderKur() { 
         const b = document.getElementById('tblKurBody'); b.innerHTML = ""; 
@@ -1237,7 +1294,7 @@
                     s.opsi.push({ t: document.getElementById('od').value, i: (await compressImage(fileInputs[3].files[0])) || getOImg(3) || "" });
                 }
             }
-            await set(ref(db, 'soal/' + uniqueId), s);
+            await db.ref('soal/' + uniqueId).set(s);
             alert("Berhasil!"); closeForm('formSoal');
         } catch (err) { alert("Gagal: " + err.message); } 
         finally { btn.innerText = "SIMPAN PERUBAHAN"; btn.disabled = false; }
@@ -1603,7 +1660,7 @@
                     s.opsi.push({ t: document.getElementById('satOd').value, i: (await compressImage(fileInputs[3]?.files[0])) || getOImg(3) || "" });
                 }
             }
-            await set(ref(db, 'sat_soal/' + uniqueId), s);
+            await db.ref('sat_soal/' + uniqueId).set(s);
             alert("Soal SAT berhasil disimpan!"); closeForm('formSATSoal');
         } catch (err) { alert("Gagal: " + err.message); }
         finally { btn.innerText = "SIMPAN SOAL SAT"; btn.disabled = false; }
@@ -1631,7 +1688,7 @@
     };
 
     window.restoreSATData = function(input) {
-        if (!input.files[0] || !db) return alert("Database belum terhubung!");
+        if (!input.files[0]) return alert("Pilih file backup!");
         
         // Admin only
         if(CURRENT_USER && CURRENT_USER.role !== 'ADMIN') return alert("Hanya Administrator yang dapat melakukan restore!");
@@ -1642,7 +1699,7 @@
             try {
                 const res = JSON.parse(e.target.result);
                 if (res.sat_soal && Array.isArray(res.sat_soal)) {
-                    for (let s of res.sat_soal) { if(s && s.id) await set(ref(db, 'sat_soal/' + s.id), s); }
+                    for (let s of res.sat_soal) { if(s && s.id) await db.ref('sat_soal/' + s.id).set(s); }
                     alert("Restore SAT Selesai! " + res.sat_soal.length + " soal dipulihkan.");
                 } else { alert("Format file tidak valid!"); }
             } catch (err) { alert("Error: " + err.message); }
