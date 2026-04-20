@@ -336,6 +336,38 @@
             letter-spacing: 0.5px;
         }
 
+        /* Multi-Select Tag Style */
+        .multi-select-container {
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            padding: 8px;
+            background: #fff;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+        .multi-select-option {
+            display: flex;
+            align-items: center;
+            padding: 6px 10px;
+            margin: 2px 0;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.2s;
+            font-size: 12px;
+        }
+        .multi-select-option:hover { background: #f1f5f9; }
+        .multi-select-option input { width: auto; margin-right: 8px; }
+        .multi-select-option.selected { background: #e0f2fe; color: #0369a1; font-weight: 600; }
+
+        .access-tag {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            margin: 2px;
+            font-weight: 600;
+        }
+
         @media (max-width: 768px) {
             .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
             .filter-bar { flex-direction: column; align-items: stretch; }
@@ -354,7 +386,7 @@
 <div id="loginOverlay">
     <div class="login-box">
         <div style="text-align:center; margin-bottom:25px;">
-            <h2 style="margin:0; color:#1e293b; font-size:22px;">ADMIN/GURU LOGIN</h2>
+            <h2 style="margin:0; color:#1e293b; font-size:22px;">LOGIN PENGGUNA</h2>
             <p style="color:#64748b; font-size:13px; margin-top:5px;">Aplikasi Pembuat Soal SAT & PJOK</p>
         </div>
         <div class="form-group">
@@ -392,7 +424,7 @@
         <div class="marquee-content">
             MAJALENGKA LANGKUNG SAE - "BERGERAK DINAMIS, MENCETAK GENERASI MUDA DI ERA DIGITAL." 
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ★ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            FITUR SAT TELAH HADIR: PENDIDIKAN PANCASILA, IPAS, B.INDONESIA, MATEMATIKA, B.INGGRIS, B.SUNDA, SENI BUDAYA, PAI
+            FITUR SAT MULTI-MAPEL TELAH HADIR DENGAN SISTEM AKSES TERBATAS
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ★ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             MAJALENGKA LANGKUNG SAE - "BERGERAK DINAMIS, MENCETAK GENERASI MUDA DI ERA DIGITAL."
         </div>
@@ -403,7 +435,7 @@
         <button class="tab-btn" onclick="switchTab(event, 'banksoal')">BANK SOAL PJOK</button>
         <button class="tab-btn" onclick="switchTab(event, 'tabUS')">US PJOK</button>
         <button class="tab-btn sat-tab" onclick="switchTab(event, 'tabSAT')">SAT (MULTI MAPEL)</button>
-        <button class="tab-btn hidden" id="btnTabUser" onclick="switchTab(event, 'tabUser')">KELOLA GURU</button>
+        <button class="tab-btn hidden" id="btnTabUser" onclick="switchTab(event, 'tabUser')">KELOLA PENGGUNA</button>
     </div>
 
     <div class="content">
@@ -543,7 +575,7 @@
                             <option value="3">Kelas 3</option><option value="4">Kelas 4</option>
                             <option value="5">Kelas 5</option><option value="6">Kelas 6</option>
                         </select>
-                        <button class="btn btn-green" onclick="openFormSATSoal()">+ SOAL BARU</button>
+                        <button class="btn btn-green" id="btnAddSATSoal" onclick="openFormSATSoal()">+ SOAL BARU</button>
                         <div class="print-group">
                             <span style="font-size:10px; font-weight:800; color:#475569;">CETAK:</span>
                             <button class="btn btn-blue" style="font-size:11px;" onclick="exportSATWord('soal')">SOAL</button>
@@ -558,27 +590,44 @@
             <div id="satSoalContainer" style="display:grid; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); gap:20px; margin-top:20px;"></div>
         </div>
 
-        <!-- ==================== TAB: KELOLA GURU ==================== -->
+        <!-- ==================== TAB: KELOLA PENGGUNA ==================== -->
         <div id="tabUser" class="tab-content hidden">
             <div class="card">
-                <div class="section-title">Registrasi Guru Baru</div>
-                <div class="grid-3">
-                    <div class="form-group"><label>Email Guru</label><input type="email" id="regEmail" placeholder="guru@email.com"></div>
+                <div class="section-title">Registrasi Pengguna Baru</div>
+                <div class="grid-2">
+                    <div class="form-group"><label>Email Pengguna</label><input type="email" id="regEmail" placeholder="guru@email.com"></div>
                     <div class="form-group"><label>Password</label><input type="password" id="regPass" placeholder="******"></div>
+                </div>
+                <div class="grid-2">
                     <div class="form-group">
-                        <label>Akses Kelas</label>
-                        <select id="regKelas">
-                            <option value="1">Kelas 1</option><option value="2">Kelas 2</option><option value="3">Kelas 3</option>
-                            <option value="4">Kelas 4</option><option value="5">Kelas 5</option><option value="6">Kelas 6</option>
+                        <label>Role</label>
+                        <select id="regRole" onchange="toggleRoleFields()">
+                            <option value="GURU">Guru (Akses Terbatas)</option>
+                            <option value="ADMIN">Administrator (Akses Penuh)</option>
                         </select>
                     </div>
+                    <div class="form-group"><label>Nama Lengkap</label><input type="text" id="regNama" placeholder="Nama pengguna..."></div>
                 </div>
-                <button class="btn btn-green" onclick="registerGuru()">DAFTARKAN GURU</button>
+                
+                <div id="guruAccessFields">
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label>Akses Mata Pelajaran SAT</label>
+                            <div class="multi-select-container" id="mapelAccessContainer"></div>
+                        </div>
+                        <div class="form-group">
+                            <label>Akses Kelas</label>
+                            <div class="multi-select-container" id="kelasAccessContainer"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <button class="btn btn-green" onclick="registerUser()" style="margin-top:10px;">DAFTARKAN PENGGUNA</button>
             </div>
             <div class="card">
-                <div class="section-title">Daftar Guru Terdaftar</div>
+                <div class="section-title">Daftar Pengguna Terdaftar</div>
                 <table>
-                    <thead><tr><th>Email</th><th>Akses Kelas</th><th>Aksi</th></tr></thead>
+                    <thead><tr><th>Email</th><th>Nama</th><th>Role</th><th>Akses</th><th>Aksi</th></tr></thead>
                     <tbody id="tblUserBody"></tbody>
                 </table>
             </div>
@@ -718,7 +767,7 @@
     let KUR_DB = [];
     let SOAL_DB = [];
     let SAT_DB = [];
-    let userAksesKelas = null;
+    let CURRENT_USER = null;
     let activeSATMapel = null;
 
     // === KONFIGURASI MAPEL SAT ===
@@ -792,41 +841,103 @@
 
             onValue(ref(db, 'users/' + userId), (snap) => {
                 const userData = snap.val();
-                if(userData && userData.role === "GURU") {
-                    userAksesKelas = userData.aksesKelas;
-                    displayUser.innerText = "Guru Kelas " + userAksesKelas;
-                    if(btnTabUser) btnTabUser.classList.add('hidden');
-                    if(adminLogoBar) adminLogoBar.style.display = 'none';
-                    if(adminRestoreBar) adminRestoreBar.style.display = 'none';
-                    document.getElementById('mainFilterKelas').value = userAksesKelas;
-                    document.getElementById('mainFilterKelas').disabled = true;
+                CURRENT_USER = userData || { role: 'UNKNOWN', email: user.email };
+                
+                if(userData) {
+                    CURRENT_USER.uid = userId;
+                    
+                    if(userData.role === "ADMIN") {
+                        displayUser.innerText = `Admin: ${userData.nama || 'Administrator'}`;
+                        if(btnTabUser) { btnTabUser.classList.remove('hidden'); btnTabUser.style.display = 'block'; }
+                        if(adminLogoBar) adminLogoBar.style.display = 'flex';
+                        if(adminRestoreBar) adminRestoreBar.style.display = 'flex';
+                        document.getElementById('mainFilterKelas').disabled = false;
+                    } else {
+                        // GURU
+                        const mapelNames = (userData.mapelAkses || []).map(m => MAPEL_SAT.find(mp => mp.code === m)?.name || m).join(', ');
+                        displayUser.innerText = `Guru: ${userData.nama || 'User'} (${mapelNames})`;
+                        if(btnTabUser) btnTabUser.classList.add('hidden');
+                        if(adminLogoBar) adminLogoBar.style.display = 'none';
+                        if(adminRestoreBar) adminRestoreBar.style.display = 'none';
+                        
+                        // Lock filter kelas
+                        const filterKelas = document.getElementById('mainFilterKelas');
+                        const userKelas = userData.kelasAkses || [];
+                        if(userKelas.length === 1) {
+                            filterKelas.value = userKelas[0];
+                            filterKelas.disabled = true;
+                        } else {
+                            // Jika banyak kelas, filter hanya yang diizinkan
+                            filterKelas.innerHTML = '<option value="ALL">Tampilkan Terbatas</option>';
+                            userKelas.forEach(k => filterKelas.innerHTML += `<option value="${k}">Kelas ${k}</option>`);
+                            filterKelas.disabled = true;
+                        }
+                    }
                 } else {
-                    userAksesKelas = null;
-                    displayUser.innerText = "Administrator (Indra Setiawan)";
-                    if(btnTabUser) { btnTabUser.classList.remove('hidden'); btnTabUser.style.display = 'block'; }
-                    if(adminLogoBar) adminLogoBar.style.display = 'flex';
-                    if(adminRestoreBar) adminRestoreBar.style.display = 'flex';
-                    document.getElementById('mainFilterKelas').disabled = false;
+                    displayUser.innerText = "User Tidak Terdaftar";
+                    if(btnTabUser) btnTabUser.classList.add('hidden');
                 }
+                
                 applyFilter();
+                renderMapelGrid(); // Refresh grid based on access
             }, { onlyOnce: true });
 
         } else { 
             overlay.style.display = 'flex'; 
+            CURRENT_USER = null;
         }
     });
 
-    window.registerGuru = async function() {
+    // === USER MANAGEMENT ===
+    window.toggleRoleFields = function() {
+        const role = document.getElementById('regRole').value;
+        const fields = document.getElementById('guruAccessFields');
+        fields.style.display = role === 'GURU' ? 'block' : 'none';
+    };
+
+    function initAccessContainers() {
+        const mapelContainer = document.getElementById('mapelAccessContainer');
+        const kelasContainer = document.getElementById('kelasAccessContainer');
+        
+        mapelContainer.innerHTML = MAPEL_SAT.map(m => 
+            `<label class="multi-select-option"><input type="checkbox" value="${m.code}" onchange="this.parentElement.classList.toggle('selected', this.checked)"> ${m.icon} ${m.name}</label>`
+        ).join('');
+        
+        kelasContainer.innerHTML = [1,2,3,4,5,6].map(k => 
+            `<label class="multi-select-option"><input type="checkbox" value="${k}" onchange="this.parentElement.classList.toggle('selected', this.checked)"> Kelas ${k}</label>`
+        ).join('');
+    }
+
+    window.registerUser = async function() {
         const email = document.getElementById('regEmail').value;
         const pass = document.getElementById('regPass').value;
-        const kelas = document.getElementById('regKelas').value;
-        if(!email || !pass) return alert("Isi email dan password!");
+        const nama = document.getElementById('regNama').value;
+        const role = document.getElementById('regRole').value;
+        
+        if(!email || !pass || !nama) return alert("Isi semua field wajib!");
+        
+        const userId = btoa(email).replace(/=/g, "");
+        const userData = { email, nama, role };
+        
+        if(role === 'GURU') {
+            const mapelAkses = Array.from(document.querySelectorAll('#mapelAccessContainer input:checked')).map(i => i.value);
+            const kelasAkses = Array.from(document.querySelectorAll('#kelasAccessContainer input:checked')).map(i => i.value);
+            
+            if(mapelAkses.length === 0) return alert("Pilih minimal 1 mata pelajaran!");
+            if(kelasAkses.length === 0) return alert("Pilih minimal 1 kelas!");
+            
+            userData.mapelAkses = mapelAkses;
+            userData.kelasAkses = kelasAkses;
+        }
+        
         try {
-            const userId = btoa(email).replace(/=/g, "");
-            await set(ref(db, 'users/' + userId), { email, role: "GURU", aksesKelas: kelas });
-            alert("Berhasil! Guru kelas " + kelas + " terdaftar.");
+            await set(ref(db, 'users/' + userId), userData);
+            alert(`Berhasil! ${role === 'ADMIN' ? 'Administrator' : 'Guru'} ${nama} terdaftar.`);
             document.getElementById('regEmail').value = "";
             document.getElementById('regPass').value = "";
+            document.getElementById('regNama').value = "";
+            document.querySelectorAll('.multi-select-option').forEach(o => o.classList.remove('selected'));
+            document.querySelectorAll('.multi-select-container input').forEach(i => i.checked = false);
         } catch (err) { alert("Gagal: " + err.message); }
     };
 
@@ -839,16 +950,41 @@
             if(users) {
                 Object.keys(users).forEach(key => {
                     const u = users[key];
-                    tbody.innerHTML += `<tr><td>${u.email}</td><td>Kelas ${u.aksesKelas}</td><td><button class="btn btn-red" onclick="hapusUser('${key}')">Hapus</button></td></tr>`;
+                    let aksesHtml = '-';
+                    if(u.role === 'GURU') {
+                        const mapelTags = (u.mapelAkses || []).map(m => {
+                            const mapel = MAPEL_SAT.find(mp => mp.code === m);
+                            return `<span class="access-tag" style="background:${mapel?.color || '#6b7280'}20; color:${mapel?.color || '#6b7280'}">${mapel?.name || m}</span>`;
+                        }).join(' ');
+                        const kelasTags = (u.kelasAkses || []).map(k => 
+                            `<span class="access-tag" style="background:#dbeafe; color:#1e40af">Kelas ${k}</span>`
+                        ).join(' ');
+                        aksesHtml = `<div>${mapelTags}</div><div style="margin-top:4px">${kelasTags}</div>`;
+                    } else if(u.role === 'ADMIN') {
+                        aksesHtml = '<span class="access-tag" style="background:#fee2e2; color:#991b1b">FULL ACCESS</span>';
+                    }
+                    tbody.innerHTML += `<tr>
+                        <td>${u.email}</td>
+                        <td>${u.nama || '-'}</td>
+                        <td><span class="access-tag" style="background:${u.role === 'ADMIN' ? '#1e293b' : '#3b82f6'}; color:white">${u.role}</span></td>
+                        <td>${aksesHtml}</td>
+                        <td><button class="btn btn-red" onclick="hapusUser('${key}')">Hapus</button></td>
+                    </tr>`;
                 });
             }
         });
     }
 
-    window.hapusUser = function(key) { if(confirm("Hapus akses guru ini?")) remove(ref(db, 'users/' + key)); };
+    window.hapusUser = function(key) { if(confirm("Hapus pengguna ini?")) remove(ref(db, 'users/' + key)); };
 
-    window.hapusDataUniversal = function(path, id, kelasData) {
-        if(userAksesKelas && kelasData != userAksesKelas) return alert("Akses Ditolak! Anda hanya boleh mengelola Kelas " + userAksesKelas);
+    window.hapusDataUniversal = function(path, id, kelasData, mapelData) {
+        if(!CURRENT_USER) return;
+        if(CURRENT_USER.role === 'GURU') {
+            if(kelasData && CURRENT_USER.kelasAkses && !CURRENT_USER.kelasAkses.includes(kelasData)) 
+                return alert("Akses Ditolak! Anda tidak memiliki akses ke Kelas " + kelasData);
+            if(mapelData && CURRENT_USER.mapelAkses && !CURRENT_USER.mapelAkses.includes(mapelData)) 
+                return alert("Akses Ditolak! Anda tidak memiliki akses ke Mapel ini.");
+        }
         if(confirm('Yakin ingin menghapus data ini secara permanen?')) remove(ref(db, path + '/' + id));
     };
 
@@ -903,7 +1039,9 @@
     window.switchTab = function(e, n) { 
         document.querySelectorAll('.tab-content').forEach(x => x.classList.add('hidden')); 
         document.querySelectorAll('.tab-btn').forEach(x => x.classList.remove('active')); 
-        document.getElementById(n).classList.remove('hidden'); e.currentTarget.classList.add('active'); 
+        document.getElementById(n).classList.remove('hidden'); e.currentTarget.classList.add('active');
+        
+        if(n === 'tabUser') initAccessContainers();
     };
     window.closeForm = function(id) { document.getElementById(id).classList.add('hidden'); };
     window.showPv = function(inp, id) { 
@@ -915,9 +1053,20 @@
         document.getElementById('editKurId').value = ""; document.getElementById('tpInputs').innerHTML = ""; addTPField(''); 
         const filterVal = document.getElementById('mainFilterKelas').value;
         const inputKelas = document.getElementById('fKelas');
-        if(userAksesKelas) { inputKelas.value = userAksesKelas; inputKelas.disabled = true; } 
-        else if(filterVal !== 'ALL') { inputKelas.value = filterVal; inputKelas.disabled = false; } 
-        else { inputKelas.disabled = false; }
+        
+        // Lock for Guru
+        if(CURRENT_USER && CURRENT_USER.role === 'GURU' && CURRENT_USER.kelasAkses) {
+            if(CURRENT_USER.kelasAkses.length === 1) {
+                inputKelas.value = CURRENT_USER.kelasAkses[0];
+                inputKelas.disabled = true;
+            } else {
+                inputKelas.innerHTML = CURRENT_USER.kelasAkses.map(k => `<option value="${k}">${k}</option>`).join('');
+                inputKelas.disabled = false;
+            }
+        } else {
+            if(filterVal !== 'ALL') { inputKelas.value = filterVal; inputKelas.disabled = false; } 
+            else { inputKelas.disabled = false; }
+        }
         document.getElementById('formKur').classList.remove('hidden'); 
     };
     window.addTPField = function(v) { document.getElementById('tpInputs').insertAdjacentHTML('beforeend', `<div style="display:flex; gap:5px; margin-bottom:5px;"><input type="text" class="tp-val" value="${v}" style="flex:1" placeholder="Isi Tujuan Pembelajaran..."><button class="btn btn-red" onclick="this.parentElement.remove()" style="padding:5px 10px;">X</button></div>`); };
@@ -935,13 +1084,20 @@
         const b = document.getElementById('tblKurBody'); b.innerHTML = ""; 
         const filterVal = document.getElementById('mainFilterKelas').value;
         let filteredData = filterVal !== 'ALL' ? KUR_DB.filter(d => d.rombel == filterVal) : KUR_DB;
+        
+        // Filter for Guru
+        if(CURRENT_USER && CURRENT_USER.role === 'GURU' && CURRENT_USER.kelasAkses) {
+            filteredData = filteredData.filter(d => CURRENT_USER.kelasAkses.includes(d.rombel));
+        }
+        
         filteredData.sort((a,b)=>a.rombel - b.rombel).forEach(d => { 
             b.innerHTML += `<tr><td><span style="font-weight:bold; color:#2563eb;">Kelas ${d.rombel}</span></td><td>${d.sem}</td><td>${d.cp}</td><td><ul style="margin:0; padding-left:20px;">${(d.tpSet||[]).map(t=>`<li>${t}</li>`).join('')}</ul></td><td><button class="btn btn-orange" style="padding:5px 10px;" onclick="editKur(${d.id})">Edit</button><button class="btn btn-red" style="padding:5px 10px;" onclick="hapusDataUniversal('kurikulum', ${d.id}, '${d.rombel}')">Hapus</button></td></tr>`; 
         }); 
     }
     window.editKur = function(id) { 
         const d = KUR_DB.find(x => x.id === id); if(!d) return;
-        if(userAksesKelas && d.rombel != userAksesKelas) return alert("Hanya bisa mengedit Kelas " + userAksesKelas);
+        if(CURRENT_USER && CURRENT_USER.role === 'GURU' && CURRENT_USER.kelasAkses && !CURRENT_USER.kelasAkses.includes(d.rombel)) 
+            return alert("Hanya bisa mengedit Kelas " + CURRENT_USER.kelasAkses.join(', '));
         document.getElementById('editKurId').value = d.id; document.getElementById('fFase').value = d.fase; document.getElementById('fKelas').value = d.rombel; document.getElementById('fSem').value = d.sem; document.getElementById('fCp').value = d.cp; 
         document.getElementById('tpInputs').innerHTML = ""; (d.tpSet || []).forEach(t => addTPField(t)); 
         document.getElementById('formKur').classList.remove('hidden'); 
@@ -950,7 +1106,15 @@
     // ==================== BANK SOAL PJOK ====================
     window.populateKelas = function() { 
         const s = document.getElementById('sKelas'); const currentVal = s.value; s.innerHTML = "<option value=''>- Pilih Kelas -</option>"; 
-        [...new Set(KUR_DB.map(x => x.rombel))].sort().forEach(k => s.innerHTML += `<option value="${k}">${k}</option>`); 
+        
+        let kelasList = [...new Set(KUR_DB.map(x => x.rombel))].sort();
+        
+        // Filter for Guru
+        if(CURRENT_USER && CURRENT_USER.role === 'GURU' && CURRENT_USER.kelasAkses) {
+            kelasList = kelasList.filter(k => CURRENT_USER.kelasAkses.includes(k.toString()));
+        }
+        
+        kelasList.forEach(k => s.innerHTML += `<option value="${k}">${k}</option>`); 
         if(currentVal) s.value = currentVal;
     };
     window.loadTP = function() {
@@ -974,9 +1138,25 @@
 
     window.openFormSoal = function(kategori = 'REGULER') { 
         const sk = document.getElementById('sKelas');
-        if(userAksesKelas && kategori === 'REGULER') { sk.value = userAksesKelas; sk.disabled = true; } 
-        else if(userAksesKelas && kategori === 'US' && userAksesKelas != "6") { return alert("Modul US khusus untuk pengampu Kelas 6."); } 
-        else { sk.disabled = false; }
+        
+        if(CURRENT_USER && CURRENT_USER.role === 'GURU' && CURRENT_USER.kelasAkses) {
+            // Lock kelas
+            if(CURRENT_USER.kelasAkses.length === 1) {
+                sk.value = CURRENT_USER.kelasAkses[0];
+                sk.disabled = true;
+            } else {
+                sk.innerHTML = CURRENT_USER.kelasAkses.map(k => `<option value="${k}">${k}</option>`).join('');
+                sk.disabled = false;
+            }
+            
+            // Check US access
+            if(kategori === 'US' && !CURRENT_USER.kelasAkses.includes("6")) {
+                return alert("Modul US khusus untuk pengampu Kelas 6.");
+            }
+        } else {
+            sk.disabled = false;
+        }
+        
         document.getElementById('editSoalId').value = ""; document.getElementById('sKategori').value = kategori;
         document.getElementById('labelKategori').innerText = kategori === 'US' ? "[ MODE UJIAN SEKOLAH ]" : "";
         document.getElementById('formSoal').classList.remove('hidden'); 
@@ -988,7 +1168,6 @@
         document.querySelectorAll('input[type=file]').forEach(i => i.value = "");
         populateKelas(); 
         if(kategori === 'US') document.getElementById('sKelas').value = "6"; 
-        else if(userAksesKelas) document.getElementById('sKelas').value = userAksesKelas;
         loadTP(); checkSoalType(); 
     };
 
@@ -996,7 +1175,8 @@
         populateKelas(); 
         const s = SOAL_DB.find(x => x.id == id); 
         if(!s) return;
-        if(userAksesKelas && s.kelas != userAksesKelas) return alert("Hanya bisa mengedit Kelas " + userAksesKelas);
+        if(CURRENT_USER && CURRENT_USER.role === 'GURU' && CURRENT_USER.kelasAkses && !CURRENT_USER.kelasAkses.includes(s.kelas)) 
+            return alert("Hanya bisa mengedit Kelas " + CURRENT_USER.kelasAkses.join(', '));
         document.getElementById('editSoalId').value = s.id;
         document.getElementById('sKategori').value = s.kategori || 'REGULER';
         document.getElementById('labelKategori').innerText = s.kategori === 'US' ? "[ MODE UJIAN SEKOLAH ]" : "";
@@ -1069,8 +1249,17 @@
         l.innerHTML = ""; u.innerHTML = ""; 
         const filterVal = document.getElementById('mainFilterKelas').value;
         let filteredReg = SOAL_DB.filter(s => (s.kategori === 'REGULER' || !s.kategori));
-        if(filterVal !== 'ALL') filteredReg = filteredReg.filter(s => s.kelas == filterVal);
         let usData = SOAL_DB.filter(s => s.kategori === 'US');
+        
+        // Filter for Guru
+        if(CURRENT_USER && CURRENT_USER.role === 'GURU' && CURRENT_USER.kelasAkses) {
+            filteredReg = filteredReg.filter(s => CURRENT_USER.kelasAkses.includes(s.kelas));
+            usData = usData.filter(s => CURRENT_USER.kelasAkses.includes(s.kelas));
+            if(filterVal !== 'ALL') filteredReg = filteredReg.filter(s => s.kelas == filterVal);
+        } else {
+            if(filterVal !== 'ALL') filteredReg = filteredReg.filter(s => s.kelas == filterVal);
+        }
+        
         const getRekapHtml = (data, title) => {
             const c = { L1: 0, L2: 0, L3: 0, total: data.length }; data.forEach(s => { if(c[s.level] !== undefined) c[s.level]++; });
             const p = (v) => c.total > 0 ? Math.round((v / c.total) * 100) : 0;
@@ -1096,6 +1285,12 @@
     window.downloadSoalJSON = function() {
         const filterVal = document.getElementById('mainFilterKelas').value;
         let dataToExport = filterVal !== 'ALL' ? SOAL_DB.filter(s => s.kelas == filterVal && (s.kategori === 'REGULER' || !s.kategori)) : SOAL_DB.filter(s => s.kategori === 'REGULER' || !s.kategori);
+        
+        // Filter for Guru
+        if(CURRENT_USER && CURRENT_USER.role === 'GURU' && CURRENT_USER.kelasAkses) {
+            dataToExport = dataToExport.filter(s => CURRENT_USER.kelasAkses.includes(s.kelas));
+        }
+        
         if (!dataToExport.length) return alert("Tidak ada data soal tersedia!");
         const backupData = { soal: dataToExport, kur: KUR_DB.filter(k => filterVal === 'ALL' || k.rombel == filterVal), exportedAt: new Date().toISOString(), kelas: filterVal };
         try {
@@ -1110,8 +1305,22 @@
     function renderMapelGrid() {
         const grid = document.getElementById('mapelGrid');
         grid.innerHTML = "";
-        MAPEL_SAT.forEach(m => {
-            const count = SAT_DB.filter(s => s.mapel === m.code).length;
+        
+        let availableMapel = MAPEL_SAT;
+        
+        // Filter for Guru
+        if(CURRENT_USER && CURRENT_USER.role === 'GURU' && CURRENT_USER.mapelAkses) {
+            availableMapel = MAPEL_SAT.filter(m => CURRENT_USER.mapelAkses.includes(m.code));
+        }
+        
+        availableMapel.forEach(m => {
+            let count = SAT_DB.filter(s => s.mapel === m.code).length;
+            
+            // Filter count for Guru
+            if(CURRENT_USER && CURRENT_USER.role === 'GURU' && CURRENT_USER.kelasAkses) {
+                count = SAT_DB.filter(s => s.mapel === m.code && CURRENT_USER.kelasAkses.includes(s.kelas)).length;
+            }
+            
             const isActive = activeSATMapel === m.code;
             grid.innerHTML += `
                 <div class="mapel-card ${isActive ? 'active' : ''}" onclick="selectSATMapel('${m.code}')" style="${isActive ? `border-color:${m.color}; background:${m.color}15;` : ''}">
@@ -1123,6 +1332,11 @@
     }
 
     window.selectSATMapel = function(code) {
+        // Check access
+        if(CURRENT_USER && CURRENT_USER.role === 'GURU' && CURRENT_USER.mapelAkses && !CURRENT_USER.mapelAkses.includes(code)) {
+            return alert("Anda tidak memiliki akses ke mata pelajaran ini.");
+        }
+        
         activeSATMapel = (activeSATMapel === code) ? null : code;
         renderMapelGrid();
         const controlBar = document.getElementById('satControlBar');
@@ -1133,6 +1347,19 @@
             document.getElementById('satBadgeMapel').style.background = m.color;
             document.getElementById('satTitleMapel').innerText = `Soal SAT ${m.name}`;
             document.getElementById('satDescMapel').innerText = m.desc;
+            
+            // Update kelas filter for Guru
+            const filterKelas = document.getElementById('satFilterKelas');
+            if(CURRENT_USER && CURRENT_USER.role === 'GURU' && CURRENT_USER.kelasAkses) {
+                filterKelas.innerHTML = '<option value="ALL">Semua Kelas</option>';
+                CURRENT_USER.kelasAkses.forEach(k => filterKelas.innerHTML += `<option value="${k}">Kelas ${k}</option>`);
+            } else {
+                filterKelas.innerHTML = `<option value="ALL">Semua Kelas</option>
+                    <option value="1">Kelas 1</option><option value="2">Kelas 2</option>
+                    <option value="3">Kelas 3</option><option value="4">Kelas 4</option>
+                    <option value="5">Kelas 5</option><option value="6">Kelas 6</option>`;
+            }
+            
             renderSATSoal();
         } else {
             controlBar.classList.add('hidden');
@@ -1143,14 +1370,29 @@
     // Rekap SAT
     function renderSATRekap() {
         const el = document.getElementById('satRekapStats');
+        
+        let availableMapel = MAPEL_SAT;
+        if(CURRENT_USER && CURRENT_USER.role === 'GURU' && CURRENT_USER.mapelAkses) {
+            availableMapel = MAPEL_SAT.filter(m => CURRENT_USER.mapelAkses.includes(m.code));
+        }
+        
         if(!activeSATMapel) {
-            const total = SAT_DB.length;
-            let html = `<div class="section-title" style="color:var(--sat-accent);">Ringkasan Data SAT Semua Mapel</div>
-                <div class="rekap-container" style="grid-template-columns: repeat(${MAPEL_SAT.length}, 1fr);">`;
-            MAPEL_SAT.forEach(m => {
-                const c = SAT_DB.filter(s => s.mapel === m.code).length;
+            const total = SAT_DB.filter(s => {
+                if(CURRENT_USER && CURRENT_USER.role === 'GURU' && CURRENT_USER.kelasAkses) {
+                    return CURRENT_USER.kelasAkses.includes(s.kelas);
+                }
+                return true;
+            }).length;
+            
+            let html = `<div class="section-title" style="color:var(--sat-accent);">Ringkasan Data SAT</div>
+                <div class="rekap-container" style="grid-template-columns: repeat(${availableMapel.length}, 1fr);">`;
+            availableMapel.forEach(m => {
+                let c = SAT_DB.filter(s => s.mapel === m.code);
+                if(CURRENT_USER && CURRENT_USER.role === 'GURU' && CURRENT_USER.kelasAkses) {
+                    c = c.filter(s => CURRENT_USER.kelasAkses.includes(s.kelas));
+                }
                 html += `<div class="rekap-card" style="background:${m.color}15; border-color:${m.color}30;">
-                    <div class="rekap-val" style="color:${m.color};">${c}</div>
+                    <div class="rekap-val" style="color:${m.color};">${c.length}</div>
                     <div class="rekap-label">${m.code}</div>
                 </div>`;
             });
@@ -1158,8 +1400,12 @@
             el.innerHTML = html;
             return;
         }
-        const data = SAT_DB.filter(s => s.mapel === activeSATMapel);
         const m = MAPEL_SAT.find(x => x.code === activeSATMapel);
+        let data = SAT_DB.filter(s => s.mapel === activeSATMapel);
+        if(CURRENT_USER && CURRENT_USER.role === 'GURU' && CURRENT_USER.kelasAkses) {
+            data = data.filter(s => CURRENT_USER.kelasAkses.includes(s.kelas));
+        }
+        
         const c = { L1: 0, L2: 0, L3: 0, PG: 0, Essay: 0, total: data.length };
         data.forEach(s => { if(c[s.level] !== undefined) c[s.level]++; if(s.tipe === 'PG') c.PG++; else c.Essay++; });
         const p = (v) => c.total > 0 ? Math.round((v / c.total) * 100) : 0;
@@ -1182,6 +1428,12 @@
         if(!activeSATMapel) return;
         const filterKelas = document.getElementById('satFilterKelas').value;
         let data = SAT_DB.filter(s => s.mapel === activeSATMapel);
+        
+        // Filter for Guru
+        if(CURRENT_USER && CURRENT_USER.role === 'GURU' && CURRENT_USER.kelasAkses) {
+            data = data.filter(s => CURRENT_USER.kelasAkses.includes(s.kelas));
+        }
+        
         if(filterKelas !== 'ALL') data = data.filter(s => s.kelas == filterKelas);
         data.sort((a, b) => (a.tipe === b.tipe) ? 0 : (a.tipe === 'PG' ? -1 : 1));
         const m = MAPEL_SAT.find(x => x.code === activeSATMapel);
@@ -1197,7 +1449,7 @@
                     ${contentHtml}
                     <div style="margin-top:10px;">
                         <button class="btn btn-orange" onclick="editSATSoal('${s.id}')">EDIT</button>
-                        <button class="btn btn-red" onclick="hapusDataUniversal('sat_soal', '${s.id}', '${s.kelas}')">HAPUS</button>
+                        <button class="btn btn-red" onclick="hapusDataUniversal('sat_soal', '${s.id}', '${s.kelas}', '${s.mapel}')">HAPUS</button>
                     </div>
                 </div>`;
         });
@@ -1226,6 +1478,12 @@
 
     window.openFormSATSoal = function() {
         if(!activeSATMapel) return alert("Pilih mata pelajaran terlebih dahulu!");
+        
+        // Check access
+        if(CURRENT_USER && CURRENT_USER.role === 'GURU' && CURRENT_USER.mapelAkses && !CURRENT_USER.mapelAkses.includes(activeSATMapel)) {
+            return alert("Anda tidak memiliki akses ke mata pelajaran ini.");
+        }
+        
         document.getElementById('editSATId').value = "";
         const m = MAPEL_SAT.find(x => x.code === activeSATMapel);
         document.getElementById('satLabelMapel').innerText = `[ ${m.name} ]`;
@@ -1239,20 +1497,59 @@
         document.getElementById('satOc').value = ""; document.getElementById('satOd').value = "";
         document.querySelectorAll('#formSATSoal div[id^=pvSatP]').forEach(i => i.innerHTML = "");
         document.querySelectorAll('#formSATSoal input[type=file]').forEach(i => i.value = "");
-        if(userAksesKelas) { document.getElementById('satKelas').value = userAksesKelas; document.getElementById('satKelas').disabled = true; }
-        else { document.getElementById('satKelas').disabled = false; }
+        
+        const kelasSelect = document.getElementById('satKelas');
+        
+        // Lock kelas for Guru
+        if(CURRENT_USER && CURRENT_USER.role === 'GURU' && CURRENT_USER.kelasAkses) {
+            if(CURRENT_USER.kelasAkses.length === 1) {
+                kelasSelect.value = CURRENT_USER.kelasAkses[0];
+                kelasSelect.disabled = true;
+            } else {
+                kelasSelect.innerHTML = CURRENT_USER.kelasAkses.map(k => `<option value="${k}">${k}</option>`).join('');
+                kelasSelect.disabled = false;
+            }
+        } else {
+            kelasSelect.innerHTML = `<option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option>`;
+            kelasSelect.disabled = false;
+        }
+        
         checkSATKelas(); checkSATType();
     };
 
     window.editSATSoal = function(id) {
         const s = SAT_DB.find(x => x.id == id);
         if(!s) return;
-        if(userAksesKelas && s.kelas != userAksesKelas) return alert("Hanya bisa mengedit Kelas " + userAksesKelas);
+        
+        // Check access
+        if(CURRENT_USER && CURRENT_USER.role === 'GURU') {
+            if(CURRENT_USER.kelasAkses && !CURRENT_USER.kelasAkses.includes(s.kelas)) 
+                return alert("Anda tidak memiliki akses ke Kelas " + s.kelas);
+            if(CURRENT_USER.mapelAkses && !CURRENT_USER.mapelAkses.includes(s.mapel)) 
+                return alert("Anda tidak memiliki akses ke Mapel ini.");
+        }
+        
         document.getElementById('editSATId').value = s.id;
         const m = MAPEL_SAT.find(x => x.code === s.mapel);
         document.getElementById('satLabelMapel').innerText = `[ ${m?.name || s.mapel} ]`;
         document.getElementById('satType').value = s.tipe;
         document.getElementById('satKelas').value = s.kelas;
+        
+        // Lock kelas for Guru
+        if(CURRENT_USER && CURRENT_USER.role === 'GURU' && CURRENT_USER.kelasAkses) {
+            const kelasSelect = document.getElementById('satKelas');
+            if(CURRENT_USER.kelasAkses.length === 1) {
+                kelasSelect.value = CURRENT_USER.kelasAkses[0];
+                kelasSelect.disabled = true;
+            } else {
+                kelasSelect.innerHTML = CURRENT_USER.kelasAkses.map(k => `<option value="${k}">${k}</option>`).join('');
+                kelasSelect.value = s.kelas;
+                kelasSelect.disabled = false;
+            }
+        } else {
+            document.getElementById('satKelas').disabled = false;
+        }
+        
         checkSATKelas(); checkSATType();
         document.getElementById('satLevel').value = s.level || "L1";
         document.getElementById('satSkor').value = s.skor || 1;
@@ -1314,16 +1611,31 @@
 
     // Backup / Restore SAT
     window.downloadSATBackup = function() {
-        if(!SAT_DB.length) return alert("Tidak ada data SAT tersimpan!");
+        let dataToExport = SAT_DB;
+        
+        // Filter for Guru
+        if(CURRENT_USER && CURRENT_USER.role === 'GURU') {
+            dataToExport = SAT_DB.filter(s => {
+                const mapelOk = CURRENT_USER.mapelAkses ? CURRENT_USER.mapelAkses.includes(s.mapel) : false;
+                const kelasOk = CURRENT_USER.kelasAkses ? CURRENT_USER.kelasAkses.includes(s.kelas) : false;
+                return mapelOk && kelasOk;
+            });
+        }
+        
+        if(!dataToExport.length) return alert("Tidak ada data SAT tersimpan!");
         try {
-            const blob = new Blob([JSON.stringify({ sat_soal: SAT_DB, exportedAt: new Date().toISOString() }, null, 2)], { type: "application/json" });
+            const blob = new Blob([JSON.stringify({ sat_soal: dataToExport, exportedAt: new Date().toISOString() }, null, 2)], { type: "application/json" });
             const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
-            a.download = `BACKUP_SAT_ALL_${new Date().toLocaleDateString().replace(/\//g, '-')}.json`; a.click(); URL.revokeObjectURL(a.href);
+            a.download = `BACKUP_SAT_${new Date().toLocaleDateString().replace(/\//g, '-')}.json`; a.click(); URL.revokeObjectURL(a.href);
         } catch (e) { alert("Gagal: " + e.message); }
     };
 
     window.restoreSATData = function(input) {
         if (!input.files[0] || !db) return alert("Database belum terhubung!");
+        
+        // Admin only
+        if(CURRENT_USER && CURRENT_USER.role !== 'ADMIN') return alert("Hanya Administrator yang dapat melakukan restore!");
+        
         if(!confirm("Restore data SAT? Data lama yang sama akan ditimpa.")) { input.value = ''; return; }
         const reader = new FileReader();
         reader.onload = async function(e) {
@@ -1415,7 +1727,14 @@
         let labelJudul = "PJOK";
         
         if(mode.startsWith('us_')) { dataToExport = SOAL_DB.filter(x => x.kategori === 'US'); labelJudul = "UJIAN SEKOLAH (US) PJOK"; } 
-        else { dataToExport = (filterVal !== 'ALL') ? SOAL_DB.filter(s => s.kelas == filterVal && (s.kategori === 'REGULER' || !s.kategori)) : SOAL_DB.filter(s => s.kategori === 'REGULER' || !s.kategori); }
+        else { 
+            dataToExport = (filterVal !== 'ALL') ? SOAL_DB.filter(s => s.kelas == filterVal && (s.kategori === 'REGULER' || !s.kategori)) : SOAL_DB.filter(s => s.kategori === 'REGULER' || !s.kategori);
+        }
+        
+        // Filter for Guru
+        if(CURRENT_USER && CURRENT_USER.role === 'GURU' && CURRENT_USER.kelasAkses) {
+            dataToExport = dataToExport.filter(s => CURRENT_USER.kelasAkses.includes(s.kelas));
+        }
         
         if(dataToExport.length === 0) return alert("Data Kosong!");
         const klList = [...new Set(dataToExport.map(x => x.kelas))].sort();
@@ -1471,10 +1790,22 @@
     // === EXPORT SAT ===
     window.exportSATWord = async function(mode) {
         if(!activeSATMapel) return alert("Pilih mata pelajaran terlebih dahulu!");
+        
+        // Check access
+        if(CURRENT_USER && CURRENT_USER.role === 'GURU' && CURRENT_USER.mapelAkses && !CURRENT_USER.mapelAkses.includes(activeSATMapel)) {
+            return alert("Anda tidak memiliki akses ke mata pelajaran ini.");
+        }
+        
         const { Document, Packer, Paragraph, TextRun, ImageRun, Table, TableRow, TableCell, WidthType, BorderStyle, AlignmentType, VerticalAlign } = docx;
         
         const filterKelas = document.getElementById('satFilterKelas').value;
         let data = SAT_DB.filter(s => s.mapel === activeSATMapel);
+        
+        // Filter for Guru
+        if(CURRENT_USER && CURRENT_USER.role === 'GURU' && CURRENT_USER.kelasAkses) {
+            data = data.filter(s => CURRENT_USER.kelasAkses.includes(s.kelas));
+        }
+        
         if(filterKelas !== 'ALL') data = data.filter(s => s.kelas == filterKelas);
         if(data.length === 0) return alert("Tidak ada soal untuk mapel & kelas ini!");
         
@@ -1535,7 +1866,11 @@
         try { const blob = await Packer.toBlob(new Document({ sections })); saveAs(blob, fileName); } catch(e){ alert("Error: "+e.message); console.error(e); }
     };
 
-    window.onload = () => { const logo = localStorage.getItem('pjok_logo_kop'); if(logo) renderLogoKop(logo); renderMapelGrid(); renderSATRekap(); };
+    window.onload = () => { 
+        const logo = localStorage.getItem('pjok_logo_kop'); 
+        if(logo) renderLogoKop(logo); 
+        initAccessContainers();
+    };
 </script>
 
 </body>
